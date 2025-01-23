@@ -1,0 +1,31 @@
+name: "local_docker_netbox_applications_plugin"
+services:
+  netbox: &netbox
+    image: adestis-netbox-applications-plugin:latest
+    build:
+      context: ../
+      dockerfile: Dev-Dockerfile
+    depends_on:
+    - postgres
+    - redis
+    - redis-cache
+    ports:
+      - "13000:8080"
+    environment:
+      SKIP_SUPERUSER: "false"
+      SUPERUSER_EMAIL: "admin@adestis.de"
+      SUPERUSER_NAME: "admin"
+      SUPERUSER_PASSWORD: "admin"
+      DEVELOPER: "True"
+      DEBUG: "True"
+      DB_WAIT_DEBUG: "1"
+    # docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications"
+    # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/base_requirements.txt
+    # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/requirements-container.txt
+    # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/requirements.txt
+    # volumes:
+    #   - ../adestis_netbox_applications/migrations:/opt/netbox/venv/lib/python3.12/site-packages/adestis_netbox_applications/migrations
+  netbox-worker:
+    <<: *netbox
+  netbox-housekeeping:
+    <<: *netbox
