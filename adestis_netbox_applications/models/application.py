@@ -14,13 +14,14 @@ class ApplicationStatusChoices(ChoiceSet):
 
     # TODO: Add status states
     STATUS_ACTIVE = 'active'
+    STATUS_INACTIVE = 'inactive'
 
 
     CHOICES = [
         (STATUS_ACTIVE, 'Active', 'green'),
+        (STATUS_INACTIVE, 'Inactive', 'red'),
     ]
-
-
+    
 class Application(NetBoxModel):
 
 

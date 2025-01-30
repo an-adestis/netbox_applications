@@ -19,6 +19,7 @@ services:
       DEVELOPER: "True"
       DEBUG: "True"
       DB_WAIT_DEBUG: "1"
+      
     # docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications"
     # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/base_requirements.txt
     # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/requirements-container.txt
