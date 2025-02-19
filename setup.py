@@ -2,9 +2,9 @@ from setuptools import find_packages, setup
 
 setup(
     name='adestis-netbox-applications',
-    version='1.9.2',
-    description='ADESTIS Account Management',
-    url='https://github.com/adestis/netbox-account-management',
+    version='1.0.0',
+    description='ADESTIS Applications',
+    # url='https://github.com/adestis/netbox-account-management',
     author='ADESTIS GmbH',
     author_email='pypi@adestis.de',
     install_requires=[],

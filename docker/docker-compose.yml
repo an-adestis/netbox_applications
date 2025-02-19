@@ -1,4 +1,4 @@
-name: "local_docker_netbox_applications_plugin"
+name: "local_docker_netbox_account_management_plugin"
 services:
   netbox: &netbox
     image: docker.io/netboxcommunity/netbox:${VERSION-v4.0-2.9.1}
@@ -21,7 +21,8 @@ services:
     - netbox-reports-files:/opt/netbox/netbox/reports:rw
     - netbox-scripts-files:/opt/netbox/netbox/scripts:rw
   netbox-worker:
-    <<: *netbox
+    # <<: *netbox
+    image: docker.io/netboxcommunity/netbox:${VERSION-v4.0-2.9.1}
     depends_on:
       netbox:
         condition: service_healthy
@@ -29,23 +30,31 @@ services:
     - /opt/netbox/venv/bin/python
     - /opt/netbox/netbox/manage.py
     - rqworker
+    env_file: env/netbox.env
+    user: 'unit:root'
     healthcheck:
       start_period: 20s
       timeout: 3s
       interval: 15s
       test: "ps -aux | grep -v grep | grep -q rqworker || exit 1"
-  netbox-housekeeping:
-    <<: *netbox
-    depends_on:
-      netbox:
-        condition: service_healthy
-    command:
-    - /opt/netbox/housekeeping.sh
-    healthcheck:
-      start_period: 20s
-      timeout: 3s
-      interval: 15s
-      test: "ps -aux | grep -v grep | grep -q housekeeping || exit 1"
+    volumes:
+    - ./configuration:/etc/netbox/config:z,ro
+    - netbox-media-files:/opt/netbox/netbox/media:rw
+    - netbox-reports-files:/opt/netbox/netbox/reports:rw
+    - netbox-scripts-files:/opt/netbox/netbox/scripts:rw
+
+  # netbox-housekeeping:
+  #   <<: *netbox
+  #   depends_on:
+  #     netbox:
+  #       condition: service_healthy
+  #   command:
+  #   - /opt/netbox/housekeeping.sh
+  #   healthcheck:
+  #     start_period: 20s
+  #     timeout: 3s
+  #     interval: 15s
+  #     test: "ps -aux | grep -v grep | grep -q housekeeping || exit 1"
 
   # postgres
   postgres:
@@ -89,7 +98,7 @@ volumes:
     driver_opts:
         type: "none"
         o: "bind"
-        device: "../../data/local_docker_netbox_applications_plugin/postgres"
+        device: "../../data/local_account_management_plugin/postgres"
   netbox-redis-cache-data:
     driver: local
   netbox-redis-data:

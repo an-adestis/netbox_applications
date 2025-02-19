@@ -1,5 +1,6 @@
 from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
 from adestis_netbox_applications.models import *
+from adestis_netbox_applications.filtersets import *
 
 
 class ApplicationTable(NetBoxTable):
@@ -8,9 +9,19 @@ class ApplicationTable(NetBoxTable):
     comments = columns.MarkdownColumn()
 
     tags = columns.TagColumn()
+    
+    name = columns.MarkdownColumn(
+        linkify=True
+    )
 
+    description = columns.MarkdownColumn()
+    
+    url = columns.MarkdownColumn(
+        linkify=True
+    )
 
     class Meta(NetBoxTable.Meta):
         model = Application
-        fields = ['pk', 'id', 'status', 'comments', 'actions', 'tags', 'created', 'last_updated']
-        default_columns = ['pk', 'id', 'status', 'comments', 'actions', 'tags', 'created', 'last_updated']
+        fields = ['name', 'status', 'tenant', 'version', 'url', 'description', 'tags', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'comments',]
+        default_columns = [ 'name', 'tenant', 'version', 'status' ]
+        

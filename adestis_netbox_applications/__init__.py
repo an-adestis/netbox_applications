@@ -1,16 +1,16 @@
 from netbox.plugins import PluginConfig
 
-class AdestisAccountManagementConfig(PluginConfig):
+class AdestisAccountsConfig(PluginConfig):
     name = 'adestis_netbox_applications'
-    verbose_name = 'Account Management'
-    description = 'A NetBox plugin for managing the ownership of accounts.'
-    version = '1.9.2'
+    verbose_name = 'Applications'
+    description = 'A NetBox plugin for managing applications.'
+    version = '1.0.0'
     author = 'ADESTIS GmbH'
     author_email = 'pypi@adestis.de'
-    base_url = 'account-management'
+    base_url = 'applications'
     required_settings = []
     default_settings = {
         'top_level_menu' : True,
     }
 
-config = AdestisAccountManagementConfig
+config = AdestisAccountsConfig
