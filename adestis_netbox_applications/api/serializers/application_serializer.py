@@ -15,7 +15,7 @@ class ApplicationSerializer(NetBoxModelSerializer):
     class Meta:
         model = Application
         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                  'custom_field_data', 'status', 'comments')
+                  'custom_field_data', 'status', 'comments', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'description', 'version')
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                        'custom_field_data', 'status', 'comments')
+                        'custom_field_data', 'status', 'comments', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'description', 'version')
 

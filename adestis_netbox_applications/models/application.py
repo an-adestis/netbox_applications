@@ -45,7 +45,10 @@ class Application(NetBoxModel):
     )
     
     url = django_models.URLField(
-        max_length=300
+        max_length=2048,
+        verbose_name='URL/Identification',
+        blank=True
+
     )
     
     version = django_models.CharField(

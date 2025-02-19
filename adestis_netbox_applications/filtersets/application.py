@@ -31,13 +31,38 @@ class ApplicationFilterSet(NetBoxModelFilterSet):
     #     queryset=Cluster.objects.all(),
     #     required=False,
     #     label=_('Cluster (name)')
-    # )   
+    # )
+    
+    # device_id = django_filters.ModelMultipleChoiceFilter(
+    #     queryset=Device.objects.all(),
+    #     label=_('Device (ID)'),
+    # )
+    
+    # device = DynamicModelMultipleChoiceField(
+    #     queryset=Device.objects.all(),
+    #     required= False,
+    #     to_field_name='name',
+    #     label=_('Device (name)'),
+    # )
 
     # virtual_machines_id = DynamicModelMultipleChoiceField(
     #     queryset=VirtualMachine.objects.all(),
     #     required=False,
     #     label=_('Virtual machine (name)'))
-   
+    
+    # tenant_id = DynamicModelMultipleChoiceField(
+    #     queryset=Tenant.objects.all(),
+    #     required=False,
+    #     label=_('Tenant (ID)'),
+    # )
+    
+    # tenant = DynamicModelMultipleChoiceField(
+    #     queryset=Tenant.objects.all(),
+    #     required=False,
+    #     to_field_name='tenant',
+    #     label=_('Tenant (name)'),
+    # )
+
     class Meta:
         model = Application
         fields = ['id', 'status', 'name', 'url']

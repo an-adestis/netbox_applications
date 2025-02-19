@@ -138,8 +138,11 @@ class ApplicationFilterForm(NetBoxModelFilterSetForm):
     model = Application
 
     fieldsets = (
-        FieldSet('q', 'index', 'tag'),
-        FieldSet('status'),
+        FieldSet('q', 'index',),
+        FieldSet('name', 'url', 'tag', 'status', name=_('Application')),
+        FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
+        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machines_id', name=_('Virtualization')),
+        FieldSet('device_id', name=_('Device'))
     )
 
     index = forms.IntegerField(
@@ -151,10 +154,73 @@ class ApplicationFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label=_('Status')
     )
+    
+    device_id = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'cluster_id': '$cluster_id',
+        },
+        label=_('Device')
+    )
+    
+    virtual_machine_id = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'cluster_id': '$cluster_id',
+            'device_id': '$device_id',
+        },
+        label=_('Virtual Machine')
+    )
+    
+    cluster_group_id = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Cluster Group')
+    )
+
+    cluster_id = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'group_id': '$cluster_group_id'
+        },
+        label=_('Cluster')
+    )
+    
+    manufacturer_id = DynamicModelMultipleChoiceField(
+        queryset=Manufacturer.objects.all(),
+        required=False,
+        null_option='None',   
+        label=_('Manufacturer')
+    )
+    
+    tenant_id = DynamicModelMultipleChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'group_id': '$tenant_group_id'
+        },
+        label=_('Tenant')
+    )
+    
+    tenant_group_id = DynamicModelChoiceField(
+        queryset=TenantGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Tenant Group')
+    )
+
 
     tag = TagFilterField(model)
 
-
+    
 class ApplicationCSVForm(NetBoxModelImportForm):
 
     status = CSVChoiceField(
