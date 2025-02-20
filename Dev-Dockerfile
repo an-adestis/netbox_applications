@@ -10,5 +10,6 @@ COPY ./adestis_netbox_applications /source/adestis-netbox-applications/adestis_n
 COPY ./setup.py /source/adestis-netbox-applications/
 COPY ./MANIFEST.in /source/adestis-netbox-applications/
 COPY ./README.md /source/adestis-netbox-applications/
+COPY ./docker/requirements-container.txt /source/adestis-netbox-applications/
 
 RUN pip3 install --no-warn-script-location /source/adestis-netbox-applications/

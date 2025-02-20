@@ -66,7 +66,7 @@ class ApplicationFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Application
         fields = ['id', 'status', 'name', 'url']
-        # fields = ['id', 'status', 'name', 'url', 'cluster_group_id', 'cluster_id', 'device', 'virtual_machines_id']
+    
 
     def search(self, queryset, name, value):
         if not value.strip():
