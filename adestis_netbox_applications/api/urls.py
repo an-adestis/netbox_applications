@@ -4,6 +4,6 @@ from . import views
 app_name = 'adestis_netbox_applications'
 
 router = NetBoxRouter()
-router.register('applications', views.ApplicationViewSet)
+router.register('applications', views.InstalledApplicationViewSet)
 
 urlpatterns = router.urls

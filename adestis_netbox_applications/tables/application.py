@@ -3,7 +3,7 @@ from adestis_netbox_applications.models import *
 from adestis_netbox_applications.filtersets import *
 
 
-class ApplicationTable(NetBoxTable):
+class InstalledApplicationTable(NetBoxTable):
     status = ChoiceFieldColumn()
 
     comments = columns.MarkdownColumn()
@@ -21,7 +21,7 @@ class ApplicationTable(NetBoxTable):
     )
 
     class Meta(NetBoxTable.Meta):
-        model = Application
+        model = InstalledApplication
         fields = ['name', 'status', 'tenant', 'version', 'url', 'description', 'tags', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'comments',]
         default_columns = [ 'name', 'tenant', 'version', 'status' ]
         

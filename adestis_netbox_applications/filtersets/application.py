@@ -1,4 +1,4 @@
-from adestis_netbox_applications.models import Application
+from adestis_netbox_applications.models import InstalledApplication
 from netbox.filtersets import NetBoxModelFilterSet
 
 from django.db.models import Q
@@ -16,10 +16,10 @@ from ipam.api.serializers import *
 from ipam.api.field_serializers import *
 
 __all__ = (
-    'ApplicationFilterSet',
+    'InstalledApplicationFilterSet',
 )
 
-class ApplicationFilterSet(NetBoxModelFilterSet):
+class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
     # cluster_group_id = DynamicModelMultipleChoiceField(
     #     queryset=ClusterGroup.objects.all(),
@@ -64,7 +64,7 @@ class ApplicationFilterSet(NetBoxModelFilterSet):
     # )
 
     class Meta:
-        model = Application
+        model = InstalledApplication
         fields = ['id', 'status', 'name', 'url']
     
 

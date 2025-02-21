@@ -7,46 +7,46 @@ from netbox.views import generic
 from django.utils.translation import gettext as _
 
 __all__ = (
-    'ApplicationView',
-    'ApplicationListView',
-    'ApplicationEditView',
-    'ApplicationDeleteView',
-    'ApplicationBulkDeleteView',
-    'ApplicationBulkEditView',
-    'ApplicationBulkImportView',
+    'InstalledApplicationView',
+    'InstalledApplicationListView',
+    'InstalledApplicationEditView',
+    'InstalledApplicationDeleteView',
+    'InstalledApplicationBulkDeleteView',
+    'InstalledApplicationBulkEditView',
+    'InstalledApplicationBulkImportView',
 )
 
-class ApplicationView(generic.ObjectView):
-    queryset = Application.objects.all()
+class InstalledApplicationView(generic.ObjectView):
+    queryset = InstalledApplication.objects.all()
 
-class ApplicationListView(generic.ObjectListView):
-    queryset = Application.objects.all()
-    table = ApplicationTable
-    filterset = ApplicationFilterSet
-    filterset_form = ApplicationFilterForm
+class InstalledApplicationListView(generic.ObjectListView):
+    queryset = InstalledApplication.objects.all()
+    table = InstalledApplicationTable
+    filterset = InstalledApplicationFilterSet
+    filterset_form = InstalledApplicationFilterForm
 
-class ApplicationEditView(generic.ObjectEditView):
-    queryset = Application.objects.all()
-    form = ApplicationForm
+class InstalledApplicationEditView(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.all()
+    form = InstalledApplicationForm
 
 
-class ApplicationDeleteView(generic.ObjectDeleteView):
-    queryset = Application.objects.all() 
+class InstalledApplicationDeleteView(generic.ObjectDeleteView):
+    queryset = InstalledApplication.objects.all() 
 
-class ApplicationBulkDeleteView(generic.BulkDeleteView):
-    queryset = Application.objects.all()
-    table = ApplicationTable
+class InstalledApplicationBulkDeleteView(generic.BulkDeleteView):
+    queryset = InstalledApplication.objects.all()
+    table = InstalledApplicationTable
     
     
-class ApplicationBulkEditView(generic.BulkEditView):
-    queryset = Application.objects.all()
-    filterset = ApplicationFilterSet
-    table = ApplicationTable
-    form =  ApplicationBulkEditForm
+class InstalledApplicationBulkEditView(generic.BulkEditView):
+    queryset = InstalledApplication.objects.all()
+    filterset = InstalledApplicationFilterSet
+    table = InstalledApplicationTable
+    form =  InstalledApplicationBulkEditForm
     
 
-class ApplicationBulkImportView(generic.BulkImportView):
-    queryset = Application.objects.all()
-    model_form = ApplicationCSVForm
-    table = ApplicationTable
+class InstalledApplicationBulkImportView(generic.BulkImportView):
+    queryset = InstalledApplication.objects.all()
+    model_form = InstalledApplicationCSVForm
+    table = InstalledApplicationTable
     

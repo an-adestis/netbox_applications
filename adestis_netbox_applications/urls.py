@@ -8,26 +8,26 @@ from utilities.urls import get_model_urls
 urlpatterns = (
 
     # Applications
-    path('applications/', ApplicationListView.as_view(),
-         name='application_list'),
-    path('applications/add/', ApplicationEditView.as_view(),
-         name='application_add'),
-    path('applications/delete/', ApplicationBulkDeleteView.as_view(),
-         name='application_bulk_delete'),
-    path('applications/edit/', ApplicationBulkEditView.as_view(),
-         name='application_bulk_edit'),
-    path('applications/import/', ApplicationBulkImportView.as_view(),
-         name='application_import'),
+    path('applications/', InstalledApplicationListView.as_view(),
+         name='installedapplication_list'),
+    path('applications/add/', InstalledApplicationEditView.as_view(),
+         name='installedapplication_add'),
+    path('applications/delete/', InstalledApplicationBulkDeleteView.as_view(),
+         name='installedapplication_bulk_delete'),
+    path('applications/edit/', InstalledApplicationBulkEditView.as_view(),
+         name='installedapplication_bulk_edit'),
+    path('applications/import/', InstalledApplicationBulkImportView.as_view(),
+         name='installedapplication_import'),
     path('applications/<int:pk>/',
-         ApplicationView.as_view(), name='application'),
+         InstalledApplicationView.as_view(), name='installedapplication'),
     path('applications/<int:pk>/',
-         include(get_model_urls("adestis_netbox_applications", "application"))),
+         include(get_model_urls("adestis_netbox_applications", "installedapplication"))),
     path('applications/<int:pk>/edit/',
-         ApplicationEditView.as_view(), name='application_edit'),
+         InstalledApplicationEditView.as_view(), name='installedapplication_edit'),
     path('applications/<int:pk>/delete/',
-         ApplicationDeleteView.as_view(), name='application_delete'),
+         InstalledApplicationDeleteView.as_view(), name='installedapplication_delete'),
     path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='application_changelog', kwargs={
-        'model': Application
+        'model': InstalledApplication
     }),
 
 )

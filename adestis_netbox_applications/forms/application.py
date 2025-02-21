@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.application import Application, ApplicationStatusChoices
+from adestis_netbox_applications.models.application import InstalledApplication, InstalledApplicationStatusChoices
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
 from utilities.forms.fields import (
@@ -15,13 +15,13 @@ from dcim.models import *
 from virtualization.models import *
 
 __all__ = (
-    'ApplicationForm',
-    'ApplicationFilterForm',
-    'ApplicationBulkEditForm',
-    'ApplicationCSVForm',
+    'InstalledApplicationForm',
+    'InstalledApplicationFilterForm',
+    'InstalledApplicationBulkEditForm',
+    'InstalledApplicationCSVForm',
 )
 
-class ApplicationForm(NetBoxModelForm):
+class InstalledApplicationForm(NetBoxModelForm):
 
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'version', name=_('Application')),
@@ -31,16 +31,16 @@ class ApplicationForm(NetBoxModelForm):
     )
 
     class Meta:
-        model = Application
+        model = InstalledApplication
         fields = ['name', 'description', 'url', 'tags', 'status', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'comments', 'version']
         
         help_texts = {
             'status': "Example text",
         }
 
-class ApplicationBulkEditForm(NetBoxModelBulkEditForm):
+class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
-        queryset=Application.objects.all(),
+        queryset=InstalledApplication.objects.all(),
         widget=forms.MultipleHiddenInput, 
     )
     
@@ -70,7 +70,7 @@ class ApplicationBulkEditForm(NetBoxModelBulkEditForm):
 
     status = forms.ChoiceField(
         required=False,
-        choices=ApplicationStatusChoices,
+        choices=InstalledApplicationStatusChoices,
     )
     
     description = forms.CharField(
@@ -120,7 +120,7 @@ class ApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Cluster")
     )
     
-    model = Application
+    model = InstalledApplication
 
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'version', 'comments', name=_('Application')),
@@ -133,9 +133,9 @@ class ApplicationBulkEditForm(NetBoxModelBulkEditForm):
          'add_tags', 'remove_tags', 'description', ''
     ]
     
-class ApplicationFilterForm(NetBoxModelFilterSetForm):
+class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     
-    model = Application
+    model = InstalledApplication
 
     fieldsets = (
         FieldSet('q', 'index',),
@@ -150,7 +150,7 @@ class ApplicationFilterForm(NetBoxModelFilterSetForm):
     )
 
     status = forms.MultipleChoiceField(
-        choices=ApplicationStatusChoices,
+        choices=InstalledApplicationStatusChoices,
         required=False,
         label=_('Status')
     )
@@ -221,10 +221,10 @@ class ApplicationFilterForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
     
-class ApplicationCSVForm(NetBoxModelImportForm):
+class InstalledApplicationCSVForm(NetBoxModelImportForm):
 
     status = CSVChoiceField(
-        choices=ApplicationStatusChoices,
+        choices=InstalledApplicationStatusChoices,
         help_text=_('Status'),
         required=True,
     )
@@ -286,9 +286,9 @@ class ApplicationCSVForm(NetBoxModelImportForm):
     )
 
     class Meta:
-        model = Application
+        model = InstalledApplication
         fields = ['name' ,'status',  'url', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'description',  'tags', 'comments', 'version']
-        default_return_url = 'plugins:adestis_netbox_applications:Application_list'
+        default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
 
     
