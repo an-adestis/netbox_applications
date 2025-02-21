@@ -19,7 +19,6 @@ __all__ = (
 class ApplicationView(generic.ObjectView):
     queryset = Application.objects.all()
 
-
 class ApplicationListView(generic.ObjectListView):
     queryset = Application.objects.all()
     table = ApplicationTable
@@ -32,8 +31,7 @@ class ApplicationEditView(generic.ObjectEditView):
 
 
 class ApplicationDeleteView(generic.ObjectDeleteView):
-    queryset = Application.objects.all()
- 
+    queryset = Application.objects.all() 
 
 class ApplicationBulkDeleteView(generic.BulkDeleteView):
     queryset = Application.objects.all()
@@ -52,4 +50,3 @@ class ApplicationBulkImportView(generic.BulkImportView):
     model_form = ApplicationCSVForm
     table = ApplicationTable
     
-

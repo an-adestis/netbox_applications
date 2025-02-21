@@ -6,6 +6,9 @@
 
 PLUGINS = [
     "adestis_netbox_applications",
+    "adestis_netbox_plugin_account_management",
+    "netbox_bgp",
+    "netbox_data_flows"
 ]
 
 # PLUGINS_CONFIG = {
