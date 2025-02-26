@@ -5,15 +5,15 @@
 # See https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins
 
 PLUGINS = [
-    # "netbox_bgp",
+    "netbox_bgp",
     "adestis_netbox_applications",
-    # "adestis_netbox_plugin_account_management",
+    "adestis_netbox_plugin_account_management",
     "netbox_data_flows"
 ]
 
 PLUGINS_CONFIG = {
     "adestis_netbox_applications": {},
-    # "adestis_netbox_plugin_account_management": {},
-    # "netbox_bgp": {},
+    "adestis_netbox_plugin_account_management": {},
+    "netbox_bgp": {},
     "netbox_data_flows": {}
 }

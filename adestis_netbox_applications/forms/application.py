@@ -217,7 +217,6 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Tenant Group')
     )
 
-
     tag = TagFilterField(model)
 
     

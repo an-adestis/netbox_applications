@@ -24,6 +24,7 @@ class InstalledApplicationListView(generic.ObjectListView):
     table = InstalledApplicationTable
     filterset = InstalledApplicationFilterSet
     filterset_form = InstalledApplicationFilterForm
+    
 
 class InstalledApplicationEditView(generic.ObjectEditView):
     queryset = InstalledApplication.objects.all()

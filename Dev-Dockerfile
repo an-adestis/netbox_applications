@@ -7,7 +7,6 @@ ENV VIRTUAL_ENV=/opt/netbox/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY ./adestis_netbox_applications /source/adestis-netbox-applications/adestis_netbox_applications/
-RUN chmod 777 -R /source/adestis-netbox-applications/adestis_netbox_applications/
 COPY ./setup.py /source/adestis-netbox-applications/
 COPY ./MANIFEST.in /source/adestis-netbox-applications/
 COPY ./README.md /source/adestis-netbox-applications/

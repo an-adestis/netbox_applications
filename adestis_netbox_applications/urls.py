@@ -17,7 +17,7 @@ urlpatterns = (
     path('applications/edit/', InstalledApplicationBulkEditView.as_view(),
          name='installedapplication_bulk_edit'),
     path('applications/import/', InstalledApplicationBulkImportView.as_view(),
-         name='installedapplication_import'),
+         name='installedapplication_bulk_import'),
     path('applications/<int:pk>/',
          InstalledApplicationView.as_view(), name='installedapplication'),
     path('applications/<int:pk>/',
