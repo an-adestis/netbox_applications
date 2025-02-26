@@ -1,6 +1,6 @@
 from netbox.plugins import PluginConfig
 
-class AdestisAccountsConfig(PluginConfig):
+class AdestisApplicationsConfig(PluginConfig):
     name = 'adestis_netbox_applications'
     verbose_name = 'Applications'
     description = 'A NetBox plugin for managing applications.'
@@ -13,4 +13,4 @@ class AdestisAccountsConfig(PluginConfig):
         'top_level_menu' : True,
     }
 
-config = AdestisAccountsConfig
+config = AdestisApplicationsConfig
