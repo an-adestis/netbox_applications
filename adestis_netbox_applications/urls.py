@@ -26,7 +26,7 @@ urlpatterns = (
          InstalledApplicationEditView.as_view(), name='installedapplication_edit'),
     path('applications/<int:pk>/delete/',
          InstalledApplicationDeleteView.as_view(), name='installedapplication_delete'),
-    path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='application_changelog', kwargs={
+    path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplication_changelog', kwargs={
         'model': InstalledApplication
     }),
 
