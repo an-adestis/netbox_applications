@@ -46,7 +46,7 @@ class InstalledApplication(NetBoxModel):
     
     url = django_models.URLField(
         max_length=2048,
-        verbose_name='URL/Identification',
+        verbose_name='URL',
         blank=True
 
     )
@@ -55,10 +55,10 @@ class InstalledApplication(NetBoxModel):
          max_length=200,
      )
     
-    virtual_machines = django_models.ForeignKey(
+    virtual_machine = django_models.ForeignKey(
           to='virtualization.VirtualMachine',
           on_delete = django_models.PROTECT,
-          related_name= 'applications_virtual_machines',
+          related_name= 'applications_virtual_machine',
           null=True,
           verbose_name='Virtual Machine'
     )
@@ -79,7 +79,7 @@ class InstalledApplication(NetBoxModel):
          verbose_name='Tenant'
      )
     
-    tenant_groups = django_models.ForeignKey(
+    tenant_group = django_models.ForeignKey(
         to= 'tenancy.TenantGroup',
         on_delete= django_models.PROTECT,
         related_name='applications_tenant_group',

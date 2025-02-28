@@ -190,7 +190,7 @@
        label=_("Description"),
   )
 
-  virtual_machines = DynamicModelChoiceField(
+  virtual_machine = DynamicModelChoiceField(
        queryset=VirtualMachine.objects.all(),
        required = False,
        label = ("Virtual Machines")
@@ -225,7 +225,7 @@
         required=True,
     )
     
-    tenant_groups = CSVModelChoiceField(
+    tenant_group = CSVModelChoiceField(
         label=_('Tenant Group'),
         queryset=TenantGroup.objects.all(),
         required=False,
@@ -238,7 +238,7 @@
 - Gehe zu: `../forms/application.py` und ergänze die fields:
 - Beispiel:
    ```python
-   fields = ['name' ,'status', 'description', 'url', 'tags', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'comments', 'version']
+   fields = ['name' ,'status', 'description', 'url', 'tags', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'version']
    ``` 
 
 > **Erfolg!** 🎉
@@ -320,7 +320,7 @@
         FieldSet('q', 'index',),
         FieldSet('name', 'url', 'tag', 'status', name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
-        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machines_id', name=_('Virtualization')),
+        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
         FieldSet('device_id', name=_('Device'))
     )
    ```
@@ -336,9 +336,9 @@
 - Eingabe:
    ```python
          fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                     'custom_field_data', 'status', 'comments', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'description', 'version')
+                     'custom_field_data', 'status', 'comments', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'version')
          brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                           'custom_field_data', 'status', 'comments', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'description', 'version')
+                           'custom_field_data', 'status', 'comments', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'version')
    ```
 
 > **Erfolg!** 🎉
