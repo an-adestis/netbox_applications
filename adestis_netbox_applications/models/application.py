@@ -48,7 +48,6 @@ class InstalledApplication(NetBoxModel):
         max_length=2048,
         verbose_name='URL',
         blank=True
-
     )
     
     version = django_models.CharField(
@@ -111,6 +110,10 @@ class InstalledApplication(NetBoxModel):
         verbose_name='Cluster Group'
     )
     
+    class Meta:
+        verbose_name_plural = "Applications"
+        verbose_name = 'Application'
+
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
 
