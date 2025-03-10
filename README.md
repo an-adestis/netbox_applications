@@ -32,7 +32,7 @@ See [NetBox Documentation](https://docs.netbox.dev/en/stable/plugins/#installing
 ## Screenshots
 
 Applications
-![Add](image.png)
+![Add](./docs/Images/image.png)
 
 Applications
-![Results](image-1.png)
+![Results](./docs/Images/image-1.png)
