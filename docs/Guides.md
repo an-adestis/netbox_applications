@@ -93,9 +93,9 @@
 
 3. Um Migrationen zu erstellen, führe im Terminal den Befehl:
 
-```shell
-docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications
-```
+   ```shell
+   docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications
+   ```
 
 > **Erfolg!** 🎉
 
@@ -109,11 +109,11 @@ docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_
 
    - Gehe zu: `../models/application.py` und importiere die benötigten Module.
    - Beispiel:
-     ```python
-     from tenancy.models import *
-     from dcim.models import *
-     from virtualization.models import *
-     ```
+      ```python
+      from tenancy.models import *
+      from dcim.models import *
+      from virtualization.models import *
+      ```
 
 2. **Models anpassen:**
 
@@ -190,7 +190,7 @@ docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_
        label=_("Description"),
   )
 
-  virtual_machines = DynamicModelChoiceField(
+  virtual_machine = DynamicModelChoiceField(
        queryset=VirtualMachine.objects.all(),
        required = False,
        label = ("Virtual Machines")
@@ -225,7 +225,7 @@ docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_
         required=True,
     )
     
-    tenant_groups = CSVModelChoiceField(
+    tenant_group = CSVModelChoiceField(
         label=_('Tenant Group'),
         queryset=TenantGroup.objects.all(),
         required=False,
@@ -237,10 +237,111 @@ docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_
 
 - Gehe zu: `../forms/application.py` und ergänze die fields:
 - Beispiel:
-```python
-fields = ['name' ,'status', 'description', 'url', 'tags', 'tenant', 'tenant_groups', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machines', 'device', 'comments', 'version']
-``` 
+   ```python
+   fields = ['name' ,'status', 'description', 'url', 'tags', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'version']
+   ``` 
 
 > **Erfolg!** 🎉
 
 ---
+
+## Pypi verbindung
+### Ordner erstellen
+
+1. **Erstellung**
+
+- Im terminal Eingeben:
+   ```shell 
+      sudo mkdir -p  ../../data/local_account_management_plugin/postgres
+   ```
+   - Danach wieder aufbauen:
+   ```shell
+      docker compose up --build -d
+   ```
+   - Danach einen Ordner zurückgehen mit:
+   ```shell
+      cd .. 
+   ```
+   - Daraufhin die nötige Instalation mit:
+   ```shell
+      pip install -r requirements.txt
+   ```
+
+2. **PyPi Token Erstellen**
+
+- Auf https://pypi.org/ gehen und einen Account erstellen.
+   - eine 2FA verrifizierung ist nötig 
+
+- Unter Account settings einen Token erstellen.
+- Den Recovery Code und Die Token Addrese kopieren
+
+3. **Veröffentlichen**
+
+- Im Terminal eingeben:
+   ```shell 
+   pip install  setuptools
+   ```
+   - Nach der Installation im Terminal:
+   ```shell
+   ./publish.sh 
+   ```
+   Eingeben und die Token Addrese einfügen. 
+
+> **Erfolg!** 🎉
+
+---
+
+## Filters bearbeiten
+### Anpassungen im Programm
+
+1. **Module Anpassen**
+- Gehe zu: `../forms/application.py` und vervollständige NetBoxModelFilterSetForm:
+- Eingabe:     
+   ```python
+       status = forms.MultipleChoiceField(
+        choices=ApplicationStatusChoices,
+        required=False,
+        label=_('Status')
+    )
+    
+    device_id = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'cluster_id': '$cluster_id',
+        },
+        label=_('Device')
+    )
+    ```
+- Erweitere den fieldsets:
+   ```python
+      fieldsets = (
+        FieldSet('q', 'index',),
+        FieldSet('name', 'url', 'tag', 'status', name=_('Application')),
+        FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
+        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
+        FieldSet('device_id', name=_('Device'))
+    )
+   ```
+
+> **Erfolg!** 🎉
+
+---
+
+## Serializers bearbeiten
+### Anpassungen im Programm 
+1. **Module Anpassen**
+- Gehe zu: `../serializers/application_serializer.py` und vervollständige NetBoxModelSerializer:
+- Eingabe:
+   ```python
+         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
+                     'custom_field_data', 'status', 'comments', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'version')
+         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
+                           'custom_field_data', 'status', 'comments', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'version')
+   ```
+
+> **Erfolg!** 🎉
+
+---
+

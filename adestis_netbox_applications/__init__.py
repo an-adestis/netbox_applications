@@ -1,10 +1,10 @@
 from netbox.plugins import PluginConfig
 
-class AdestisAccountsConfig(PluginConfig):
+class AdestisApplicationsConfig(PluginConfig):
     name = 'adestis_netbox_applications'
     verbose_name = 'Applications'
     description = 'A NetBox plugin for managing applications.'
-    version = '1.0.0'
+    version = '1.0.1'
     author = 'ADESTIS GmbH'
     author_email = 'pypi@adestis.de'
     base_url = 'applications'
@@ -13,4 +13,4 @@ class AdestisAccountsConfig(PluginConfig):
         'top_level_menu' : True,
     }
 
-config = AdestisAccountsConfig
+config = AdestisApplicationsConfig

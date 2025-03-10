@@ -4,11 +4,11 @@ from django.conf import settings
 
 _applications = [
     PluginMenuItem(
-        link='plugins:adestis_netbox_applications:application_list',
+        link='plugins:adestis_netbox_applications:installedapplication_list',
         link_text='Applications',
-        permissions=["adestis_netbox_applications.application_list"],
+        permissions=["adestis_netbox_applications.installedapplication_list"],
         buttons=(
-            PluginMenuButton('plugins:adestis_netbox_applications:application_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.application_add"]),
+            PluginMenuButton('plugins:adestis_netbox_applications:installedapplication_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.installedapplication_add"]),
         )
     ),    
 ]

@@ -7,12 +7,12 @@ from dcim.models import *
 from virtualization.models import *
 
 __all__ = (
-    'ApplicationStatusChoices',
-    'Application',
+    'InstalledApplicationStatusChoices',
+    'InstalledApplication',
 )
 
-class ApplicationStatusChoices(ChoiceSet):
-    key = 'Applications.status'
+class InstalledApplicationStatusChoices(ChoiceSet):
+    key = 'InstalledApplications.status'
 
     STATUS_ACTIVE = 'active'
     STATUS_INACTIVE = 'inactive'
@@ -22,11 +22,11 @@ class ApplicationStatusChoices(ChoiceSet):
         (STATUS_INACTIVE, 'Inactive', 'red'),
     ]
     
-class Application(NetBoxModel):
+class InstalledApplication(NetBoxModel):
 
     status = django_models.CharField(
         max_length=50,
-        choices=ApplicationStatusChoices,
+        choices=InstalledApplicationStatusChoices,
         verbose_name='Status',
         help_text='Status'
     )
@@ -45,17 +45,20 @@ class Application(NetBoxModel):
     )
     
     url = django_models.URLField(
-        max_length=300
+        max_length=2048,
+        verbose_name='URL',
+        blank=True
+
     )
     
     version = django_models.CharField(
          max_length=200,
      )
     
-    virtual_machines = django_models.ForeignKey(
+    virtual_machine = django_models.ForeignKey(
           to='virtualization.VirtualMachine',
           on_delete = django_models.PROTECT,
-          related_name= 'applications_virtual_machines',
+          related_name= 'applications_virtual_machine',
           null=True,
           verbose_name='Virtual Machine'
     )
@@ -76,7 +79,7 @@ class Application(NetBoxModel):
          verbose_name='Tenant'
      )
     
-    tenant_groups = django_models.ForeignKey(
+    tenant_group = django_models.ForeignKey(
         to= 'tenancy.TenantGroup',
         on_delete= django_models.PROTECT,
         related_name='applications_tenant_group',
@@ -109,10 +112,10 @@ class Application(NetBoxModel):
     )
     
     def get_absolute_url(self):
-        return reverse('plugins:adestis_netbox_applications:application', args=[self.pk])
+        return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
 
     def get_status_color(self):
-        return ApplicationStatusChoices.colors.get(self.status)
+        return InstalledApplicationStatusChoices.colors.get(self.status)
     
     def __str__(self):
         return self.name 

@@ -1,4 +1,4 @@
-from adestis_netbox_applications.models import Application
+from adestis_netbox_applications.models import InstalledApplication
 from netbox.filtersets import NetBoxModelFilterSet
 
 from django.db.models import Q
@@ -16,10 +16,10 @@ from ipam.api.serializers import *
 from ipam.api.field_serializers import *
 
 __all__ = (
-    'ApplicationFilterSet',
+    'InstalledApplicationFilterSet',
 )
 
-class ApplicationFilterSet(NetBoxModelFilterSet):
+class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
     # cluster_group_id = DynamicModelMultipleChoiceField(
     #     queryset=ClusterGroup.objects.all(),
@@ -31,17 +31,42 @@ class ApplicationFilterSet(NetBoxModelFilterSet):
     #     queryset=Cluster.objects.all(),
     #     required=False,
     #     label=_('Cluster (name)')
-    # )   
+    # )
+    
+    # device_id = django_filters.ModelMultipleChoiceFilter(
+    #     queryset=Device.objects.all(),
+    #     label=_('Device (ID)'),
+    # )
+    
+    # device = DynamicModelMultipleChoiceField(
+    #     queryset=Device.objects.all(),
+    #     required= False,
+    #     to_field_name='name',
+    #     label=_('Device (name)'),
+    # )
 
     # virtual_machines_id = DynamicModelMultipleChoiceField(
     #     queryset=VirtualMachine.objects.all(),
     #     required=False,
     #     label=_('Virtual machine (name)'))
-   
+    
+    # tenant_id = DynamicModelMultipleChoiceField(
+    #     queryset=Tenant.objects.all(),
+    #     required=False,
+    #     label=_('Tenant (ID)'),
+    # )
+    
+    # tenant = DynamicModelMultipleChoiceField(
+    #     queryset=Tenant.objects.all(),
+    #     required=False,
+    #     to_field_name='tenant',
+    #     label=_('Tenant (name)'),
+    # )
+
     class Meta:
-        model = Application
+        model = InstalledApplication
         fields = ['id', 'status', 'name', 'url']
-        # fields = ['id', 'status', 'name', 'url', 'cluster_group_id', 'cluster_id', 'device', 'virtual_machines_id']
+    
 
     def search(self, queryset, name, value):
         if not value.strip():
