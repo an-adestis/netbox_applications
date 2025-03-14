@@ -16,10 +16,16 @@ class InstalledApplicationStatusChoices(ChoiceSet):
 
     STATUS_ACTIVE = 'active'
     STATUS_INACTIVE = 'inactive'
+    STATUS_PLANNED ='planned'
+    STATUS_DECOMISSIONING = 'decomissioning'
+    STATUS_REMOVED = 'removed'
 
     CHOICES = [
         (STATUS_ACTIVE, 'Active', 'green'),
         (STATUS_INACTIVE, 'Inactive', 'red'),
+        (STATUS_PLANNED, 'Planned', 'blue'),
+        (STATUS_DECOMISSIONING, 'Decomissioning', 'orange'),
+        (STATUS_REMOVED, 'Removed', 'gray'),
     ]
     
 class InstalledApplication(NetBoxModel):
@@ -50,7 +56,7 @@ class InstalledApplication(NetBoxModel):
     
     version = django_models.CharField(
          max_length=200,
-     )
+    )
     
     virtual_machine = django_models.ForeignKey(
           to='virtualization.VirtualMachine',

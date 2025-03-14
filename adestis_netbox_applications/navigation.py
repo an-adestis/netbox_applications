@@ -17,7 +17,7 @@ plugin_settings = settings.PLUGINS_CONFIG.get('adestis_netbox_applications', {})
 
 if plugin_settings.get('top_level_menu'):
     menu = PluginMenu(  
-        label="Applications",
+        label="Application Management",
         groups=(
             ("Applications", _applications),
         ),
