@@ -1,7 +1,9 @@
 from django.urls import path
 from netbox.views.generic import ObjectChangeLogView
 from adestis_netbox_applications.models import *
+from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.views import *
+from adestis_netbox_applications.views.software import *
 from django.urls import include
 from utilities.urls import get_model_urls
 
@@ -28,6 +30,28 @@ urlpatterns = (
          InstalledApplicationDeleteView.as_view(), name='installedapplication_delete'),
     path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplication_changelog', kwargs={
         'model': InstalledApplication
+    }),
+    
+    path('software/', SoftwareListView.as_view(),
+         name='software_list'),
+    path('software/add/', SoftwareEditView.as_view(),
+         name='software_add'),
+    path('software/delete/', SoftwareBulkDeleteView.as_view(),
+         name='software_bulk_delete'),
+    path('software/edit/', SoftwareBulkEditView.as_view(),
+         name='software_bulk_edit'),
+    path('software/import/', SoftwareBulkImportView.as_view(),
+         name='software_bulk_import'),
+    path('software/<int:pk>/',
+         SoftwareView.as_view(), name='software'),
+    path('software/<int:pk>/',
+         include(get_model_urls("adestis_netbox_applications", "software"))),
+    path('software/<int:pk>/edit/',
+         SoftwareEditView.as_view(), name='software_edit'),
+    path('software/<int:pk>/delete/',
+         SoftwareDeleteView.as_view(), name='software_delete'),
+    path('software/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='software_changelog', kwargs={
+        'model': Software
     }),
 
 )

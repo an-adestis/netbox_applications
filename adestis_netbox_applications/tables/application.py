@@ -19,9 +19,11 @@ class InstalledApplicationTable(NetBoxTable):
     url = columns.MarkdownColumn(
         linkify=True
     )
+    
+    status_date = columns.DateColumn()
 
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
-        fields = ['name', 'status', 'tenant', 'version', 'url', 'description', 'tags', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments',]
-        default_columns = [ 'name', 'tenant', 'version', 'status' ]
+        fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'software',]
+        default_columns = [ 'name', 'tenant', 'status', 'status_date' ]
         

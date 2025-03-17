@@ -10,9 +10,11 @@ from utilities.forms.fields import (
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
 )
+from utilities.forms.widgets import DatePicker
 from tenancy.models import Tenant, TenantGroup
 from dcim.models import *
 from virtualization.models import *
+from adestis_netbox_applications.models.software import *
 
 __all__ = (
     'InstalledApplicationForm',
@@ -24,18 +26,23 @@ __all__ = (
 class InstalledApplicationForm(NetBoxModelForm):
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', name=_('Application')),
+        FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('manufacturer', 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),   
-        FieldSet('device', name=_('Device'))
+        FieldSet('cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),   
+        FieldSet('device', name=_('Device')),
+        FieldSet('software', name=('Software'))
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'description', 'url', 'tags', 'status', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'version']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'tenant_group',  'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'software',]
         
         help_texts = {
             'status': "Example text",
+        }
+        
+        widgets = {
+            'status_date': DatePicker(),
         }
 
 class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
@@ -62,15 +69,16 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("URL")
     )
     
-    version = forms.CharField(
-        max_length=200,
-        required=False,
-        label=_("Version")
-    )
+    
 
     status = forms.ChoiceField(
         required=False,
         choices=InstalledApplicationStatusChoices,
+    )
+    
+    status_date = forms.DateField(
+        required=False,
+        widget=DatePicker
     )
     
     description = forms.CharField(
@@ -102,10 +110,10 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Tenant"),
     )
     
-    manufacturer = DynamicModelChoiceField(
-        queryset=Manufacturer.objects.all(),
-        required = False,
-        label=_("Manufacturer")
+    software = DynamicModelChoiceField(
+        queryset=Software.objects.all(),
+        required= False,
+        label=_('Software'),
     )
     
     cluster_group = DynamicModelChoiceField(
@@ -123,10 +131,11 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', 'comments', name=_('Application')),
+        FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
-        FieldSet('manufacturer', 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),
-        FieldSet('device', name=_('Device'))
+        FieldSet( 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),
+        FieldSet('device', name=_('Device')),
+        FieldSet('software', name=_('Software'))
     )
 
     nullable_fields = [
@@ -139,10 +148,11 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'status', name=_('Application')),
+        FieldSet('name', 'url', 'tag', 'status', 'status_date', name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
-        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
-        FieldSet('device_id', name=_('Device'))
+        FieldSet('cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
+        FieldSet('device_id', name=_('Device')),
+        FieldSet('software', name=_('Software'))
     )
 
     index = forms.IntegerField(
@@ -193,12 +203,12 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Cluster')
     )
     
-    manufacturer_id = DynamicModelMultipleChoiceField(
-        queryset=Manufacturer.objects.all(),
-        required=False,
-        null_option='None',   
-        label=_('Manufacturer')
-    )
+    # software_id = DynamicModelChoiceField(
+    #     queryset=Software.objects.all,
+    #     required=False,
+    #     null_option='None',
+    #     label=_('Software')
+    # )
     
     tenant_id = DynamicModelMultipleChoiceField(
         queryset=Tenant.objects.all(),
@@ -244,12 +254,12 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         help_text=_('Assigned tenant')
     )
     
-    manufacturer = CSVModelChoiceField(
-        label=_("Manufacturer"),
-        queryset=Manufacturer.objects.all(),
+    software = CSVModelChoiceField(
+        label=_('Software'),
+        queryset=Software.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned manufacturer')
+        help_text=_('Assigned software')
     )
     
     cluster_group = CSVModelChoiceField(
@@ -286,7 +296,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = InstalledApplication
-        fields = ['name' ,'status',  'url', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description',  'tags', 'comments', 'version']
+        fields = ['name' ,'status', 'status_date', 'url', 'tenant', 'tenant_group', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description',  'tags', 'comments', 'software']
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
 

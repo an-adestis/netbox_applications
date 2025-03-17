@@ -5,6 +5,7 @@ from utilities.choices import ChoiceSet
 from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
+from adestis_netbox_applications.models.software import *
 
 __all__ = (
     'InstalledApplicationStatusChoices',
@@ -23,8 +24,8 @@ class InstalledApplicationStatusChoices(ChoiceSet):
     CHOICES = [
         (STATUS_ACTIVE, 'Active', 'green'),
         (STATUS_INACTIVE, 'Inactive', 'red'),
-        (STATUS_PLANNED, 'Planned', 'blue'),
-        (STATUS_DECOMISSIONING, 'Decomissioning', 'orange'),
+        (STATUS_PLANNED, 'Planned', 'cyan'),
+        (STATUS_DECOMISSIONING, 'Decomissioning', 'yellow'),
         (STATUS_REMOVED, 'Removed', 'gray'),
     ]
     
@@ -35,6 +36,13 @@ class InstalledApplication(NetBoxModel):
         choices=InstalledApplicationStatusChoices,
         verbose_name='Status',
         help_text='Status'
+    )
+    
+    status_date = django_models.DateField(
+        null=True, 
+        blank=True,
+        verbose_name='Status Date',
+        help_text='Status Date'
     )
 
     comments = django_models.TextField(
@@ -54,24 +62,10 @@ class InstalledApplication(NetBoxModel):
         max_length=300
     )
     
-    version = django_models.CharField(
-         max_length=200,
-    )
-    
-    virtual_machine = django_models.ForeignKey(
-          to='virtualization.VirtualMachine',
-          on_delete = django_models.PROTECT,
-          related_name= 'applications_virtual_machine',
-          null=True,
-          verbose_name='Virtual Machine'
-    )
-    
-    device = django_models.ForeignKey(
-        to = 'dcim.Device',
-        on_delete = django_models.PROTECT,
-        related_name= 'applications_device',
-        null = True,
-        verbose_name='Device'
+    virtual_machine = django_models.ManyToManyField(
+        to='virtualization.VirtualMachine',
+        through='ApplicationVirtualMachine',
+        verbose_name='Virtual Machines'
     )
     
     tenant = django_models.ForeignKey(
@@ -90,28 +84,100 @@ class InstalledApplication(NetBoxModel):
         verbose_name= 'Tenant Group'
     )
     
-    manufacturer = django_models.ForeignKey(
-        to= 'dcim.Manufacturer',
+    software = django_models.ForeignKey(
+        to='adestis_netbox_applications.Software',
         on_delete= django_models.PROTECT,
-        related_name= 'applications_manufacturer',
-        null= True,
-        verbose_name='Manufacturer'
+        related_name= 'applications_software',
+        null=True,
+        verbose_name='Software'
     )
     
-    cluster = django_models.ForeignKey(
+    device = django_models.ManyToManyField(
+        to = 'dcim.Device',
+        through='ApplicationDevice',
+        verbose_name='Device'
+    )
+    
+    cluster = django_models.ManyToManyField(
         to = 'virtualization.Cluster',
-        on_delete = django_models.PROTECT,
-        related_name = 'applications_cluster',
-        null = True,
+        through='ApplicationCluster',
         verbose_name='Cluster'
     )
     
-    cluster_group = django_models.ForeignKey(
+    cluster_group = django_models.ManyToManyField(
         to = 'virtualization.ClusterGroup',
-        on_delete = django_models.PROTECT,
-        related_name = 'applications_cluster_group',
-        null = True,
+        through= 'ApplicationClusterGroup',
         verbose_name='Cluster Group'
+    )
+    
+    software = django_models.ForeignKey(
+        to='adestis_netbox_applications.Software',
+        on_delete=django_models.PROTECT,
+        related_name='applications_software',
+        null=True,
+        verbose_name='Software'
+    )
+    
+    class ApplicationDevice(django_models.Model):
+     application = django_models.ForeignKey(
+        'InstalledApplication',
+        on_delete=django_models.CASCADE,
+        related_name='application_device',
+        verbose_name='Installed Application'
+    )
+    
+    device = django_models.ForeignKey(
+        'dcim.Device',
+        on_delete=django_models.PROTECT,
+        related_name= 'applications_device',
+        null = True,
+        verbose_name='Device'
+    )
+    
+    class ApplicationCluster(django_models.Model):
+     application = django_models.ForeignKey(
+        'InstalledApplication',
+        on_delete=django_models.CASCADE,
+        related_name='application_cluster',
+        verbose_name='Installed Application'
+    ) 
+     
+     cluster = django_models.ForeignKey(
+         'virtualization.Cluster',
+         on_delete=django_models.PROTECT,
+         null = True,
+         verbose_name='Cluster',
+         related_name='application_cluster'
+     )
+    
+    class ApplicationClusterGroup(django_models.Model):
+     application = django_models.ForeignKey(
+        'InstalledApplication',
+        on_delete=django_models.CASCADE,
+        related_name='application_cluster_group',
+        verbose_name='Installed Application'
+    ) 
+     cluster_group = django_models.ForeignKey(
+         'virtualization.ClusterGroup',
+         on_delete=django_models.PROTECT,
+         null = True,
+         verbose_name='Cluster Group',
+         related_name='application_cluster_group'
+     ) 
+    
+    class ApplicationVirtualMachine(django_models.Model):
+     application = django_models.ForeignKey(
+        'InstalledApplication',
+        on_delete=django_models.CASCADE,
+        related_name='application_virtual_machines',
+        verbose_name='Installed Application'
+    )
+    virtual_machine = django_models.ForeignKey(
+        'virtualization.VirtualMachine',
+        on_delete=django_models.PROTECT,
+        related_name='application_virtual_machines',
+        verbose_name='Virtual Machine',
+        null=True
     )
     
     class Meta:

@@ -12,6 +12,7 @@ from utilities.filters import TreeNodeMultipleChoiceFilter
 from virtualization.models import *
 from tenancy.models import *
 from dcim.models import *
+from adestis_netbox_applications.models.software import *
 from ipam.api.serializers import *
 from ipam.api.field_serializers import *
 
@@ -62,10 +63,23 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         to_field_name='tenant',
         label=_('Tenant (name)'),
     )
+    
+    # software_id = DynamicModelMultipleChoiceField(
+    #     queryset=Software.objects.all(),
+    #     required=False,
+    #     label=_('Software (ID)'),
+    # )
+    
+    # software = DynamicModelMultipleChoiceField(
+    #     queryset=Software.objects.all(),
+    #     required = False,
+    #     to_field_name='software',
+    #     label=_('Software (name)'),
+    # )
 
     class Meta:
         model = InstalledApplication
-        fields = ['id', 'status', 'name', 'url']
+        fields = ['id', 'status', 'status_date', 'name', 'url']
     
 
     def search(self, queryset, name, value):

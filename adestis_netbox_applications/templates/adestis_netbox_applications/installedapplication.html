@@ -28,6 +28,16 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Status Date</th>
+              <td>
+                {% if object.status_date %}
+                  {{ object.status_date|date:"Y-m-d" }}  <!-- Datum im Format YYYY-MM-DD anzeigen -->
+                {% else %}
+                  <span class="text-muted">{% trans "None" %}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope='row'>Description</th>
               <td>{% if object.description %}
                 {{ object.description|markdown }}
@@ -45,15 +55,7 @@
                   {% endif %}
               </td>
             </tr>
-            <tr>
-              <th scope='row'>Version</th>
-              <td>{% if object.version %}
-                {{ object.version|markdown }}
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
+            
             <tr>
               <th scope='row'>Virtual Machine</th>
               <td>{% if object.virtual_machine %}
@@ -91,15 +93,6 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Manufacturer</th>
-              <td>{% if object.manufacturer %}
-                <a href="{% url 'dcim:manufacturer' object.manufacturer.id %}"> {{ object.manufacturer.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
               <th scope='row'>Cluster Group</th>
               <td>{% if object.cluster_group %}
                 <a href="{% url 'virtualization:clustergroup' object.cluster_group.id %}"> {{ object.cluster_group.name|markdown }}</a>
@@ -112,6 +105,15 @@
               <th scope='row'>Cluster</th>
               <td>{% if object.cluster %}
                 <a href="{% url 'virtualization:cluster' object.cluster.id %}"> {{ object.cluster.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope='row'>Software</th>
+              <td>{% if object.software %}
+                <a href="{% url 'plugins:adestis_netbox_applications:software' object.software.id %}"> {{ object.software.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}

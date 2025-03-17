@@ -7,15 +7,15 @@ from dcim.api.serializers import *
 from dcim.models import *
 from virtualization.api.serializers import *
 
-class InstalledApplicationSerializer(NetBoxModelSerializer):
+class SoftwareSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:adestis_netbox_applications-api:installedapplication-detail'
+        view_name='plugins-api:adestis_netbox_applications-api:software-detail'
     )
 
     class Meta:
-        model = InstalledApplication
+        model = Software
         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                  'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'software' )
+                  'custom_field_data', 'status',  'manufacturer',  'description', 'version')
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                        'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description', 'software' )
+                        'custom_field_data', 'status', 'manufacturer', 'description', 'version')
 
