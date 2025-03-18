@@ -21,10 +21,6 @@ __all__ = (
 
 class SoftwareFilterSet(NetBoxModelFilterSet):
     
-
-    
-    
-    
     manufacturer = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
         required=False,

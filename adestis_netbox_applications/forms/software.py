@@ -52,8 +52,6 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Name"),
     )
     
-    
-    
     url = forms.URLField(
         max_length=300,
         required=False,
@@ -77,9 +75,6 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         required=False,
         label=_("Description"),
     )
-    
-    
-    
     
     model = Software
 
@@ -138,7 +133,6 @@ class SoftwareCSVForm(NetBoxModelImportForm):
         help_text=_('Assigned manufacturer')
     )
     
-
     class Meta:
         model = Software
         fields = ['name' ,'status',  'url',  'manufacturer',   'description',  'tags', 'version']

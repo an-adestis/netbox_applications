@@ -16,7 +16,7 @@ _applications = [
 _software = [
     PluginMenuItem(
         link='plugins:adestis_netbox_applications:software_list',
-        link_text='Applications',
+        link_text='Softwares',
         permissions=["adestis_netbox_applications.software_list"],
         buttons=(
             PluginMenuButton('plugins:adestis_netbox_applications:software_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.software_add"]),

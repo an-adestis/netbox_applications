@@ -69,8 +69,6 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("URL")
     )
     
-    
-
     status = forms.ChoiceField(
         required=False,
         choices=InstalledApplicationStatusChoices,
@@ -152,7 +150,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
         FieldSet('device_id', name=_('Device')),
-        FieldSet('software', name=_('Software'))
+        # FieldSet('software_id', name=_('Software'))
     )
 
     index = forms.IntegerField(
@@ -203,7 +201,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Cluster')
     )
     
-    # software_id = DynamicModelChoiceField(
+    # software_id = DynamicModelMultipleChoiceField(
     #     queryset=Software.objects.all,
     #     required=False,
     #     null_option='None',

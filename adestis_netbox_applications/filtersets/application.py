@@ -34,8 +34,9 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         label=_('Cluster (name)')
     )
     
-    device_id = django_filters.ModelMultipleChoiceFilter(
+    device_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
+        required = False,
         label=_('Device (ID)'),
     )
     
@@ -70,12 +71,12 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     #     label=_('Software (ID)'),
     # )
     
-    # software = DynamicModelMultipleChoiceField(
-    #     queryset=Software.objects.all(),
-    #     required = False,
-    #     to_field_name='software',
-    #     label=_('Software (name)'),
-    # )
+    software = DynamicModelMultipleChoiceField(
+        queryset=Software.objects.all(),
+        required = False,
+        to_field_name='software',
+        label=_('Software (name)'),
+    )
 
     class Meta:
         model = InstalledApplication
