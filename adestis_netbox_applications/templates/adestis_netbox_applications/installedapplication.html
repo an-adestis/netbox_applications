@@ -92,7 +92,7 @@
                   {% endif %}
               </td>
             </tr>
-            <tr>
+            {% comment %} <tr>
               <th scope='row'>Cluster Group</th>
               <td>{% if object.cluster_group %}
                 <a href="{% url 'virtualization:clustergroup' object.cluster_group.id %}"> {{ object.cluster_group.name|markdown }}</a>
@@ -100,7 +100,7 @@
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
               </td>
-            </tr>
+            </tr> {% endcomment %}
             <tr>
               <th scope='row'>Cluster</th>
               <td>{% if object.cluster %}

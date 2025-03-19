@@ -28,14 +28,14 @@ class InstalledApplicationForm(NetBoxModelForm):
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),   
+        FieldSet('cluster',  'virtual_machine', name=_('Virtualization')),   
         FieldSet('device', name=_('Device')),
         FieldSet('software', name=('Software'))
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'tenant_group',  'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'software',]
+        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'tenant_group',  'cluster',  'virtual_machine', 'device', 'comments', 'software']
         
         help_texts = {
             'status': "Example text",
@@ -114,11 +114,11 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_('Software'),
     )
     
-    cluster_group = DynamicModelChoiceField(
-        queryset=ClusterGroup.objects.all(),
-        required = False,
-        label=_("Cluster Group")
-    )
+    # cluster_group = DynamicModelChoiceField(
+    #     queryset=ClusterGroup.objects.all(),
+    #     required = False,
+    #     label=_("Cluster Group")
+    # )
     
     cluster = DynamicModelChoiceField(
         queryset=Cluster.objects.all(),
@@ -131,7 +131,7 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
-        FieldSet( 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),
+        FieldSet( 'cluster',  'virtual_machine', name=_('Virtualization')),
         FieldSet('device', name=_('Device')),
         FieldSet('software', name=_('Software'))
     )
@@ -148,8 +148,8 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         FieldSet('q', 'index',),
         FieldSet('name', 'url', 'tag', 'status', 'status_date', name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
-        FieldSet('cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
-        FieldSet('device_id', name=_('Device')),
+        FieldSet('cluster_id',  'virtual_machine_id', name=_('Virtualization')),
+        FieldSet('device_id', name=_('Device'))
         # FieldSet('software_id', name=_('Software'))
     )
 
@@ -184,19 +184,18 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Virtual Machine')
     )
     
-    cluster_group_id = DynamicModelMultipleChoiceField(
-        queryset=ClusterGroup.objects.all(),
-        required=False,
-        null_option='None',
-        label=_('Cluster Group')
-    )
+    # cluster_group_id = DynamicModelMultipleChoiceField(
+    #     queryset=ClusterGroup.objects.all(),
+    #     required=False,
+    #     null_option='None',
+    #     label=_('Cluster Group')
+    # )
 
     cluster_id = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         required=False,
         null_option='None',
         query_params={
-            'group_id': '$cluster_group_id'
         },
         label=_('Cluster')
     )
@@ -260,13 +259,13 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         help_text=_('Assigned software')
     )
     
-    cluster_group = CSVModelChoiceField(
-        label=_('Cluster Group'),
-        queryset=ClusterGroup.objects.all(),
-        required=True,
-        to_field_name='name',
-        help_text=_('Assigned cluster group')
-    )
+    # cluster_group = CSVModelChoiceField(
+    #     label=_('Cluster Group'),
+    #     queryset=ClusterGroup.objects.all(),
+    #     required=True,
+    #     to_field_name='name',
+    #     help_text=_('Assigned cluster group')
+    # )
     
     cluster = CSVModelChoiceField(
         label=_('Cluster'),
@@ -294,7 +293,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = InstalledApplication
-        fields = ['name' ,'status', 'status_date', 'url', 'tenant', 'tenant_group', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description',  'tags', 'comments', 'software']
+        fields = ['name' ,'status', 'status_date', 'url', 'tenant', 'tenant_group', 'cluster', 'virtual_machine', 'device', 'description',  'tags', 'comments', 'software']
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
 

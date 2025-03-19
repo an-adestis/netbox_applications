@@ -1,8 +1,8 @@
 from netbox.views import generic
-from adestis_netbox_applications.forms.application import *
-from adestis_netbox_applications.models.application import *
-from adestis_netbox_applications.filtersets.application import *
-from adestis_netbox_applications.tables.application import *
+from adestis_netbox_applications.forms import *
+from adestis_netbox_applications.models import *
+from adestis_netbox_applications.filtersets import *
+from adestis_netbox_applications.tables import *
 from netbox.views import generic
 from django.utils.translation import gettext as _
 
