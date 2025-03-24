@@ -28,29 +28,30 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     #     label=_('Cluster group (name)')
     # )   
     
-    cluster_id = DynamicModelMultipleChoiceField(
-        queryset=Cluster.objects.all(),
-        required=False,
-        label=_('Cluster (name)')
-    )
+    # cluster_id = DynamicModelMultipleChoiceField(
+    #     queryset=Cluster.objects.all(),
+    #     required=False,
+    #     label=_('Cluster (name)')
+    # )
     
-    device_id = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required = False,
-        label=_('Device (ID)'),
-    )
+    # device_id = DynamicModelMultipleChoiceField(
+    #     queryset=Device.objects.all(),
+    #     required = False,
+    #     label=_('Device (ID)'),
+    # )
     
-    device = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required= False,
-        to_field_name='name',
-        label=_('Device (name)'),
-    )
+    # device = DynamicModelMultipleChoiceField(
+    #     queryset=Device.objects.all(),
+    #     required= False,
+    #     to_field_name='name',
+    #     label=_('Device (name)'),
+    # )
 
-    virtual_machines_id = DynamicModelMultipleChoiceField(
+    virtual_machine_id = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
         required=False,
-        label=_('Virtual machine (name)'))
+        label=_('Virtual machine (name)')
+    )
     
     tenant_id = DynamicModelMultipleChoiceField(
         queryset=Tenant.objects.all(),

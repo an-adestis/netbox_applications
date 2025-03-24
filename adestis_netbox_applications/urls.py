@@ -7,6 +7,8 @@ from adestis_netbox_applications.views.software import *
 from django.urls import include
 from utilities.urls import get_model_urls
 
+app_name = 'adestis_netbox_applications'
+
 urlpatterns = (
 
     # Applications

@@ -55,25 +55,31 @@
                   {% endif %}
               </td>
             </tr>
-            
             <tr>
-              <th scope='row'>Virtual Machine</th>
-              <td>{% if object.virtual_machine %}
-                <a href= "{% url 'virtualization:virtualmachine' object.virtual_machine.id %}"> {{ object.virtual_machine.name|markdown }} </a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
+              <th scope="row">Virtual Machine</th>
+                <td>
+                  <!-- Zeigt das ganze Objekt, um sicherzustellen, dass wir das richtige Objekt haben -->
+                  <p>{{ object }}</p>
+                    {% if object.applications_virtual_machines.all %}
+                        <a href="{% url 'virtualization:virtualmachine' virtualmachine.id %}">
+                          {{ virtual_machine.name|markdown }}
+                        </a>
+                    {% endif %}
+                </td> 
             </tr>
             <tr>
               <th scope='row'>Device</th>
-              <td>{% if object.device %}
-                <a href="{% url 'dcim:device' object.device.id %}"> {{ object.device.name|markdown }} </a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
+              <td>
+                <p>{{ object }}</p>
+                  {% if object.applications_devices.all %}
+                    {% for cluster in object.applications_devices.all %}
+                      <a href="{% url 'dcim:device' device.id %}">
+                        {{ device.name|markdown }}
+                      </a><br>
+                    {% endfor %}
                   {% endif %}
               </td>
-            </tr>
+            </tr> 
             <tr>
               <th scope='row'>Tenant Group</th>
               <td>{% if object.tenant_group %}
@@ -100,14 +106,19 @@
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
               </td>
-            </tr> {% endcomment %}
-            <tr>
+            </tr>  {% endcomment %}
+             <tr>
               <th scope='row'>Cluster</th>
-              <td>{% if object.cluster %}
-                <a href="{% url 'virtualization:cluster' object.cluster.id %}"> {{ object.cluster.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
+              <td>
+                <!-- Zeigt das ganze Objekt, um sicherzustellen, dass wir das richtige Objekt haben -->
+                <p>{{ object }}</p>
+                {% if object.applications_cluster.all %}
+                  {% for cluster_group in object.applications_cluster.all %}
+                    <a href="{% url 'virtualization:cluster' cluster.id %}">
+                      {{ cluster.name|markdown }}
+                    </a><br>
+                  {% endfor %}
+                {% endif %}
               </td>
             </tr>
             <tr>
