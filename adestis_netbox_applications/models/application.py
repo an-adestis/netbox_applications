@@ -63,7 +63,7 @@ class InstalledApplication(NetBoxModel):
     
     device = django_models.ManyToManyField(
         to='dcim.Device',
-        # through='ApplicationDevice',
+        through='ApplicationDevice',
         verbose_name='Device'
     )
     
@@ -166,3 +166,18 @@ class InstalledApplication(NetBoxModel):
                 verbose_name='Cluster',
                 related_name='applications_clusters'
         )
+        
+    # class ApplicationClusterGroup(django_models.Model):
+    #     installedapplication = django_models.ForeignKey(
+    #             'InstalledApplication',
+    #             on_delete=django_models.CASCADE,
+    #             related_name='applications_cluster_groups',
+    #             verbose_name='Installed Application'
+    #     )
+    #     cluster = django_models.ForeignKey(
+    #             'virtualization.ClusterGroup',
+    #             on_delete=django_models.PROTECT,
+    #             null=True,
+    #             verbose_name='ClusterGroup',
+    #             related_name='applications_cluster_groups'
+    #     )

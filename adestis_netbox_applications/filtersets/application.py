@@ -1,4 +1,5 @@
 from adestis_netbox_applications.models import InstalledApplication
+from adestis_netbox_applications.models.software import *
 from netbox.filtersets import NetBoxModelFilterSet
 
 from django.db.models import Q
@@ -28,24 +29,24 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     #     label=_('Cluster group (name)')
     # )   
     
-    # cluster_id = DynamicModelMultipleChoiceField(
-    #     queryset=Cluster.objects.all(),
-    #     required=False,
-    #     label=_('Cluster (name)')
-    # )
+    cluster_id = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        required=False,
+        label=_('Cluster (name)')
+    )
     
-    # device_id = DynamicModelMultipleChoiceField(
-    #     queryset=Device.objects.all(),
-    #     required = False,
-    #     label=_('Device (ID)'),
-    # )
+    device_id = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required = False,
+        label=_('Device (ID)'),
+    )
     
-    # device = DynamicModelMultipleChoiceField(
-    #     queryset=Device.objects.all(),
-    #     required= False,
-    #     to_field_name='name',
-    #     label=_('Device (name)'),
-    # )
+    device = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required= False,
+        to_field_name='name',
+        label=_('Device (name)'),
+    )
 
     virtual_machine_id = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
@@ -66,11 +67,11 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         label=_('Tenant (name)'),
     )
     
-    # software_id = DynamicModelMultipleChoiceField(
-    #     queryset=Software.objects.all(),
-    #     required=False,
-    #     label=_('Software (ID)'),
-    # )
+    software_id = DynamicModelMultipleChoiceField(
+        queryset=Software.objects.all(),
+        required=False,
+        label=_('Software (ID)'),
+    )
     
     software = DynamicModelMultipleChoiceField(
         queryset=Software.objects.all(),
