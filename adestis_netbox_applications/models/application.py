@@ -69,15 +69,15 @@ class InstalledApplication(NetBoxModel):
     
     cluster = django_models.ManyToManyField(
         to='virtualization.Cluster',
-        through='ApplicationCluster',
+        # through='ApplicationCluster',
         verbose_name='Cluster'
     )
     
-    # cluster_group = django_models.ManyToManyField(
-    #     to='virtualization.ClusterGroup',
-    #     through='ApplicationClusterGroup',
-    #     verbose_name='Cluster Group'
-    # )
+    cluster_group = django_models.ManyToManyField(
+        to='virtualization.ClusterGroup',
+        # through='ApplicationClusterGroup',
+        verbose_name='Cluster Group'
+    )
     
     virtual_machine = django_models.ManyToManyField(
         to='virtualization.VirtualMachine',
@@ -152,20 +152,20 @@ class InstalledApplication(NetBoxModel):
             verbose_name='Device'
         )
 
-    class ApplicationCluster(django_models.Model):
-        installedapplication = django_models.ForeignKey(
-                'InstalledApplication',
-                on_delete=django_models.CASCADE,
-                related_name='applications_clusters',
-                verbose_name='Installed Application'
-        )
-        cluster = django_models.ForeignKey(
-                'virtualization.Cluster',
-                on_delete=django_models.PROTECT,
-                null=True,
-                verbose_name='Cluster',
-                related_name='applications_clusters'
-        )
+    # class ApplicationCluster(django_models.Model):
+    #     installedapplication = django_models.ForeignKey(
+    #             'InstalledApplication',
+    #             on_delete=django_models.CASCADE,
+    #             related_name='applications_clusters',
+    #             verbose_name='Installed Application'
+    #     )
+    #     cluster = django_models.ForeignKey(
+    #             'virtualization.Cluster',
+    #             on_delete=django_models.PROTECT,
+    #             null=True,
+    #             verbose_name='Cluster',
+    #             related_name='applications_clusters'
+    #     )
         
     # class ApplicationClusterGroup(django_models.Model):
     #     installedapplication = django_models.ForeignKey(
@@ -174,7 +174,7 @@ class InstalledApplication(NetBoxModel):
     #             related_name='applications_cluster_groups',
     #             verbose_name='Installed Application'
     #     )
-    #     cluster = django_models.ForeignKey(
+    #     cluster_group = django_models.ForeignKey(
     #             'virtualization.ClusterGroup',
     #             on_delete=django_models.PROTECT,
     #             null=True,

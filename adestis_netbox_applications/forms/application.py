@@ -30,14 +30,20 @@ class InstalledApplicationForm(NetBoxModelForm):
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('virtual_machine', 'cluster', name=_('Virtualization')),   
+        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
         FieldSet('device', name=_('Device')),
         FieldSet('software', name=('Software'))
     )
 
+    cluster_group = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required= True,
+    )
+
+
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster',  'tenant_group', 'comments', 'software']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster_group', 'cluster', 'tenant_group', 'comments', 'software']
         
         help_texts = {
             'status': "Example text",
