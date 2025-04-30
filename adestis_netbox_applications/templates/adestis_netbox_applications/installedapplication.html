@@ -55,7 +55,7 @@
                   {% endif %}
               </td>
             </tr>
-            <tr>
+            {% comment %} <tr>
                 <th scope="row">Virtual Machine</th>
                 <td>
                   {% if object.applications_virtual_machines.all %}
@@ -82,7 +82,7 @@
                  <p>Kein Device vorhanden</p>
                 {% endif %}
               </td>
-            </tr> 
+            </tr>  {% endcomment %}
             <tr>
               <th scope='row'>Tenant Group</th>
               <td>{% if object.tenant_group %}
@@ -101,6 +101,34 @@
                   {% endif %}
               </td>
             </tr>
+            <tr>
+              <th scope='row'>Cluster Group</th>
+              <td>
+                {% if object.cluster_group.exists %}
+                  {% for cluster_group in object.cluster_group.all %}
+                    <a href="{% url 'virtualization:clustergroup' cluster_group.id %}">
+                      {{ cluster_group.name|markdown }}
+                    </a>
+                  {% endfor %}
+                {% else %}
+                  <span class="text-muted">{% trans "None" %}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope='row'>Cluster</th>
+              <td>
+                {% if object.cluster.exists %}
+                  {% for cluster in object.cluster.all %}
+                    <a href="{% url 'virtualization:cluster' cluster.id %}">
+                      {{ cluster.name|markdown }}
+                    </a>
+                  {% endfor %}
+                {% else %}
+                  <span class="text-muted">{% trans "None" %}</span>
+                {% endif %}
+              </td>
+            </tr>
             {% comment %} <tr>
               <th scope='row'>Cluster Group</th>
               <td>
@@ -115,7 +143,7 @@
                 {% endif %}
               </td>
             </tr>   {% endcomment %}
-            <tr>
+            {% comment %} <tr>
               <th scope='row'>Cluster</th>
               <td>
                   {% if object.applications_clusters.all %}
@@ -126,7 +154,7 @@
                     {% endfor %}
                   {% endif %}
               </td>
-            </tr>
+            </tr> {% endcomment %}
             <tr>
               <th scope='row'>Software</th>
               <td>{% if object.software %}
@@ -142,6 +170,7 @@
     </div>
     <div class="col col-md-6">
       {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc//panels/related_objects.html' %}
       {% include 'inc/panels/tags.html' %}
       {% include 'inc/panels/comments.html'%}
     </div>

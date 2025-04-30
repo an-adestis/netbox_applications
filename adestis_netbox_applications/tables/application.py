@@ -27,3 +27,13 @@ class InstalledApplicationTable(NetBoxTable):
         fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'comments', 'software']
         default_columns = [ 'name', 'tenant', 'status', 'status_date' ]
         
+class DeviceInstalledApplicationListTable(NetBoxTable):
+    
+    device = columns.MarkdownColumn(
+        linkify=True
+    )
+    
+    class Meta(NetBoxTable.Meta):
+        model = InstalledApplication
+        fields=['device']
+        default_columns = ['device']

@@ -12,8 +12,10 @@ app_name = 'adestis_netbox_applications'
 urlpatterns = (
 
     # Applications
-    path('applications/', InstalledApplicationListView.as_view(),
+    path('applications/', InstalledApplicationView.as_view(),
          name='installedapplication_list'),
+    path('applications/devices/', DeviceAffectedInstalledApplicationView.as_view(),
+         name='applicationdevices_list'),
     path('applications/add/', InstalledApplicationEditView.as_view(),
          name='installedapplication_add'),
     path('applications/delete/', InstalledApplicationBulkDeleteView.as_view(),
@@ -23,7 +25,7 @@ urlpatterns = (
     path('applications/import/', InstalledApplicationBulkImportView.as_view(),
          name='installedapplication_bulk_import'),
     path('applications/<int:pk>/',
-         InstalledApplicationView.as_view(), name='installedapplication'),
+         InstalledApplicationListView.as_view(), name='installedapplication'),
     path('applications/<int:pk>/',
          include(get_model_urls("adestis_netbox_applications", "installedapplication"))),
     path('applications/<int:pk>/edit/',
