@@ -131,7 +131,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= InstalledApplication
     table = ClusterInstalledApplicationListTable
     template_name = "adestis_netbox_applications/application_cluster.html"
-    tab = ViewTab(label='Devices', badge=lambda obj: ClusterAssignment.objects.filter(application=obj).count(), hide_if_empty=True)
+    tab = ViewTab(label='Clusters', badge=lambda obj: ClusterAssignment.objects.filter(application=obj).count(), hide_if_empty=True)
     
     def get_children(self, request, parent):  
             children = ClusterAssignment.objects.filter(application=parent)

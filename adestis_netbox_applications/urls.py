@@ -49,7 +49,7 @@ urlpatterns = (
     path("clustergroup-assignments/add/", ClusterGroupAssignmentEditView.as_view(), name="clustergroupassignment_add",),
     path("clustergroup-assignments/<int:pk>/edit/", ClusterGroupAssignmentEditView.as_view(), name="clustergroupassignment_edit",),
     path("clustergroup-assignment/delete/<int:pk>/", ClusterGroupAssignmentBulkDeleteView.as_view(), name="clustergroupassignment_delete",),
-    path('clustergroup-assignments/<int:pk>/', include(get_model_urls(app_name, 'deviceassignment'))),
+    path('clustergroup-assignments/<int:pk>/', include(get_model_urls(app_name, 'clustergroupassignment'))),
     
     path("virtualmachine-assignments/add/", VirtualMachineAssignmentEditView.as_view(), name="virtualmachineassignment_add",),
     path("virtualmachine-assignments/<int:pk>/edit/", VirtualMachineAssignmentEditView.as_view(), name="virtualmachineassignment_edit",),

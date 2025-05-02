@@ -11,6 +11,9 @@ __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
     'DeviceAssignment',
+    'ClusterAssignment',
+    'ClusterGroupAssignment',
+    'VirtualMachineAssignment'
 )
 
 class InstalledApplicationStatusChoices(ChoiceSet):
