@@ -1,7 +1,7 @@
 from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
-from adestis_netbox_applications.models import InstalledApplication
+from adestis_netbox_applications.models import InstalledApplication, DeviceAssignment, ClusterAssignment, ClusterGroupAssignment, VirtualMachineAssignment
 from adestis_netbox_applications.filtersets import *
-
+import django_tables2 as tables
 
 class InstalledApplicationTable(NetBoxTable):
     status = ChoiceFieldColumn()
@@ -29,11 +29,71 @@ class InstalledApplicationTable(NetBoxTable):
         
 class DeviceInstalledApplicationListTable(NetBoxTable):
     
-    device = columns.MarkdownColumn(
-        linkify=True
-    )
-    
+    device = tables.Column(verbose_name='Device', linkify = True)
     class Meta(NetBoxTable.Meta):
-        model = InstalledApplication
-        fields=['device']
-        default_columns = ['device']
+        model = DeviceAssignment
+        fields = ['device']
+        
+class DeviceExploitListTable(NetBoxTable):
+
+    device = tables.Column(linkify=True)
+
+    application = tables.Column(verbose_name="Application")
+
+    class Meta(NetBoxTable.Meta):
+        model = DeviceAssignment
+        fields = ["device", "application"]
+        
+
+class ClusterInstalledApplicationListTable(NetBoxTable):
+    
+    cluster = tables.Column(verbose_name='Cluster', linkify = True)
+    class Meta(NetBoxTable.Meta):
+        model = ClusterAssignment
+        fields = ['cluster']
+        
+class ClusterExploitListTable(NetBoxTable):
+
+    cluster = tables.Column(linkify=True)
+
+    application = tables.Column(verbose_name="Application")
+
+    class Meta(NetBoxTable.Meta):
+        model = ClusterAssignment
+        fields = ["cluster", "application"]
+        
+        
+class ClusterGroupInstalledApplicationListTable(NetBoxTable):
+    
+    cluster_group = tables.Column(verbose_name='Cluster Group', linkify = True)
+    class Meta(NetBoxTable.Meta):
+        model = ClusterGroupAssignment
+        fields = ['cluster group']
+        
+class ClusterGroupExploitListTable(NetBoxTable):
+
+    cluster_group = tables.Column(linkify=True)
+
+    application = tables.Column(verbose_name="Application")
+
+    class Meta(NetBoxTable.Meta):
+        model = ClusterGroupAssignment
+        fields = ["cluster_group", "application"]
+        
+        
+class VirtualMachineInstalledApplicationListTable(NetBoxTable):
+    
+    virtual_machine = tables.Column(verbose_name='virtual Machine', linkify = True)
+    class Meta(NetBoxTable.Meta):
+        model = VirtualMachineAssignment
+        fields = ['virtual_machine']
+        
+class VirtualMachineExploitListTable(NetBoxTable):
+
+    virtual_machine = tables.Column(linkify=True)
+
+    application = tables.Column(verbose_name="Application")
+
+    class Meta(NetBoxTable.Meta):
+        model = VirtualMachineAssignment
+        fields = ["virtual_machine", "application"]

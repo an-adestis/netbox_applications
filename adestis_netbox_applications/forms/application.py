@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.application import InstalledApplication, InstalledApplicationStatusChoices
+from adestis_netbox_applications.models.application import InstalledApplication, InstalledApplicationStatusChoices, DeviceAssignment, ClusterAssignment, ClusterGroupAssignment, VirtualMachineAssignment
 from adestis_netbox_applications.models.software import *
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
@@ -23,6 +23,10 @@ __all__ = (
     'InstalledApplicationFilterForm',
     'InstalledApplicationBulkEditForm',
     'InstalledApplicationCSVForm',
+    'DeviceAssignmentForm',
+    'ClusterAssignmentForm',
+    'ClusterGroupAssignmentForm',
+    'VirtualMachineAssignmentForm',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -35,10 +39,6 @@ class InstalledApplicationForm(NetBoxModelForm):
         FieldSet('software', name=('Software'))
     )
 
-    cluster_group = DynamicModelMultipleChoiceField(
-        queryset=ClusterGroup.objects.all(),
-        required= True,
-    )
 
 
     class Meta:
@@ -52,6 +52,71 @@ class InstalledApplicationForm(NetBoxModelForm):
         widgets = {
             'status_date': DatePicker(),
         }
+   
+   
+class DeviceAssignmentForm(forms.ModelForm):
+
+    device = DynamicModelChoiceField(
+        queryset=InstalledApplication.objects.all(),
+        required=True,
+    )
+    
+    class Meta:
+        model = DeviceAssignment
+        fields = ["application", "applications_id", "device"]
+        widgets = {
+            "application": forms.HiddenInput(),
+            "applications_id": forms.HiddenInput(),
+        }    
+        
+        
+class ClusterAssignmentForm(forms.ModelForm):
+
+    cluster = DynamicModelChoiceField(
+        queryset=InstalledApplication.objects.all(),
+        required=True,
+    )
+    
+    class Meta:
+        model = ClusterAssignment
+        fields = ["application", "applications_id", "cluster"]
+        widgets = {
+            "application": forms.HiddenInput(),
+            "applications_id": forms.HiddenInput(),
+        } 
+        
+        
+class ClusterGroupAssignmentForm(forms.ModelForm):
+
+    cluster_group = DynamicModelChoiceField(
+        queryset=InstalledApplication.objects.all(),
+        required=True,
+    )
+    
+    class Meta:
+        model = ClusterGroupAssignment
+        fields = ["application", "applications_id", "cluster_group"]
+        widgets = {
+            "application": forms.HiddenInput(),
+            "applications_id": forms.HiddenInput(),
+        } 
+        
+        
+class VirtualMachineAssignmentForm(forms.ModelForm):
+
+    virtual_machine = DynamicModelChoiceField(
+        queryset=InstalledApplication.objects.all(),
+        required=True,
+    )
+    
+    class Meta:
+        model = VirtualMachineAssignment
+        fields = ["application", "applications_id", "virtual_machine"]
+        widgets = {
+            "application": forms.HiddenInput(),
+            "applications_id": forms.HiddenInput(),
+        }  
+        
         
 class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
