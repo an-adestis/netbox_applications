@@ -38,11 +38,13 @@ class DeviceExploitListTable(NetBoxTable):
 
     device = tables.Column(linkify=True)
 
-    application = tables.Column(verbose_name="Application")
+    application = tables.Column(linkify=True)
+    
+    application_type = tables.Column(verbose_name="Application Type")
 
     class Meta(NetBoxTable.Meta):
         model = DeviceAssignment
-        fields = ["device", "application"]
+        fields = ["device", "application", "application_type"]
         
 
 class ClusterInstalledApplicationListTable(NetBoxTable):
@@ -56,11 +58,13 @@ class ClusterExploitListTable(NetBoxTable):
 
     cluster = tables.Column(linkify=True)
 
-    application = tables.Column(verbose_name="Application")
+    application = tables.Column(linkify=True)
+    
+    application_type = tables.Column(verbose_name="Application Type")
 
     class Meta(NetBoxTable.Meta):
         model = ClusterAssignment
-        fields = ["cluster", "application"]
+        fields = ["cluster", "application", "application_type"]
         
         
 class ClusterGroupInstalledApplicationListTable(NetBoxTable):
@@ -68,22 +72,24 @@ class ClusterGroupInstalledApplicationListTable(NetBoxTable):
     cluster_group = tables.Column(verbose_name='Cluster Group', linkify = True)
     class Meta(NetBoxTable.Meta):
         model = ClusterGroupAssignment
-        fields = ['cluster group']
+        fields = ['cluster_group']
         
 class ClusterGroupExploitListTable(NetBoxTable):
 
     cluster_group = tables.Column(linkify=True)
 
-    application = tables.Column(verbose_name="Application")
+    application = tables.Column(linkify=True)
+    
+    application_type = tables.Column(verbose_name="Application Type")
 
     class Meta(NetBoxTable.Meta):
         model = ClusterGroupAssignment
-        fields = ["cluster_group", "application"]
+        fields = ["cluster_group", "application", "application_type"]
         
         
 class VirtualMachineInstalledApplicationListTable(NetBoxTable):
     
-    virtual_machine = tables.Column(verbose_name='virtual Machine', linkify = True)
+    virtual_machine = tables.Column(verbose_name='Virtual Machine', linkify = True)
     class Meta(NetBoxTable.Meta):
         model = VirtualMachineAssignment
         fields = ['virtual_machine']
@@ -92,8 +98,10 @@ class VirtualMachineExploitListTable(NetBoxTable):
 
     virtual_machine = tables.Column(linkify=True)
 
-    application = tables.Column(verbose_name="Application")
+    application = tables.Column(linkify=True)
+    
+    application_type = tables.Column(verbose_name="Application Type")
 
     class Meta(NetBoxTable.Meta):
         model = VirtualMachineAssignment
-        fields = ["virtual_machine", "application"]
+        fields = ["virtual_machine", "application", "application_type"]

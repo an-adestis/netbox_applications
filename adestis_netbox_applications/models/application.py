@@ -2,6 +2,8 @@ from django.db import models as django_models
 from django.urls import reverse
 from netbox.models import NetBoxModel
 from utilities.choices import ChoiceSet
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
@@ -143,19 +145,27 @@ class DeviceAssignment(NetBoxModel):
         verbose_name="Device"
     )
     
-    application = django_models.ForeignKey(
-        to='adestis_netbox_applications.InstalledApplication',
+    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    
+    application_type = django_models.ForeignKey(
+        to=ContentType,
         on_delete=django_models.CASCADE,
         related_name='device_assignments',
-        verbose_name='Application'
+        verbose_name='Application',
+        null=True
     )
     
-    applications_id = django_models.PositiveIntegerField(blank=True, null=True)
+    application = GenericForeignKey(
+        ct_field="application_type",
+        fk_field="application_id",
+    )
+    
+    application_id = django_models.PositiveIntegerField(blank=True, null=True)
     class Meta:
         constraints = (
             django_models.UniqueConstraint(
-                fields=("device", "application"),
-                name="%(app_label)s_%(class)s_unique_device_application",
+                fields=("device", "application_type", "application_id"),
+                name="%(app_label)s_%(class)s_unique_object_device",
             ),
         )
         
@@ -168,19 +178,27 @@ class ClusterAssignment(NetBoxModel):
         verbose_name="Cluster"
     )
     
-    application = django_models.ForeignKey(
-        to='adestis_netbox_applications.InstalledApplication',
+    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    
+    application_type = django_models.ForeignKey(
+        to=ContentType,
         on_delete=django_models.CASCADE,
         related_name='cluster_assignments',
-        verbose_name='Application'
+        verbose_name='Application',
+        null=True
     )
     
-    applications_id = django_models.PositiveIntegerField(blank=True, null=True)
+    application = GenericForeignKey(
+        ct_field="application_type",
+        fk_field="application_id",
+    )
+    
+    application_id = django_models.PositiveIntegerField(blank=True, null=True)
     class Meta:
         constraints = (
             django_models.UniqueConstraint(
-                fields=("cluster", "application"),
-                name="%(app_label)s_%(class)s_unique_cluster_application",
+                fields=("cluster", "application_type", "application_id"),
+                name="%(app_label)s_%(class)s_unique_object_cluster",
             ),
         )
         
@@ -193,19 +211,27 @@ class ClusterGroupAssignment(NetBoxModel):
         verbose_name="Cluster Group"
     )
     
-    application = django_models.ForeignKey(
-        to='adestis_netbox_applications.InstalledApplication',
+    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    
+    application_type = django_models.ForeignKey(
+        to=ContentType,
         on_delete=django_models.CASCADE,
         related_name='cluster_group_assignments',
-        verbose_name='Application'
+        verbose_name='Application',
+        null=True
     )
     
-    applications_id = django_models.PositiveIntegerField(blank=True, null=True)
+    application_id = django_models.PositiveIntegerField(blank=True, null=True)
+    
+    application = GenericForeignKey(
+        ct_field="application_type",
+        fk_field="application_id",
+    )
     class Meta:
         constraints = (
             django_models.UniqueConstraint(
-                fields=("cluster_group", "application"),
-                name="%(app_label)s_%(class)s_unique_cluster_group_application",
+                fields=("cluster_group", "application_type", "application_id"),
+                name="%(app_label)s_%(class)s_unique_object_cluster_group",
             ),
         )
         
@@ -218,18 +244,26 @@ class VirtualMachineAssignment(NetBoxModel):
         verbose_name="Cluster"
     )
     
-    application = django_models.ForeignKey(
-        to='adestis_netbox_applications.InstalledApplication',
+    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    
+    application_type = django_models.ForeignKey(
+        to=ContentType,
         on_delete=django_models.CASCADE,
         related_name='virtual_machine_assignments',
-        verbose_name='Application'
+        verbose_name='Application',
+        null=True
     )
     
-    applications_id = django_models.PositiveIntegerField(blank=True, null=True)
+    application_id = django_models.PositiveIntegerField(blank=True, null=True)
+    
+    application = GenericForeignKey(
+        ct_field="application_type",
+        fk_field="application_id",
+    )
     class Meta:
         constraints = (
             django_models.UniqueConstraint(
-                fields=("virtual_machine", "application"),
-                name="%(app_label)s_%(class)s_unique_virtual_machine_application",
+                fields=("virtual_machine", "application_type", "application_id"),
+                name="%(app_label)s_%(class)s_unique_object_virtual_machine",
             ),
         )

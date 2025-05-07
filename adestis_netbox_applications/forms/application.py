@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.application import InstalledApplication, InstalledApplicationStatusChoices, DeviceAssignment, ClusterAssignment, ClusterGroupAssignment, VirtualMachineAssignment
+from adestis_netbox_applications.models import *
 from adestis_netbox_applications.models.software import *
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
@@ -63,10 +63,10 @@ class DeviceAssignmentForm(forms.ModelForm):
     
     class Meta:
         model = DeviceAssignment
-        fields = ["application", "applications_id", "device"]
+        fields = ["application_type", "application_id", "device"]
         widgets = {
-            "application": forms.HiddenInput(),
-            "applications_id": forms.HiddenInput(),
+            "application_type": forms.HiddenInput(),
+            "application_id": forms.HiddenInput(),
         }    
         
         
@@ -79,26 +79,26 @@ class ClusterAssignmentForm(forms.ModelForm):
     
     class Meta:
         model = ClusterAssignment
-        fields = ["application", "applications_id", "cluster"]
+        fields = ["application_type", "application_id", "cluster"]
         widgets = {
-            "application": forms.HiddenInput(),
-            "applications_id": forms.HiddenInput(),
+            "application_type": forms.HiddenInput(),
+            "application_id": forms.HiddenInput(),
         } 
         
         
 class ClusterGroupAssignmentForm(forms.ModelForm):
 
     cluster_group = DynamicModelChoiceField(
-        queryset=InstalledApplication.objects.all(),
+        queryset=ClusterGroup.objects.all(),
         required=True,
     )
     
     class Meta:
         model = ClusterGroupAssignment
-        fields = ["application", "applications_id", "cluster_group"]
+        fields = ["application_type", "application_id", "cluster_group"]
         widgets = {
-            "application": forms.HiddenInput(),
-            "applications_id": forms.HiddenInput(),
+            "application_type": forms.HiddenInput(),
+            "application_id": forms.HiddenInput(),
         } 
         
         
@@ -111,10 +111,10 @@ class VirtualMachineAssignmentForm(forms.ModelForm):
     
     class Meta:
         model = VirtualMachineAssignment
-        fields = ["application", "applications_id", "virtual_machine"]
+        fields = ["application_type", "application_id", "virtual_machine"]
         widgets = {
-            "application": forms.HiddenInput(),
-            "applications_id": forms.HiddenInput(),
+            "application_type": forms.HiddenInput(),
+            "application_id": forms.HiddenInput(),
         }  
         
         
