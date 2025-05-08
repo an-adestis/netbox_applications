@@ -10,7 +10,6 @@ from tenancy.models import *
 from dcim.models import *
 from dcim.forms import *
 from dcim.filtersets import *
-from dcim.filterset_fo import *
 from netbox.constants import DEFAULT_ACTION_PERMISSIONS
 from virtualization.models import *
 from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
@@ -92,39 +91,44 @@ class InstalledApplicationBulkImportView(generic.BulkImportView):
 @register_model_view(InstalledApplication, name='devices')
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
+    # queryset = InstalledApplication.objects.all()
     child_model= InstalledApplication
     table = DeviceInstalledApplicationListTable
     template_name = "adestis_netbox_applications/application_device.html"
     tab = ViewTab(label='Devices', badge=lambda obj: DeviceAssignment.objects.filter(installed_application=obj).count(), hide_if_empty=True)
-    
-    def get_children(self, request, parent):  
-            children = DeviceAssignment.objects.filter(installed_application=parent)
-            return children
-
-class DeviceAssignmentEditView(generic.ObjectChildrenView):
-    queryset = Device.objects.all()
-    form = DeviceForm
-    template_name = "dcim/dcim/device.html"
-    table = tables.VirtualMachineVMInterfaceTable
-    filterset = filtersets.DeviceFilterSet
-    filterset_form = forms.DeviceFilterForm
-    actions = {
-        **DEFAULT_ACTION_PERMISSIONS,
-        'bulk_rename': {'change'},
-    }
-    tab = ViewTab(
-        label=_('Interfaces'),
-        badge=lambda obj: obj.interface_count,
-        permission='dcim.view_device',
-        weight=500
-    )
+    # actions = {
+    #     **DEFAULT_ACTION_PERMISSIONS,
+    #     'bulk_rename': {'change'},
+    # }
+    # tab = ViewTab(
+    #     label=_('Devices'),
+    #     badge=lambda obj: obj.device_count,
+    #     permission='dcim.view_device',
+    #     weight=500
+    # )
 
     def get_children(self, request, parent):
-        return parent.interfaces.restrict(request.user, 'view').prefetch_related(
-            Prefetch('ip_addresses', queryset=IPAddress.objects.restrict(request.user)),
-            'tags',
-        )
-        
+        children = DeviceAssignment.objects.filter(installed_application=parent)
+        return children
+
+@register_model_view(InstalledApplication, name='devices')
+class DeviceAssignmentEditView(generic.ObjectChildrenView):
+    queryset = InstalledApplication.objects.all()
+    child_model = InstalledApplication
+    table = DeviceInstalledApplicationListTable
+    form = DeviceForm
+    template_name = "dcim/device.html"
+
+    def get_object(self, **kwargs):
+        installed_app = super().get_object(**kwargs)
+        return installed_app
+
+    def get_extra_context(self, request, instance):
+        return {"installed_app": instance}
+
+    def get_children(self, request, parent):
+        return parent.device.all()
+  
 class DeviceAssignmentBulkDeleteView(generic.BulkDeleteView):
     queryset = DeviceAssignment.objects.all()
     table = DeviceExploitListTable
