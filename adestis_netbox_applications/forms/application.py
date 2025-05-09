@@ -23,10 +23,6 @@ __all__ = (
     'InstalledApplicationFilterForm',
     'InstalledApplicationBulkEditForm',
     'InstalledApplicationCSVForm',
-    'DeviceAssignmentForm',
-    'ClusterAssignmentForm',
-    'ClusterGroupAssignmentForm',
-    'VirtualMachineAssignmentForm',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -39,8 +35,6 @@ class InstalledApplicationForm(NetBoxModelForm):
         FieldSet('software', name=('Software'))
     )
 
-
-
     class Meta:
         model = InstalledApplication
         fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster_group', 'cluster', 'tenant_group', 'comments', 'software']
@@ -52,71 +46,6 @@ class InstalledApplicationForm(NetBoxModelForm):
         widgets = {
             'status_date': DatePicker(),
         }
-   
-   
-class DeviceAssignmentForm(forms.ModelForm):
-
-    device = DynamicModelChoiceField(
-        queryset=InstalledApplication.objects.all(),
-        required=True,
-    )
-    
-    class Meta:
-        model = DeviceAssignment
-        fields = ["application_type", "application_id", "device"]
-        widgets = {
-            "application_type": forms.HiddenInput(),
-            "application_id": forms.HiddenInput(),
-        }    
-        
-        
-class ClusterAssignmentForm(forms.ModelForm):
-
-    cluster = DynamicModelChoiceField(
-        queryset=InstalledApplication.objects.all(),
-        required=True,
-    )
-    
-    class Meta:
-        model = ClusterAssignment
-        fields = ["application_type", "application_id", "cluster"]
-        widgets = {
-            "application_type": forms.HiddenInput(),
-            "application_id": forms.HiddenInput(),
-        } 
-        
-        
-class ClusterGroupAssignmentForm(forms.ModelForm):
-
-    cluster_group = DynamicModelChoiceField(
-        queryset=ClusterGroup.objects.all(),
-        required=True,
-    )
-    
-    class Meta:
-        model = ClusterGroupAssignment
-        fields = ["application_type", "application_id", "cluster_group"]
-        widgets = {
-            "application_type": forms.HiddenInput(),
-            "application_id": forms.HiddenInput(),
-        } 
-        
-        
-class VirtualMachineAssignmentForm(forms.ModelForm):
-
-    virtual_machine = DynamicModelChoiceField(
-        queryset=InstalledApplication.objects.all(),
-        required=True,
-    )
-    
-    class Meta:
-        model = VirtualMachineAssignment
-        fields = ["application_type", "application_id", "virtual_machine"]
-        widgets = {
-            "application_type": forms.HiddenInput(),
-            "application_id": forms.HiddenInput(),
-        }  
-        
         
 class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
@@ -316,7 +245,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=TenantGroup.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=('Assigned tenant group')
+        help_text=('Name of assigned tenant group')
     )
     
     tenant = CSVModelChoiceField(
@@ -324,7 +253,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=Tenant.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Name of assigned tenant')
     )
     
     software = CSVModelChoiceField(
@@ -332,23 +261,23 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=Software.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned software')
+        help_text=_('Name of assigned software')
     )
     
-    # cluster_group = CSVModelChoiceField(
-    #     label=_('Cluster Group'),
-    #     queryset=ClusterGroup.objects.all(),
-    #     required=True,
-    #     to_field_name='name',
-    #     help_text=_('Assigned cluster group')
-    # )
+    cluster_group = CSVModelChoiceField(
+        label=_('Cluster Group'),
+        queryset=ClusterGroup.objects.all(),
+        required=True,
+        to_field_name='name',
+        help_text=_('Name of assigned cluster group')
+    )
     
     cluster = CSVModelMultipleChoiceField(
         label=_('Cluster'),
         queryset=Cluster.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned cluster')
+        help_text=_('Name of assigned cluster')
     )
     
     virtual_machine = CSVModelMultipleChoiceField(
@@ -356,7 +285,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=VirtualMachine.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned virtual machine')
+        help_text=_('Name of assigned virtual machine')
     )
     
     device = CSVModelMultipleChoiceField(
@@ -364,7 +293,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=Device.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned device')
+        help_text=_('Name of assigned device')
     )
 
     class Meta:

@@ -1,4 +1,4 @@
-from adestis_netbox_applications.models import InstalledApplication
+from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.models.software import *
 from netbox.filtersets import NetBoxModelFilterSet
 
@@ -13,7 +13,7 @@ from utilities.filters import TreeNodeMultipleChoiceFilter
 from virtualization.models import *
 from tenancy.models import *
 from dcim.models import *
-from adestis_netbox_applications.models.software import *
+
 from ipam.api.serializers import *
 from ipam.api.field_serializers import *
 
@@ -88,4 +88,5 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
+
 

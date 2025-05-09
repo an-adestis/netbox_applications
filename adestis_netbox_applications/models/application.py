@@ -12,10 +12,6 @@ from adestis_netbox_applications.models.software import *
 __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
-    'DeviceAssignment',
-    'ClusterAssignment',
-    'ClusterGroupAssignment',
-    'VirtualMachineAssignment'
 )
 
 class InstalledApplicationStatusChoices(ChoiceSet):
@@ -69,33 +65,29 @@ class InstalledApplication(NetBoxModel):
     
     device = django_models.ManyToManyField(
         to='dcim.Device',
-        # through='ApplicationDevice',
-        through='DeviceAssignment',
         verbose_name='Device',
+        through='DeviceAssignment',
         related_name='installedapplication'
     )
     
     cluster = django_models.ManyToManyField(
         to='virtualization.Cluster',
-        # through='ApplicationCluster',
-        through='ClusterAssignment',
         verbose_name='Cluster',
+        through='ClusterAssignment',
         related_name='installedapplication'
     )
     
     cluster_group = django_models.ManyToManyField(
         to='virtualization.ClusterGroup',
-        # through='ApplicationClusterGroup',
-        through='ClusterGroupAssignment',
         verbose_name='Cluster Group',
+        through='ClusterGroupAssignment',
         related_name='installedapplication'
     )
     
     virtual_machine = django_models.ManyToManyField(
         to='virtualization.VirtualMachine',
-        through='VirtualMachineAssignment',
-        # through='ApplicationVirtualMachines',
         verbose_name='Virtual Machine',
+        through='VirtualMachineAssignment',
         related_name='installedapplication'
     )
     
@@ -146,28 +138,6 @@ class DeviceAssignment(NetBoxModel):
     )
     
     installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
-    
-    application_type = django_models.ForeignKey(
-        to=ContentType,
-        on_delete=django_models.CASCADE,
-        related_name='device_assignments',
-        verbose_name='Application',
-        null=True
-    )
-    
-    application = GenericForeignKey(
-        ct_field="application_type",
-        fk_field="application_id",
-    )
-    
-    application_id = django_models.PositiveIntegerField(blank=True, null=True)
-    class Meta:
-        constraints = (
-            django_models.UniqueConstraint(
-                fields=("device", "application_type", "application_id"),
-                name="%(app_label)s_%(class)s_unique_object_device",
-            ),
-        )
         
 class ClusterAssignment(NetBoxModel):
     
@@ -179,29 +149,7 @@ class ClusterAssignment(NetBoxModel):
     )
     
     installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
-    
-    application_type = django_models.ForeignKey(
-        to=ContentType,
-        on_delete=django_models.CASCADE,
-        related_name='cluster_assignments',
-        verbose_name='Application',
-        null=True
-    )
-    
-    application = GenericForeignKey(
-        ct_field="application_type",
-        fk_field="application_id",
-    )
-    
-    application_id = django_models.PositiveIntegerField(blank=True, null=True)
-    class Meta:
-        constraints = (
-            django_models.UniqueConstraint(
-                fields=("cluster", "application_type", "application_id"),
-                name="%(app_label)s_%(class)s_unique_object_cluster",
-            ),
-        )
-        
+      
 class ClusterGroupAssignment(NetBoxModel):
     
     cluster_group = django_models.ForeignKey(
@@ -213,28 +161,6 @@ class ClusterGroupAssignment(NetBoxModel):
     
     installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
     
-    application_type = django_models.ForeignKey(
-        to=ContentType,
-        on_delete=django_models.CASCADE,
-        related_name='cluster_group_assignments',
-        verbose_name='Application',
-        null=True
-    )
-    
-    application_id = django_models.PositiveIntegerField(blank=True, null=True)
-    
-    application = GenericForeignKey(
-        ct_field="application_type",
-        fk_field="application_id",
-    )
-    class Meta:
-        constraints = (
-            django_models.UniqueConstraint(
-                fields=("cluster_group", "application_type", "application_id"),
-                name="%(app_label)s_%(class)s_unique_object_cluster_group",
-            ),
-        )
-        
 class VirtualMachineAssignment(NetBoxModel):
     
     virtual_machine = django_models.ForeignKey(
@@ -245,25 +171,3 @@ class VirtualMachineAssignment(NetBoxModel):
     )
     
     installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
-    
-    application_type = django_models.ForeignKey(
-        to=ContentType,
-        on_delete=django_models.CASCADE,
-        related_name='virtual_machine_assignments',
-        verbose_name='Application',
-        null=True
-    )
-    
-    application_id = django_models.PositiveIntegerField(blank=True, null=True)
-    
-    application = GenericForeignKey(
-        ct_field="application_type",
-        fk_field="application_id",
-    )
-    class Meta:
-        constraints = (
-            django_models.UniqueConstraint(
-                fields=("virtual_machine", "application_type", "application_id"),
-                name="%(app_label)s_%(class)s_unique_object_virtual_machine",
-            ),
-        )

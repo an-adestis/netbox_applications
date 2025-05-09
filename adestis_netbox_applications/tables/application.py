@@ -1,7 +1,8 @@
 from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
-from adestis_netbox_applications.models import InstalledApplication, DeviceAssignment, ClusterAssignment, ClusterGroupAssignment, VirtualMachineAssignment
+from adestis_netbox_applications.models import InstalledApplication
 from adestis_netbox_applications.filtersets import *
 import django_tables2 as tables
+from dcim.models import *
 
 class InstalledApplicationTable(NetBoxTable):
     status = ChoiceFieldColumn()
@@ -29,79 +30,115 @@ class InstalledApplicationTable(NetBoxTable):
         
 class DeviceInstalledApplicationListTable(NetBoxTable):
     
-    device = tables.Column(verbose_name='Device', linkify = True)
+    parent = tables.Column(
+        verbose_name=('Parent'),
+        linkify=True
+    )
+    bridge = tables.Column(
+        verbose_name=('Bridge'),
+        linkify=True
+    )
+    # actions = columns.ActionsColumn(
+    #     actions=('edit', 'delete'),
+    #     extra_buttons=VMINTERFACE_BUTTONS
+    # )
+
     class Meta(NetBoxTable.Meta):
-        model = DeviceAssignment
-        fields = ['device']
-        
-class DeviceExploitListTable(NetBoxTable):
-
-    device = tables.Column(linkify=True)
-
-    application = tables.Column(linkify=True)
-    
-    application_type = tables.Column(verbose_name="Application Type")
-
-    class Meta(NetBoxTable.Meta):
-        model = DeviceAssignment
-        fields = ["device", "application", "application_type"]
-        
+        model = Device
+        fields = (
+            'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
+            'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
+            'qinq_svlan', 'actions',
+        )
+        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+        row_attrs = {
+            'data-name': lambda record: record.name,
+            'data-virtual': lambda record: "true",
+            'data-enabled': lambda record: "true" if record.enabled else "false",
+        }
+             
 
 class ClusterInstalledApplicationListTable(NetBoxTable):
     
-    cluster = tables.Column(verbose_name='Cluster', linkify = True)
+    parent = tables.Column(
+        verbose_name=('Parent'),
+        linkify=True
+    )
+    bridge = tables.Column(
+        verbose_name=('Bridge'),
+        linkify=True
+    )
+    # actions = columns.ActionsColumn(
+    #     actions=('edit', 'delete'),
+    #     extra_buttons=VMINTERFACE_BUTTONS
+    # )
+
     class Meta(NetBoxTable.Meta):
-        model = ClusterAssignment
-        fields = ['cluster']
-        
-class ClusterExploitListTable(NetBoxTable):
-
-    cluster = tables.Column(linkify=True)
-
-    application = tables.Column(linkify=True)
-    
-    application_type = tables.Column(verbose_name="Application Type")
-
-    class Meta(NetBoxTable.Meta):
-        model = ClusterAssignment
-        fields = ["cluster", "application", "application_type"]
-        
-        
+        model = Device
+        fields = (
+            'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
+            'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
+            'qinq_svlan', 'actions',
+        )
+        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+        row_attrs = {
+            'data-name': lambda record: record.name,
+            'data-virtual': lambda record: "true",
+            'data-enabled': lambda record: "true" if record.enabled else "false",
+        }  
 class ClusterGroupInstalledApplicationListTable(NetBoxTable):
     
-    cluster_group = tables.Column(verbose_name='Cluster Group', linkify = True)
+    parent = tables.Column(
+        verbose_name=('Parent'),
+        linkify=True
+    )
+    bridge = tables.Column(
+        verbose_name=('Bridge'),
+        linkify=True
+    )
+    # actions = columns.ActionsColumn(
+    #     actions=('edit', 'delete'),
+    #     extra_buttons=VMINTERFACE_BUTTONS
+    # )
+
     class Meta(NetBoxTable.Meta):
-        model = ClusterGroupAssignment
-        fields = ['cluster_group']
-        
-class ClusterGroupExploitListTable(NetBoxTable):
-
-    cluster_group = tables.Column(linkify=True)
-
-    application = tables.Column(linkify=True)
-    
-    application_type = tables.Column(verbose_name="Application Type")
-
-    class Meta(NetBoxTable.Meta):
-        model = ClusterGroupAssignment
-        fields = ["cluster_group", "application", "application_type"]
-        
-        
+        model = Device
+        fields = (
+            'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
+            'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
+            'qinq_svlan', 'actions',
+        )
+        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+        row_attrs = {
+            'data-name': lambda record: record.name,
+            'data-virtual': lambda record: "true",
+            'data-enabled': lambda record: "true" if record.enabled else "false",
+        }
 class VirtualMachineInstalledApplicationListTable(NetBoxTable):
     
-    virtual_machine = tables.Column(verbose_name='Virtual Machine', linkify = True)
+    parent = tables.Column(
+        verbose_name=('Parent'),
+        linkify=True
+    )
+    bridge = tables.Column(
+        verbose_name=('Bridge'),
+        linkify=True
+    )
+    # actions = columns.ActionsColumn(
+    #     actions=('edit', 'delete'),
+    #     extra_buttons=VMINTERFACE_BUTTONS
+    # )
+
     class Meta(NetBoxTable.Meta):
-        model = VirtualMachineAssignment
-        fields = ['virtual_machine']
-        
-class VirtualMachineExploitListTable(NetBoxTable):
-
-    virtual_machine = tables.Column(linkify=True)
-
-    application = tables.Column(linkify=True)
-    
-    application_type = tables.Column(verbose_name="Application Type")
-
-    class Meta(NetBoxTable.Meta):
-        model = VirtualMachineAssignment
-        fields = ["virtual_machine", "application", "application_type"]
+        model = Device
+        fields = (
+            'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
+            'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
+            'qinq_svlan', 'actions',
+        )
+        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+        row_attrs = {
+            'data-name': lambda record: record.name,
+            'data-virtual': lambda record: "true",
+            'data-enabled': lambda record: "true" if record.enabled else "false",
+        }

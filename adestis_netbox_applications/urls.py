@@ -16,9 +16,15 @@ urlpatterns = (
          name='installedapplication_list'),
     path('applications/devices/', DeviceAffectedInstalledApplicationView.as_view(),
          name='applicationdevices_list'),
-    path('applications/add/', InstalledApplicationEditView.as_view(),
+     path('applications/clusters/', ClusterAffectedInstalledApplicationView.as_view(),
+         name='applicationclusters_list'),
+     path('applications/clustergroups/', ClusterGroupAffectedInstalledApplicationView.as_view(),
+         name='applicationclustergroups_list'),
+     path('applications/virtualmachines/', VirtualMachineAffectedInstalledApplicationView.as_view(),
+         name='applicationvirtualmachines_list'),
+     path('applications/add/', InstalledApplicationEditView.as_view(),
          name='installedapplication_add'),
-    path('applications/delete/', InstalledApplicationBulkDeleteView.as_view(),
+     path('applications/delete/', InstalledApplicationBulkDeleteView.as_view(),
          name='installedapplication_bulk_delete'),
     path('applications/edit/', InstalledApplicationBulkEditView.as_view(),
          name='installedapplication_bulk_edit'),
@@ -32,31 +38,17 @@ urlpatterns = (
          InstalledApplicationEditView.as_view(), name='installedapplication_edit'),
     path('applications/<int:pk>/delete/',
          InstalledApplicationDeleteView.as_view(), name='installedapplication_delete'),
+     path('applications/devices/<int:pk>/delete/',
+         DeviceAssignmentDeleteView.as_view(), name='deviceassignment'),
+     path('applications/clusters/<int:pk>/delete/',
+         ClusterAssignmentDeleteView.as_view(), name='clusterassignment'),
+     path('applications/clustergroups/<int:pk>/delete/',
+         ClusterGroupAssignmentDeleteView.as_view(), name='clustergroupassignment'),
+     path('applications/virtualmachines/<int:pk>/delete/',
+         VirtualMachineAssignmentDeleteView.as_view(), name='virtualmachineassignment'),
     path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplication_changelog', kwargs={
         'model': InstalledApplication
     }),
-    
-    path("device-assignments/add/", DeviceAssignmentEditView.as_view(), name="deviceassignment_add",),
-    path("device-assignments/<int:pk>/edit/", DeviceAssignmentEditView.as_view(), name="deviceassignment_edit",),
-    path("device-assignment/delete/<int:pk>/", DeviceAssignmentBulkDeleteView.as_view(), name="deviceassignment_delete",),
-    path('device-assignments/<int:pk>/', include(get_model_urls(app_name, 'deviceassignment'))),
-    
-    path("cluster-assignments/add/", ClusterAssignmentEditView.as_view(), name="clusterassignment_add",),
-    path("cluster-assignments/<int:pk>/edit/", ClusterAssignmentEditView.as_view(), name="clusterassignment_edit",),
-    path("cluster-assignment/delete/<int:pk>/", ClusterAssignmentBulkDeleteView.as_view(), name="clusterassignment_delete",),
-    path('cluster-assignments/<int:pk>/', include(get_model_urls(app_name, 'clusterassignment'))),
-    
-    path("clustergroup-assignments/add/", ClusterGroupAssignmentEditView.as_view(), name="clustergroupassignment_add",),
-    path("clustergroup-assignments/<int:pk>/edit/", ClusterGroupAssignmentEditView.as_view(), name="clustergroupassignment_edit",),
-    path("clustergroup-assignment/delete/<int:pk>/", ClusterGroupAssignmentBulkDeleteView.as_view(), name="clustergroupassignment_delete",),
-    path('clustergroup-assignments/<int:pk>/', include(get_model_urls(app_name, 'clustergroupassignment'))),
-    
-    path("virtualmachine-assignments/add/", VirtualMachineAssignmentEditView.as_view(), name="virtualmachineassignment_add",),
-    path("virtualmachine-assignments/<int:pk>/edit/", VirtualMachineAssignmentEditView.as_view(), name="virtualmachineassignment_edit",),
-    path("virtualmachine-assignment/delete/<int:pk>/", VirtualMachineAssignmentBulkDeleteView.as_view(), name="virtualmachineassignment_delete",),
-    path('virtualmachine-assignments/<int:pk>/', include(get_model_urls(app_name, 'virtualmachineassignment'))),
-    
-
     
     path('software/', SoftwareListView.as_view(),
          name='software_list'),
