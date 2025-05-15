@@ -55,34 +55,6 @@
                   {% endif %}
               </td>
             </tr>
-            {% comment %} <tr>
-                <th scope="row">Virtual Machine</th>
-                <td>
-                  {% if object.applications_virtual_machines.all %}
-                    {% for virtual_machine in object.applications_virtual_machines.all %}
-                      <a href="{% url 'virtualization:virtualmachine' virtual_machine.virtual_machine.id %}">
-                        {{ virtual_machine.virtual_machine.name|markdown }}
-                      </a><br>
-                    {% endfor %}
-                  {% else %}
-                    <p>Kein Virtuelle Machine vorhanden</p>
-                  {% endif %}
-                </td> 
-            </tr> 
-            <tr>
-              <th scope='row'>Device</th>
-              <td>
-                {% if object.applications_devices.all %}
-                 {% for device in object.applications_devices.all %}
-                   <a href="{% url 'dcim:device' device.device.id %}">
-                      {{ device.device.name|markdown }}
-                   </a><br>
-                 {% endfor %}
-                {% else %}
-                 <p>Kein Device vorhanden</p>
-                {% endif %}
-              </td>
-            </tr>  {% endcomment %}
             <tr>
               <th scope='row'>Tenant Group</th>
               <td>{% if object.tenant_group %}
@@ -101,60 +73,6 @@
                   {% endif %}
               </td>
             </tr>
-            <tr>
-              <th scope='row'>Cluster Group</th>
-              <td>
-                {% if object.cluster_group.exists %}
-                  {% for cluster_group in object.cluster_group.all %}
-                    <a href="{% url 'virtualization:clustergroup' cluster_group.id %}">
-                      {{ cluster_group.name|markdown }}
-                    </a>
-                  {% endfor %}
-                {% else %}
-                  <span class="text-muted">{% trans "None" %}</span>
-                {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Cluster</th>
-              <td>
-                {% if object.cluster.exists %}
-                  {% for cluster in object.cluster.all %}
-                    <a href="{% url 'virtualization:cluster' cluster.id %}">
-                      {{ cluster.name|markdown }}
-                    </a>
-                  {% endfor %}
-                {% else %}
-                  <span class="text-muted">{% trans "None" %}</span>
-                {% endif %}
-              </td>
-            </tr>
-            {% comment %} <tr>
-              <th scope='row'>Cluster Group</th>
-              <td>
-                {% if object.applications_cluster_groups.all %}
-                  {% for cluster_group in object.applications_cluster_groups.all %}
-                    <a href="{% url 'virtualization:clustergroup' cluster_group.cluster_group.id %}">
-                      {{ cluster_group.cluster_group.name|markdown }}
-                      </a><br>
-                  {% endfor %}
-                {% else %}
-                 <p>Keine Cluster Group vorhanden</p>
-                {% endif %}
-              </td>
-            </tr>   {% endcomment %}
-            {% comment %} <tr>
-              <th scope='row'>Cluster</th>
-              <td>
-                  {% if object.applications_clusters.all %}
-                    {% for cluster in object.applications_clusters.all %}
-                      <a href="{% url 'virtualization:cluster' cluster.cluster.id %}">
-                          {{ cluster.cluster.name|markdown }}
-                        </a><br>
-                    {% endfor %}
-                  {% endif %}
-              </td>
-            </tr> {% endcomment %}
             <tr>
               <th scope='row'>Software</th>
               <td>{% if object.software %}

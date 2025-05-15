@@ -23,11 +23,11 @@ __all__ = (
 
 class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
-    # cluster_group_id = DynamicModelMultipleChoiceField(
-    #     queryset=ClusterGroup.objects.all(),
-    #     required=False,
-    #     label=_('Cluster group (name)')
-    # )   
+    cluster_group_id = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        label=_('Cluster group (name)')
+    )   
     
     cluster_id = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),

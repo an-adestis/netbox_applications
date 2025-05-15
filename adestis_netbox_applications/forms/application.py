@@ -97,7 +97,7 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     device = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required = False,
-        label =_("Device"),
+        label =_("Devices"),
         null_option='None'
     )
     
@@ -118,16 +118,16 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_('Software'),
     )
     
-    # cluster_group = DynamicModelChoiceField(
-    #     queryset=ClusterGroup.objects.all(),
-    #     required = False,
-    #     label=_("Cluster Group")
-    # )
+    cluster_group = DynamicModelChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required = False,
+        label=_("Cluster Groups")
+    )
     
     cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         required = False,
-        label=_("Cluster"),
+        label=_("Clusters"),
         null_option='None'
     )
     
@@ -175,7 +175,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         query_params={
             'cluster_id': '$cluster_id',
         },
-        label=_('Device')
+        label=_('Devices')
     )
     
     virtual_machine_id = DynamicModelMultipleChoiceField(
@@ -186,15 +186,15 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
             'cluster_id': '$cluster_id',
             'device_id': '$device_id',
         },
-        label=_('Virtual Machine')
+        label=_('Virtual Machines')
     )
     
-    # cluster_group_id = DynamicModelMultipleChoiceField(
-    #     queryset=ClusterGroup.objects.all(),
-    #     required=False,
-    #     null_option='None',
-    #     label=_('Cluster Group')
-    # )
+    cluster_group_id = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Cluster Groups')
+    )
 
     cluster_id = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
@@ -202,7 +202,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         null_option='None',
         query_params={
         },
-        label=_('Cluster')
+        label=_('Clusters')
     )
     
     software_id = DynamicModelMultipleChoiceField(
@@ -265,7 +265,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     )
     
     cluster_group = CSVModelChoiceField(
-        label=_('Cluster Group'),
+        label=_('Cluster Groups'),
         queryset=ClusterGroup.objects.all(),
         required=True,
         to_field_name='name',
@@ -273,7 +273,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     )
     
     cluster = CSVModelMultipleChoiceField(
-        label=_('Cluster'),
+        label=_('Clusters'),
         queryset=Cluster.objects.all(),
         required=True,
         to_field_name='name',
@@ -281,7 +281,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     )
     
     virtual_machine = CSVModelMultipleChoiceField(
-        label=_('Virtual Machine'),
+        label=_('Virtual Machines'),
         queryset=VirtualMachine.objects.all(),
         required=True,
         to_field_name='name',
@@ -289,7 +289,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     )
     
     device = CSVModelMultipleChoiceField(
-        label=_('Device'),
+        label=_('Devices'),
         queryset=Device.objects.all(),
         required=True,
         to_field_name='name',

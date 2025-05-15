@@ -65,28 +65,28 @@ class InstalledApplication(NetBoxModel):
     
     device = django_models.ManyToManyField(
         to='dcim.Device',
-        verbose_name='Device',
+        verbose_name='Devices',
         through='DeviceAssignment',
         related_name='installedapplication'
     )
     
     cluster = django_models.ManyToManyField(
         to='virtualization.Cluster',
-        verbose_name='Cluster',
+        verbose_name='Clusters',
         through='ClusterAssignment',
         related_name='installedapplication'
     )
     
     cluster_group = django_models.ManyToManyField(
         to='virtualization.ClusterGroup',
-        verbose_name='Cluster Group',
+        verbose_name='Cluster Groups',
         through='ClusterGroupAssignment',
         related_name='installedapplication'
     )
     
     virtual_machine = django_models.ManyToManyField(
         to='virtualization.VirtualMachine',
-        verbose_name='Virtual Machine',
+        verbose_name='Virtual Machines',
         through='VirtualMachineAssignment',
         related_name='installedapplication'
     )

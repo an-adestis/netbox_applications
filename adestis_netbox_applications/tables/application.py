@@ -38,10 +38,6 @@ class DeviceInstalledApplicationListTable(NetBoxTable):
         verbose_name=('Bridge'),
         linkify=True
     )
-    # actions = columns.ActionsColumn(
-    #     actions=('edit', 'delete'),
-    #     extra_buttons=VMINTERFACE_BUTTONS
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = Device
@@ -68,10 +64,6 @@ class ClusterInstalledApplicationListTable(NetBoxTable):
         verbose_name=('Bridge'),
         linkify=True
     )
-    # actions = columns.ActionsColumn(
-    #     actions=('edit', 'delete'),
-    #     extra_buttons=VMINTERFACE_BUTTONS
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = Device
@@ -96,10 +88,6 @@ class ClusterGroupInstalledApplicationListTable(NetBoxTable):
         verbose_name=('Bridge'),
         linkify=True
     )
-    # actions = columns.ActionsColumn(
-    #     actions=('edit', 'delete'),
-    #     extra_buttons=VMINTERFACE_BUTTONS
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = Device
@@ -124,10 +112,6 @@ class VirtualMachineInstalledApplicationListTable(NetBoxTable):
         verbose_name=('Bridge'),
         linkify=True
     )
-    # actions = columns.ActionsColumn(
-    #     actions=('edit', 'delete'),
-    #     extra_buttons=VMINTERFACE_BUTTONS
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = Device

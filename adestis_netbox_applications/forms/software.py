@@ -11,7 +11,6 @@ from utilities.forms.fields import (
     DynamicModelMultipleChoiceField,
 )
 from utilities.forms.widgets import DatePicker
-# from tenancy.models import Tenant, TenantGroup
 from dcim.models import *
 from virtualization.models import *
 

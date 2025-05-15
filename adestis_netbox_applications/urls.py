@@ -50,6 +50,7 @@ urlpatterns = (
         'model': InstalledApplication
     }),
     
+    #Softwares
     path('software/', SoftwareListView.as_view(),
          name='software_list'),
     path('software/add/', SoftwareEditView.as_view(),

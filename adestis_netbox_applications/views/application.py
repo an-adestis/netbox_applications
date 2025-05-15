@@ -43,19 +43,6 @@ __all__ = (
 class InstalledApplicationView(generic.ObjectView):
     queryset = InstalledApplication.objects.all()
     
-#     def get_extra_context(self, request, instance):
-#         # match2 = InstalledApplication.objects.get(pk = request.pk)
-#         # matcg3 = match2.device.all()
-#         return {
-#             'related_models': self.get_related_models(
-#                 request,
-#                 instance,
-#                 extra=(
-#                     # (Device.objects.restrict(request.user, 'view').filter(id__in=[instance]), 'installedapplication_id'),
-#                     # (VirtualMachine.objects.restrict(request.user, 'view').filter(installedapplication__in=[instance]), 'installedapplication_id')
-#                 ),
-#             ),
-#         }
 class InstalledApplicationListView(generic.ObjectListView):
     queryset = InstalledApplication.objects.all()
     table = InstalledApplicationTable
@@ -147,37 +134,6 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return Cluster.objects.restrict(request.user, 'view').filter(installedapplication=parent)
-
-
-# class ClusterAssignmentEditView(generic.ObjectEditView):
-#     queryset = ClusterAssignment.objects.all()
-#     form = ClusterAssignmentForm
-#     template_name = "adestis_netbox_applications/generic_cluster_assignment_edit.html"
-
-#     def alter_object(self, instance, request, args, kwargs):
-
-#         if not instance.pk:
-#             # Assign the object based on URL kwargs
-#             content_type = get_object_or_404(
-#                 ContentType, pk=request.GET.get("application_type")
-#             )
-#             instance.object = get_object_or_404(
-#                 content_type.model_class(), pk=request.GET.get("application_id")
-#             )
-#         else:
-#             instance.object = instance.application
-#         return instance
-    
-#     def get_extra_addanother_params(self, request):
-#         return {
-#             "application_type": request.GET.get("application_type"),
-#             "application_id": request.GET.get("application_id"),
-#         }
-        
-# class ClusterAssignmentBulkDeleteView(generic.BulkDeleteView):
-#     queryset = ClusterAssignment.objects.all()
-#     table = ClusterExploitListTable
-    
     
     
 @register_model_view(InstalledApplication, name='cluster groups')
@@ -203,38 +159,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return ClusterGroup.objects.restrict(request.user, 'view').filter(installedapplication=parent)
-
-
-# class ClusterGroupAssignmentEditView(generic.ObjectEditView):
-#     queryset = ClusterGroupAssignment.objects.all()
-#     form = ClusterGroupAssignmentForm
-#     template_name = "adestis_netbox_applications/generic_cluster_group_assignment_edit.html"
-
-#     def alter_object(self, instance, request, args, kwargs):
-
-#         if not instance.pk:
-#             # Assign the object based on URL kwargs
-#             content_type = get_object_or_404(
-#                 ContentType, pk=request.GET.get("application_type")
-#             )
-#             instance.object = get_object_or_404(
-#                 content_type.model_class(), pk=request.GET.get("application_id")
-#             )
-#         else:
-#             instance.object = instance.application 
-#         return instance
-    
-#     def get_extra_addanother_params(self, request):
-#         return {
-#             "application_type": request.GET.get("application_type"),
-#             "application_id": request.GET.get("application_id"),
-#         }
-        
-# class ClusterGroupAssignmentBulkDeleteView(generic.BulkDeleteView):
-#     queryset = ClusterGroupAssignment.objects.all()
-#     table = ClusterGroupExploitListTable
-    
-    
+ 
 @register_model_view(InstalledApplication, name='virtual machines')
 class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
@@ -258,33 +183,3 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
 
     def get_children(self, request, parent):
         return VirtualMachine.objects.restrict(request.user, 'view').filter(installedapplication=parent)
-
-
-# class VirtualMachineAssignmentEditView(generic.ObjectEditView):
-#     queryset = VirtualMachineAssignment.objects.all()
-#     form = VirtualMachineAssignmentForm
-#     template_name = "adestis_netbox_applications/generic_virtual_machine_assignment_edit.html"
-
-#     def alter_object(self, instance, request, args, kwargs):
-
-#         if not instance.pk:
-#             # Assign the object based on URL kwargs
-#             content_type = get_object_or_404(
-#                 ContentType, pk=request.GET.get("application_type")
-#             )
-#             instance.object = get_object_or_404(
-#                 content_type.model_class(), pk=request.GET.get("application_id")
-#             )
-#         else:
-#             instance.object = instance.application
-#         return instance
-    
-#     def get_extra_addanother_params(self, request):
-#         return {
-#             "application_type": request.GET.get("application_type"),
-#             "application_id": request.GET.get("application_id"),
-#         }
-        
-# class VirtualMachineAssignmentBulkDeleteView(generic.BulkDeleteView):
-#     queryset = VirtualMachineAssignment.objects.all()
-#     table = VirtualMachineExploitListTable
