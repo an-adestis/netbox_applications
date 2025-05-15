@@ -1,12 +1,12 @@
 from setuptools import find_packages, setup
 from pathlib import Path
 
-this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text(encoding="utf-8")
+with open("README.md", "r") as f:
+    description = f.read()
 
 setup(
     name='adestis-netbox-applications',
-    version='1.0.4',
+    version='1.0.3',
     description='ADESTIS Application Management',
     # url='https://github.com/adestis/netbox-account-management',
     author='ADESTIS GmbH',
@@ -19,5 +19,9 @@ setup(
     package_data={
         "adestis_netbox_applications": ["**/*.html"],
         '': ['LICENSE'],
-    }
+        
+        
+    },
+    long_description=description,
+    long_description_content_type="text/markdown",
 )
