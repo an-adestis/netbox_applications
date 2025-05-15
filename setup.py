@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='adestis-netbox-applications',
-    version='1.0.2',
+    version='1.0.3',
     description='ADESTIS Application Management',
     # url='https://github.com/adestis/netbox-account-management',
     author='ADESTIS GmbH',
