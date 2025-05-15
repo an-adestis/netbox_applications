@@ -28,16 +28,15 @@ __all__ = (
 class InstalledApplicationForm(NetBoxModelForm):
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
+        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
         FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
-        FieldSet('device', name=_('Device')),
-        FieldSet('software', name=('Software'))
+        FieldSet('device', name=_('Device'))
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster_group', 'cluster', 'tenant_group', 'comments', 'software']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster_group', 'cluster', 'tenant_group', 'comments', 'software', 'version']
         
         help_texts = {
             'status': "Example text",
@@ -87,6 +86,12 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Description"),
     )
     
+    version = forms.CharField(
+        max_length=200,
+        required=False,
+        label=_("Version")
+    )
+    
     virtual_machine = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
         required = False,
@@ -134,11 +139,10 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
+        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
         FieldSet('virtual_machine', 'cluster', name=_('Virtualization')),
-        FieldSet('device', name=_('Device')),
-        FieldSet('software', name=_('Software'))
+        FieldSet('device', name=_('Device'))
     )
 
     nullable_fields = [
@@ -151,11 +155,10 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'status', 'status_date', name=_('Application')),
+        FieldSet('name', 'url', 'tag', 'version', 'software_id', 'status', 'status_date', name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('cluster_id', 'virtual_machine_id', name=_('Virtualization')),
-        FieldSet('device_id', name=_('Device')),
-        FieldSet('software_id', name=_('Software'))
+        FieldSet('device_id', name=_('Device'))
     )
 
     index = forms.IntegerField(
@@ -298,7 +301,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = InstalledApplication
-        fields = ['name' ,'status', 'status_date', 'url', 'tenant', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'description',  'tags', 'comments', 'software']
+        fields = ['name' ,'status', 'description', 'version', 'software', 'status_date', 'url', 'tenant', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'tags', 'comments' ]
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
 

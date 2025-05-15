@@ -21,6 +21,6 @@ class SoftwareTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Software
-        fields = ['name', 'status', 'version', 'url', 'description', 'tags', 'manufacturer',]
-        default_columns = [ 'name', 'version', 'status' ]
+        fields = ['name', 'status', 'url', 'description', 'tags', 'manufacturer',]
+        default_columns = [ 'name', 'status' ]
         

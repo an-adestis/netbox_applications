@@ -17,6 +17,8 @@ class InstalledApplicationTable(NetBoxTable):
 
     description = columns.MarkdownColumn()
     
+    version = columns.MarkdownColumn()
+    
     url = columns.MarkdownColumn(
         linkify=True
     )
@@ -44,9 +46,9 @@ class DeviceInstalledApplicationListTable(NetBoxTable):
         fields = (
             'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
             'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
-            'qinq_svlan', 'actions',
+            'qinq_svlan', 'actions', 'installed_application',
         )
-        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses', 'installed_application')
         row_attrs = {
             'data-name': lambda record: record.name,
             'data-virtual': lambda record: "true",

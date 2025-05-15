@@ -50,9 +50,6 @@ class Software(NetBoxModel):
         max_length=300
     )
     
-    version = django_models.CharField(
-         max_length=200,
-    )
     
     manufacturer = django_models.ForeignKey(
         to= 'dcim.Manufacturer',

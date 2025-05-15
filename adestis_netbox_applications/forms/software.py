@@ -25,13 +25,13 @@ __all__ = (
 class SoftwareForm(NetBoxModelForm):
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', name=_('Software')),
+        FieldSet('name', 'description', 'url', 'tags', 'status',  name=_('Software')),
         FieldSet('manufacturer',  name=_('Virtualization')),   
     )
 
     class Meta:
         model = Software
-        fields = ['name', 'description', 'url', 'tags', 'status',  'manufacturer', 'version']
+        fields = ['name', 'description', 'url', 'tags', 'status',  'manufacturer']
         
         help_texts = {
             'status': "Example text",
@@ -56,12 +56,6 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         required=False,
         label=_("URL")
     )
-    
-    version = forms.CharField(
-        max_length=200,
-        required=False,
-        label=_("Version")
-    )
 
     status = forms.ChoiceField(
         required=False,
@@ -78,7 +72,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
     model = Software
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', name=_('Software')),
+        FieldSet('name', 'description', 'url', 'tags', 'status', name=_('Software')),
         FieldSet('manufacturer',  name=_('Virtualization')),
     )
 
@@ -134,7 +128,7 @@ class SoftwareCSVForm(NetBoxModelImportForm):
     
     class Meta:
         model = Software
-        fields = ['name' ,'status',  'url',  'manufacturer',   'description',  'tags', 'version']
+        fields = ['name' ,'status', 'url', 'manufacturer', 'description', 'tags']
         default_return_url = 'plugins:adestis_netbox_applications:Software_list'
 
 

@@ -46,15 +46,6 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Version</th>
-              <td>{% if object.version %}
-                {{ object.version|markdown }}
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
               <th scope='row'>Manufacturer</th>
               <td>{% if object.manufacturer %}
                 <a href="{% url 'dcim:manufacturer' object.manufacturer.id %}"> {{ object.manufacturer.name|markdown }}</a>
