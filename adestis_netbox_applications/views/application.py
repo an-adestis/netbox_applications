@@ -104,12 +104,35 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     tab = ViewTab(
         label=_('Devices'),
         badge=lambda obj: obj.device.count(),
-        permission='dcim.view_virtualmachine',
         weight=600
     )
 
     def get_children(self, request, parent):
         return Device.objects.restrict(request.user, 'view').filter(installedapplication=parent)
+
+@register_model_view(Device, name='applications')
+class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
+    queryset = Device.objects.all()
+    child_model= InstalledApplication
+    table = InstalledApplicationTable
+    template_name = "adestis_netbox_applications/assign_device.html"
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_import': {'add'},
+        'bulk_edit': {'change'},
+        'bulk_remove_device': {'change'},
+    }
+
+    tab = ViewTab(
+        label=_('Applications'),
+        badge=lambda obj: obj.installedapplication.count(),
+        hide_if_empty=False
+    )
+
+    def get_children(self, request, parent):
+        return InstalledApplication.objects.restrict(request.user, 'view').filter(device=parent)
+ 
 
 @register_model_view(InstalledApplication, name='clusters')
 class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
@@ -128,12 +151,34 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     tab = ViewTab(
         label=_('Clusters'),
         badge=lambda obj: obj.cluster.count(),
-        permission='dcim.view_virtualmachine',
         weight=600
     )
 
     def get_children(self, request, parent):
         return Cluster.objects.restrict(request.user, 'view').filter(installedapplication=parent)
+ 
+@register_model_view(Cluster, name='applications')
+class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
+    queryset = Cluster.objects.all()
+    child_model= InstalledApplication
+    table = InstalledApplicationTable
+    template_name = "adestis_netbox_applications/assign_cluster.html"
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_import': {'add'},
+        'bulk_edit': {'change'},
+        'bulk_remove_device': {'change'},
+    }
+
+    tab = ViewTab(
+        label=_('Applications'),
+        badge=lambda obj: obj.installedapplication.count(),
+        hide_if_empty=False
+    )
+
+    def get_children(self, request, parent):
+        return InstalledApplication.objects.restrict(request.user, 'view').filter(cluster=parent)
     
     
 @register_model_view(InstalledApplication, name='cluster groups')
@@ -153,19 +198,42 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     tab = ViewTab(
         label=_('Cluster Groups'),
         badge=lambda obj: obj.cluster_group.count(),
-        permission='dcim.view_virtualmachine',
         weight=600
     )
 
     def get_children(self, request, parent):
         return ClusterGroup.objects.restrict(request.user, 'view').filter(installedapplication=parent)
- 
+
+@register_model_view(ClusterGroup, name='applications')
+class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
+    queryset = VirtualMachine.objects.all()
+    child_model= InstalledApplication
+    table = InstalledApplicationTable
+    template_name = "adestis_netbox_applications/assign_cluster_group.html"
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_import': {'add'},
+        'bulk_edit': {'change'},
+        'bulk_remove_device': {'change'},
+    }
+
+    tab = ViewTab(
+        label=_('Applications'),
+        badge=lambda obj: obj.installedapplication.count(),
+        hide_if_empty=False
+    )
+
+    def get_children(self, request, parent):
+        return InstalledApplication.objects.restrict(request.user, 'view').filter(cluster_group=parent)
+
+
 @register_model_view(InstalledApplication, name='virtual machines')
 class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= VirtualMachine
     table = VirtualMachineTable
-    template_name = "adestis_netbox_applications/virtual_machine.html"
+    template_name = "adestis_netbox_applications/assign_virtual_machine.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -177,9 +245,31 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     tab = ViewTab(
         label=_('Virtual Machines'),
         badge=lambda obj: obj.virtual_machine.count(),
-        permission='dcim.view_virtualmachine',
         weight=600
     )
 
     def get_children(self, request, parent):
         return VirtualMachine.objects.restrict(request.user, 'view').filter(installedapplication=parent)
+  
+@register_model_view(VirtualMachine, name='applications')
+class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
+    queryset = VirtualMachine.objects.all()
+    child_model= InstalledApplication
+    table = InstalledApplicationTable
+    template_name = "adestis_netbox_applications/virtual_machine.html"
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_import': {'add'},
+        'bulk_edit': {'change'},
+        'bulk_remove_device': {'change'},
+    }
+
+    tab = ViewTab(
+        label=_('Applications'),
+        badge=lambda obj: obj.installedapplication.count(),
+        hide_if_empty=False
+    )
+
+    def get_children(self, request, parent):
+        return InstalledApplication.objects.restrict(request.user, 'view').filter(virtual_machine=parent)

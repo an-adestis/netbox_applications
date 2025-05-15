@@ -7,7 +7,7 @@ from .serializers import InstalledApplicationSerializer, SoftwareSerializer
 
 class InstalledApplicationViewSet(NetBoxModelViewSet):
     queryset = InstalledApplication.objects.prefetch_related(
-        'tags'
+        'tags', 'virtual_machine', 'device', 'cluster', 'cluster_group',
     )
     serializer_class = InstalledApplicationSerializer
     filterset_class = InstalledApplicationFilterSet

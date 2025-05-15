@@ -14,6 +14,22 @@ class InstalledApplicationTable(NetBoxTable):
     name = columns.MarkdownColumn(
         linkify=True
     )
+    
+    virtual_machine = tables.Column(
+        linkify=True
+    )
+    
+    cluster_group = tables.Column(
+        linkify=True
+    )
+        
+    cluster = tables.Column(
+        linkify=True
+    )
+        
+    device = tables.Column(
+        linkify=True
+    )
 
     description = columns.MarkdownColumn()
     
@@ -80,30 +96,30 @@ class ClusterInstalledApplicationListTable(NetBoxTable):
             'data-virtual': lambda record: "true",
             'data-enabled': lambda record: "true" if record.enabled else "false",
         }  
-class ClusterGroupInstalledApplicationListTable(NetBoxTable):
+# class ClusterGroupInstalledApplicationListTable(NetBoxTable):
     
-    parent = tables.Column(
-        verbose_name=('Parent'),
-        linkify=True
-    )
-    bridge = tables.Column(
-        verbose_name=('Bridge'),
-        linkify=True
-    )
+#     parent = tables.Column(
+#         verbose_name=('Parent'),
+#         linkify=True
+#     )
+#     bridge = tables.Column(
+#         verbose_name=('Bridge'),
+#         linkify=True
+#     )
 
-    class Meta(NetBoxTable.Meta):
-        model = Device
-        fields = (
-            'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
-            'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
-            'qinq_svlan', 'actions',
-        )
-        default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
-        row_attrs = {
-            'data-name': lambda record: record.name,
-            'data-virtual': lambda record: "true",
-            'data-enabled': lambda record: "true" if record.enabled else "false",
-        }
+#     class Meta(NetBoxTable.Meta):
+#         model = Device
+#         fields = (
+#             'pk', 'id', 'name', 'enabled', 'parent', 'bridge', 'primary_mac_address', 'mtu', 'mode', 'description',
+#             'tags', 'vrf', 'l2vpn', 'tunnel', 'ip_addresses', 'fhrp_groups', 'untagged_vlan', 'tagged_vlans',
+#             'qinq_svlan', 'actions',
+#         )
+#         default_columns = ('pk', 'name', 'enabled', 'primary_mac_address', 'mtu', 'mode', 'description', 'ip_addresses')
+#         row_attrs = {
+#             'data-name': lambda record: record.name,
+#             'data-virtual': lambda record: "true",
+#             'data-enabled': lambda record: "true" if record.enabled else "false",
+#         }
 class VirtualMachineInstalledApplicationListTable(NetBoxTable):
     
     parent = tables.Column(
