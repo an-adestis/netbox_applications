@@ -15,6 +15,10 @@ class InstalledApplicationTable(NetBoxTable):
         linkify=True
     )
     
+    tenant = tables.Column(
+        linkify=True
+    )
+    
     virtual_machine = tables.Column(
         linkify=True
     )
@@ -30,6 +34,10 @@ class InstalledApplicationTable(NetBoxTable):
     device = tables.Column(
         linkify=True
     )
+    
+    software = tables.Column(
+        linkify = True
+    )
 
     description = columns.MarkdownColumn()
     
@@ -44,4 +52,4 @@ class InstalledApplicationTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
         fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'comments', 'software']
-        default_columns = [ 'name', 'tenant', 'status', 'status_date' ]
+        default_columns = [ 'name', 'software', 'version', 'url', 'tenant', 'status', 'status_date' ]
