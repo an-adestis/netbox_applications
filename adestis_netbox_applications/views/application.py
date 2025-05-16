@@ -206,7 +206,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
 @register_model_view(ClusterGroup, name='applications')
 class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
-    queryset = VirtualMachine.objects.all()
+    queryset = ClusterGroup.objects.all()
     child_model= InstalledApplication
     table = InstalledApplicationTable
     template_name = "adestis_netbox_applications/assign_cluster_group.html"

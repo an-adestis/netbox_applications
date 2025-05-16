@@ -171,7 +171,7 @@ class VirtualMachineAssignment(NetBoxModel):
         to='virtualization.VirtualMachine',
         on_delete=django_models.PROTECT,
         related_name="virtual_machine_assignments",
-        verbose_name="Cluster"
+        verbose_name="Virtual Machine"
     )
     
     installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
