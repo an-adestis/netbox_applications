@@ -9,6 +9,8 @@ from utilities.forms.fields import (
     DynamicModelMultipleChoiceField,
 )
 import django_filters
+from django import forms
+from utilities.forms.widgets import DatePicker
 from utilities.filters import TreeNodeMultipleChoiceFilter
 from virtualization.models import *
 from tenancy.models import *
@@ -23,19 +25,32 @@ __all__ = (
 
 class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
-    cluster_group_id = DynamicModelMultipleChoiceField(
+    status_date = forms.DateField(
+        required=False,
+        widget=DatePicker
+    )
+    
+    url = forms.URLField(
+        required=False
+    )
+    
+    version = forms.CharField(
+        required=False
+    )
+    
+    cluster_group = DynamicModelMultipleChoiceField(
         queryset=ClusterGroup.objects.all(),
         required=False,
         label=_('Cluster group (name)')
     )   
     
-    cluster_id = DynamicModelMultipleChoiceField(
+    cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         required=False,
         label=_('Cluster (name)')
     )
     
-    device_id = DynamicModelMultipleChoiceField(
+    device = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required = False,
         label=_('Device (ID)'),
@@ -48,30 +63,29 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         label=_('Device (name)'),
     )
 
-    virtual_machine_id = DynamicModelMultipleChoiceField(
+    virtual_machine = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
         required=False,
         label=_('Virtual machine (name)')
     )
     
-    tenant_id = DynamicModelMultipleChoiceField(
+    tenant = DynamicModelMultipleChoiceField(
         queryset=Tenant.objects.all(),
         required=False,
         label=_('Tenant (ID)'),
     )
     
-    tenant_group_id = DynamicModelMultipleChoiceField(
+    tenant_group = DynamicModelMultipleChoiceField(
         queryset=TenantGroup.objects.all(),
         required=False,
-        to_field_name='tenant group',
-        label=_('Tenant Group '),
+        label=_('Tenant Group (name)'),
     )
     
-    software_id = DynamicModelMultipleChoiceField(
-        queryset=Software.objects.all(),
-        required=False,
-        label=_('Software (ID)'),
-    )
+    # software_id = DynamicModelMultipleChoiceField(
+    #     queryset=Software.objects.all(),
+    #     required=False,
+    #     label=_('Software (ID)'),
+    # )
     
     software = DynamicModelMultipleChoiceField(
         queryset=Software.objects.all(),
@@ -82,11 +96,11 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = InstalledApplication
-        fields = ['id', 'status', 'status_date', 'name', 'url']
+        fields = ['id', 'status', 'status_date', 'name', 'url', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software']
     
 
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
+    # def search(self, queryset, name, value):
+    #     if not value.strip():
+    #         return queryset
 
 

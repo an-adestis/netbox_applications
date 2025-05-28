@@ -154,13 +154,30 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
-        FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
-        FieldSet('device', name=_('Device'))
+        FieldSet('name', 'description', 'version', 'software_id', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
+        FieldSet('tenant_group_id', 'tenant_id',  name=_('Tenant')), 
+        FieldSet('virtual_machine_id', 'cluster_group_id', 'cluster_id', name=_('Virtualization')),   
+        FieldSet('device_id', name=_('Device'))
     )
 
     index = forms.IntegerField(
+        required=False
+    )
+    
+    name = forms.CharField(
+        max_length=200,
+        required=False
+    )
+    
+    status_date = forms.DateField(
+        required=False
+    )
+    
+    version = forms.CharField(
+        required=False
+    )
+    
+    url = forms.URLField(
         required=False
     )
 
@@ -224,7 +241,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Tenant')
     )
     
-    tenant_group_id = DynamicModelChoiceField(
+    tenant_group_id = DynamicModelMultipleChoiceField(
         queryset=TenantGroup.objects.all(),
         required=False,
         null_option='None',
