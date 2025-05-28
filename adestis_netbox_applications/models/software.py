@@ -54,7 +54,7 @@ class Software(NetBoxModel):
     manufacturer = django_models.ForeignKey(
         to= 'dcim.Manufacturer',
         on_delete= django_models.PROTECT,
-        related_name= 'applications_manufacturer',
+        related_name= 'software_manufacturer',
         null= True,
         verbose_name='Manufacturer'
     )

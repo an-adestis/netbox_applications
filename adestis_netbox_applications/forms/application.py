@@ -154,11 +154,10 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'version', 'software_id', 'status', 'status_date', name=_('Application')),
-        FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
-        FieldSet('cluster_id', 'virtual_machine_id', name=_('Virtualization')),
-        FieldSet('device_id', name=_('Device'))
+        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
+        FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
+        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
+        FieldSet('device', name=_('Device'))
     )
 
     index = forms.IntegerField(

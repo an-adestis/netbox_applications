@@ -60,11 +60,11 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         label=_('Tenant (ID)'),
     )
     
-    tenant = DynamicModelMultipleChoiceField(
-        queryset=Tenant.objects.all(),
+    tenant_group_id = DynamicModelMultipleChoiceField(
+        queryset=TenantGroup.objects.all(),
         required=False,
-        to_field_name='tenant',
-        label=_('Tenant (name)'),
+        to_field_name='tenant group',
+        label=_('Tenant Group '),
     )
     
     software_id = DynamicModelMultipleChoiceField(

@@ -145,7 +145,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_cluster': {'change'},
     }
 
     tab = ViewTab(
@@ -168,7 +168,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_cluster': {'change'},
     }
 
     tab = ViewTab(
@@ -192,7 +192,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_cluster_group': {'change'},
     }
 
     tab = ViewTab(
@@ -215,7 +215,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_cluster_group': {'change'},
     }
 
     tab = ViewTab(
@@ -239,7 +239,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_virtual_machine': {'change'},
     }
 
     tab = ViewTab(
@@ -262,7 +262,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
         'export': {'view'},
         'bulk_import': {'add'},
         'bulk_edit': {'change'},
-        'bulk_remove_device': {'change'},
+        'bulk_remove_virtual_machine': {'change'},
     }
 
     tab = ViewTab(
