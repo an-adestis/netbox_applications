@@ -38,69 +38,73 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         required=False
     )
     
-    cluster_group = DynamicModelMultipleChoiceField(
-        queryset=ClusterGroup.objects.all(),
-        required=False,
-        label=_('Cluster group (name)')
-    )   
-    
-    cluster = DynamicModelMultipleChoiceField(
-        queryset=Cluster.objects.all(),
-        required=False,
-        label=_('Cluster (name)')
+    virtual_machine = django_filters.ModelMultipleChoiceFilter(
+        field_name='virtual_machine',
+        queryset=VirtualMachine.objects.all()
     )
     
-    device = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required = False,
-        label=_('Device (ID)'),
+    cluster_group = django_filters.ModelMultipleChoiceFilter(
+        field_name='cluster_group',
+        queryset=ClusterGroup.objects.all()
     )
     
-    device = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required= False,
-        to_field_name='name',
-        label=_('Device (name)'),
-    )
-
-    virtual_machine = DynamicModelMultipleChoiceField(
-        queryset=VirtualMachine.objects.all(),
-        required=False,
-        label=_('Virtual machine (name)')
+    cluster = django_filters.ModelMultipleChoiceFilter(
+        field_name='cluster',
+        queryset=Cluster.objects.all()
     )
     
-    tenant = DynamicModelMultipleChoiceField(
+    device = django_filters.ModelMultipleChoiceFilter(
+        field_name='device',
+        queryset=Device.objects.all()
+    )
+    
+    tenant_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Tenant.objects.all(),
-        required=False,
         label=_('Tenant (ID)'),
     )
     
-    tenant_group = DynamicModelMultipleChoiceField(
+    tenant = django_filters.ModelMultipleChoiceFilter(
+        queryset=Tenant.objects.all(),
+        required=False,
+        field_name='tenant__name',
+        to_field_name='tenant',
+        label=_('Tenant (name)'),
+    )
+    
+    tenant_group_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=TenantGroup.objects.all(),
+        label=_('Tenant (ID)'),
+    )
+    
+    tenant_group = django_filters.ModelMultipleChoiceFilter(
         queryset=TenantGroup.objects.all(),
         required=False,
+        field_name='tenant_group__name',
         label=_('Tenant Group (name)'),
     )
     
-    # software_id = DynamicModelMultipleChoiceField(
-    #     queryset=Software.objects.all(),
-    #     required=False,
-    #     label=_('Software (ID)'),
-    # )
+    software_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Software.objects.all(),
+        label=_('Software (ID)'),
+    )
     
-    software = DynamicModelMultipleChoiceField(
+    software = django_filters.ModelMultipleChoiceFilter(
         queryset=Software.objects.all(),
         required = False,
-        to_field_name='software',
+        field_name='software__name',
         label=_('Software (name)'),
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['id', 'status', 'status_date', 'name', 'url', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software']
+        fields = ('id', 'status', 'status_date', 'name', 'url', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software')
     
 
-    # def search(self, queryset, name, value):
-    #     if not value.strip():
-    #         return queryset
-
-
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(system_url__icontains=value) |
+            Q(system_status__icontains=value)
+        )

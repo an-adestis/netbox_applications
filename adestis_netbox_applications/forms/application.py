@@ -12,6 +12,7 @@ from utilities.forms.fields import (
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
 )
+import django_filters
 from utilities.forms.widgets import DatePicker
 from tenancy.models import Tenant, TenantGroup
 from dcim.models import *
@@ -156,8 +157,8 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         FieldSet('name', 'description', 'version', 'software_id', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id',  name=_('Tenant')), 
-        FieldSet('virtual_machine_id', 'cluster_group_id', 'cluster_id', name=_('Virtualization')),   
-        FieldSet('device_id', name=_('Device'))
+        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
+        FieldSet('device', name=_('Device'))
     )
 
     index = forms.IntegerField(
@@ -187,54 +188,39 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Status')
     )
     
-    device_id = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required=False,
-        null_option='None',
-        query_params={
-            'cluster_id': '$cluster_id',
-        },
-        label=_('Devices')
-    )
-    
-    virtual_machine_id = DynamicModelMultipleChoiceField(
+    virtual_machine = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
+        label=_('Virtual Machine'),
         required=False,
-        null_option='None',
-        query_params={
-            'cluster_id': '$cluster_id',
-            'device_id': '$device_id',
-        },
-        label=_('Virtual Machines')
     )
     
-    cluster_group_id = DynamicModelMultipleChoiceField(
+    cluster_group = DynamicModelMultipleChoiceField(
         queryset=ClusterGroup.objects.all(),
+        label=_('Cluster Group'),
         required=False,
-        null_option='None',
-        label=_('Cluster Groups')
     )
-
-    cluster_id = DynamicModelMultipleChoiceField(
+    
+    cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
+        label=_('Cluster'),
         required=False,
-        null_option='None',
-        query_params={
-        },
-        label=_('Clusters')
+    )
+    
+    device = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        label=_('Device'),
+        required=False,
     )
     
     software_id = DynamicModelMultipleChoiceField(
         queryset=Software.objects.all(),
         required=False,
-        null_option='None',
         label=_('Software')
     )
     
     tenant_id = DynamicModelMultipleChoiceField(
         queryset=Tenant.objects.all(),
         required=False,
-        null_option='None',
         query_params={
             'group_id': '$tenant_group_id'
         },
@@ -244,7 +230,6 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     tenant_group_id = DynamicModelMultipleChoiceField(
         queryset=TenantGroup.objects.all(),
         required=False,
-        null_option='None',
         label=_('Tenant Group')
     )
 

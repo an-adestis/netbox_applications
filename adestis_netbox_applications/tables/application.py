@@ -51,5 +51,5 @@ class InstalledApplicationTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
-        fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'comments', 'software']
+        fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'comments', 'software']
         default_columns = [ 'name', 'software', 'version', 'url', 'tenant', 'status', 'status_date' ]

@@ -21,6 +21,11 @@ __all__ = (
 
 class SoftwareFilterSet(NetBoxModelFilterSet):
     
+    manufacturer_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Manufacturer.objects.all(),
+        label=_('Manufacturer (ID)'),
+    )
+    
     manufacturer = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
         required=False,
@@ -30,7 +35,7 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = Software
-        fields = ['id', 'status', 'name', 'url']
+        fields = ['id', 'status', 'name', 'url', 'manufacturer']
     
 
     def search(self, queryset, name, value):
