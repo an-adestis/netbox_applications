@@ -2,6 +2,17 @@
 {% load helpers %}
 {% load i18n %}
 
+{% block extra_controls %}
+  <a href="{% url 'dcim:device_add' %}?installedapplication={{ object.pk }}" class="btn btn-primary">
+    <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Add Device
+  </a>
+  {{ block.super }}
+{% endblock %}
+{% load buttons %}
+{% load static %}
+{% load helpers %}
+{% load plugins %}
+
 {% block bulk_edit_controls %}
     {{ block.super }}
     {% if 'bulk_rename' in actions %}
@@ -12,3 +23,7 @@
         </button>
     {% endif %}
 {% endblock bulk_edit_controls %}
+{% load buttons %}
+{% load static %}
+{% load helpers %}
+{% load plugins %}

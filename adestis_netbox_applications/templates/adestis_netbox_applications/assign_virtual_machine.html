@@ -2,6 +2,13 @@
 {% load helpers %}
 {% load i18n %}
 
+{% block extra_controls %}
+  <a href="{% url 'virtualization:virtualmachine_add' %}?installedapplication={{ object.pk }}" class="btn btn-primary">
+    <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Add Virtual Machine
+  </a>
+  {{ block.super }}
+{% endblock %}
+
 {% block bulk_edit_controls %}
     {{ block.super }}
     {% if 'bulk_rename' in actions %}

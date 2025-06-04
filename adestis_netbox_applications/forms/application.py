@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models import *
+from adestis_netbox_applications.models.application import InstalledApplication, DeviceAssignment, InstalledApplicationStatusChoices
 from adestis_netbox_applications.models.software import *
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
@@ -307,3 +307,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
 
 
     
+class DeviceAssignmentForm(NetBoxModelForm):
+    class Meta:
+        model = DeviceAssignment
+        fields = ('device', 'installedapplication')

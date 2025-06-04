@@ -71,28 +71,32 @@ class InstalledApplication(NetBoxModel):
         to='dcim.Device',
         verbose_name='Devices',
         through='DeviceAssignment',
-        related_name='installedapplication'
+        related_name='installedapplication',
+        blank = True
     )
     
     cluster = django_models.ManyToManyField(
         to='virtualization.Cluster',
         verbose_name='Clusters',
         through='ClusterAssignment',
-        related_name='installedapplication'
+        related_name='installedapplication',
+        blank = True
     )
     
     cluster_group = django_models.ManyToManyField(
         to='virtualization.ClusterGroup',
         verbose_name='Cluster Groups',
         through='ClusterGroupAssignment',
-        related_name='installedapplication'
+        related_name='installedapplication',
+        blank = True
     )
     
     virtual_machine = django_models.ManyToManyField(
         to='virtualization.VirtualMachine',
         verbose_name='Virtual Machines',
         through='VirtualMachineAssignment',
-        related_name='installedapplication'
+        related_name='installedapplication',
+        blank = True
     )
     
     tenant = django_models.ForeignKey(
@@ -100,7 +104,8 @@ class InstalledApplication(NetBoxModel):
          on_delete = django_models.PROTECT,
          related_name = 'applications_tenant',
          null = True,
-         verbose_name='Tenant'
+         verbose_name='Tenant',
+         blank = True
      )
     
     tenant_group = django_models.ForeignKey(
@@ -108,7 +113,8 @@ class InstalledApplication(NetBoxModel):
         on_delete= django_models.PROTECT,
         related_name='applications_tenant_group',
         null = True,
-        verbose_name= 'Tenant Group'
+        verbose_name= 'Tenant Group',
+        blank = True
     )
     
     software = django_models.ForeignKey(
@@ -141,7 +147,13 @@ class DeviceAssignment(NetBoxModel):
         verbose_name="Device"
     )
     
-    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    installedapplication = django_models.ForeignKey(
+        'InstalledApplication',
+        on_delete=django_models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='devices'
+    )
         
 class ClusterAssignment(NetBoxModel):
     
@@ -152,7 +164,7 @@ class ClusterAssignment(NetBoxModel):
         verbose_name="Cluster"
     )
     
-    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    installedapplication = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
       
 class ClusterGroupAssignment(NetBoxModel):
     
@@ -163,7 +175,7 @@ class ClusterGroupAssignment(NetBoxModel):
         verbose_name="Cluster Group"
     )
     
-    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    installedapplication = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
     
 class VirtualMachineAssignment(NetBoxModel):
     
@@ -174,4 +186,4 @@ class VirtualMachineAssignment(NetBoxModel):
         verbose_name="Virtual Machine"
     )
     
-    installed_application = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)
+    installedapplication = django_models.ForeignKey('InstalledApplication', on_delete=django_models.CASCADE)

@@ -47,6 +47,15 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Software</th>
+              <td>{% if object.software %}
+                <a href="{% url 'plugins:adestis_netbox_applications:software' object.software.id %}"> {{ object.software.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope='row'>Version</th>
               <td>{% if object.version %}
                 {{ object.version|markdown }}
@@ -77,15 +86,6 @@
               <th scope='row'>Tenant</th>
               <td>{% if object.tenant %}
                 <a href="{% url 'tenancy:tenant' object.tenant.id %}"> {{ object.tenant.name|markdown }} </a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Software</th>
-              <td>{% if object.software %}
-                <a href="{% url 'plugins:adestis_netbox_applications:software' object.software.id %}"> {{ object.software.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}

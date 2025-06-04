@@ -11,7 +11,7 @@ This plugin provide following Models:
 
 |               |           |
 |---------------|-----------|
-| NetBox 3.4.x  | >= 0.9.0  |
+| NetBox 3.4.x  | >= 4.2.8  |
 
 
 ## Installation
