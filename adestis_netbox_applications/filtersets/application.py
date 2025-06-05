@@ -30,6 +30,20 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         widget=DatePicker
     )
     
+    contact_id = DynamicModelMultipleChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Group')
+    )
+    
+    contact = DynamicModelMultipleChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Group')
+    )
+    
     url = forms.URLField(
         required=False
     )
@@ -97,7 +111,7 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = InstalledApplication
-        fields = ('id', 'status', 'status_date', 'name', 'url', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software')
+        fields = ('id', 'status', 'status_date', 'name', 'url', 'contact', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software')
     
 
     def search(self, queryset, name, value):

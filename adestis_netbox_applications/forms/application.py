@@ -14,7 +14,7 @@ from utilities.forms.fields import (
 )
 import django_filters
 from utilities.forms.widgets import DatePicker
-from tenancy.models import Tenant, TenantGroup
+from tenancy.models import Tenant, TenantGroup, Contact, ContactGroup
 from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software import *
@@ -24,6 +24,10 @@ __all__ = (
     'InstalledApplicationFilterForm',
     'InstalledApplicationBulkEditForm',
     'InstalledApplicationCSVForm',
+    'InstalledApplicationAssignDeviceForm',
+    'InstalledApplicationAssignClusterForm',
+    'InstalledApplicationAssignClusterGroupForm',
+    'InstalledApplicationAssignVirtualMachineForm',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -305,9 +309,103 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         fields = ['name' ,'status', 'description', 'version', 'software', 'status_date', 'url', 'tenant', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'tags', 'comments' ]
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
-
+class InstalledApplicationAssignDeviceForm(forms.Form):
     
-class DeviceAssignmentForm(NetBoxModelForm):
+    device = DynamicModelMultipleChoiceField(
+        label=_('Devices'),
+        queryset=Device.objects.all()
+    )
+
     class Meta:
-        model = DeviceAssignment
-        fields = ('device', 'installedapplication')
+        fields = [
+            'device',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.device = DynamicModelMultipleChoiceField(
+            label=_('Devices'),
+            queryset=Device.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['device'].choices = []
+        
+class InstalledApplicationAssignClusterForm(forms.Form):
+    
+    cluster = DynamicModelMultipleChoiceField(
+        label=_('Clusters'),
+        queryset=Cluster.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'cluster',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.cluster = DynamicModelMultipleChoiceField(
+            label=_('Clusters'),
+            queryset=Cluster.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['cluster'].choices = []
+        
+class InstalledApplicationAssignClusterGroupForm(forms.Form):
+    
+    cluster_group = DynamicModelMultipleChoiceField(
+        label=_('Cluster Groups'),
+        queryset=ClusterGroup.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'cluster_group',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset=ClusterGroup.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['cluster_group'].choices = []
+        
+class InstalledApplicationAssignVirtualMachineForm(forms.Form):
+    
+    virtual_machine = DynamicModelMultipleChoiceField(
+        label=_('Virtual Machines'),
+        queryset=VirtualMachine.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'virtual_machine',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.virtual_machine = DynamicModelMultipleChoiceField(
+            label=_('Virtual Machines'),
+            queryset=VirtualMachine.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['virtual_machine'].choices = []
+    

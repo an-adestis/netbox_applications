@@ -18,7 +18,9 @@ from virtualization.forms import *
 from virtualization.tables import *
 from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
 from utilities.views import ViewTab, register_model_view
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.db import transaction
 from core.models import ObjectType as ContentType
 from django.contrib.contenttypes.models import ContentType
 
@@ -38,6 +40,10 @@ __all__ = (
     'ClusterAffectedInstalledApplicationView',
     'ClusterGroupAffectedInstalledApplicationView',
     'VirtualMachineAffectedInstalledApplicationView',
+    'InstalledApplicationAssignDevice',
+    'InstalledApplicationAssignCluster',
+    'InstalledApplicationAssignClusterGroup',
+    'InstalledApplicationAssignVirtualMachine',
 )
 
 class InstalledApplicationView(generic.ObjectView):
@@ -87,7 +93,7 @@ class InstalledApplicationBulkImportView(generic.BulkImportView):
     model_form = InstalledApplicationCSVForm
     table = InstalledApplicationTable
     
-@register_model_view(InstalledApplication, name='devices')
+@register_model_view(InstalledApplication, name='device')
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= Device
@@ -115,7 +121,7 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = Device.objects.all()
     child_model= InstalledApplication
     table = InstalledApplicationTable
-    template_name = "adestis_netbox_applications/assign_device.html"
+    template_name = "adestis_netbox_applications/application_device.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -132,7 +138,51 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(device=parent)
- 
+    
+    
+@register_model_view(InstalledApplication, 'assign_device')
+class InstalledApplicationAssignDevice(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related(
+        'device', 'tags', 
+    ).all()
+    
+    form = InstalledApplicationAssignDeviceForm
+    template_name = 'adestis_netbox_applications/assign_device.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication,  initial=request.GET)
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_device', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+
+        if form.is_valid():
+            
+            selected_devices = form.cleaned_data['device']
+            with transaction.atomic():
+                
+                for device in Device.objects.filter(pk__in=selected_devices): 
+                    installedapplication.device.add(device)
+            
+            installedapplication.save()
+            
+            return redirect(installedapplication.get_absolute_url())
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_device', kwargs={'pk': pk}),
+        })
 
 @register_model_view(InstalledApplication, name='clusters')
 class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
@@ -162,7 +212,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = Cluster.objects.all()
     child_model= InstalledApplication
     table = InstalledApplicationTable
-    template_name = "adestis_netbox_applications/assign_cluster.html"
+    template_name = "adestis_netbox_applications/application_cluster.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -179,6 +229,49 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(cluster=parent)
+    
+@register_model_view(InstalledApplication, 'assign_cluster')
+class InstalledApplicationAssignCluster(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related(
+        'cluster', 'tags', 
+    ).all()
+    
+    form = InstalledApplicationAssignClusterForm
+    template_name = 'adestis_netbox_applications/assign_cluster.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication,  initial=request.GET)
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_cluster', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+
+        if form.is_valid():
+            
+            selected_clusters = form.cleaned_data['cluster']
+            with transaction.atomic():
+                
+                for cluster in Cluster.objects.filter(pk__in=selected_clusters): 
+                    installedapplication.cluster.add(cluster)
+            
+            installedapplication.save()
+            
+            return redirect(installedapplication.get_absolute_url())
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_cluster', kwargs={'pk': pk}),
+        })
     
     
 @register_model_view(InstalledApplication, name='cluster groups')
@@ -209,7 +302,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = ClusterGroup.objects.all()
     child_model= InstalledApplication
     table = InstalledApplicationTable
-    template_name = "adestis_netbox_applications/assign_cluster_group.html"
+    template_name = "adestis_netbox_applications/application_clustergroup.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -226,6 +319,50 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(cluster_group=parent)
+    
+    
+@register_model_view(InstalledApplication, 'assign_cluster_group')
+class InstalledApplicationAssignClusterGroup(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related(
+        'cluster_group', 'tags', 
+    ).all()
+    
+    form = InstalledApplicationAssignClusterGroupForm
+    template_name = 'adestis_netbox_applications/assign_cluster_group.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication,  initial=request.GET)
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_cluster_group', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+
+        if form.is_valid():
+            
+            selected_cluster_groups = form.cleaned_data['cluster_group']
+            with transaction.atomic():
+                
+                for cluster_group in ClusterGroup.objects.filter(pk__in=selected_cluster_groups): 
+                    installedapplication.cluster_group.add(cluster_group)
+            
+            installedapplication.save()
+            
+            return redirect(installedapplication.get_absolute_url())
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_cluster_group', kwargs={'pk': pk}),
+        })
 
 
 @register_model_view(InstalledApplication, name='virtual machines')
@@ -233,7 +370,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     queryset = InstalledApplication.objects.all()
     child_model= VirtualMachine
     table = VirtualMachineTable
-    template_name = "adestis_netbox_applications/assign_virtual_machine.html"
+    template_name = "adestis_netbox_applications/virtual_machine.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -256,7 +393,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     queryset = VirtualMachine.objects.all()
     child_model= InstalledApplication
     table = InstalledApplicationTable
-    template_name = "adestis_netbox_applications/virtual_machine.html"
+    template_name = "adestis_netbox_applications/application_virtualmachine.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -273,3 +410,47 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(virtual_machine=parent)
+    
+    
+@register_model_view(InstalledApplication, 'assign_virtual_machine')
+class InstalledApplicationAssignVirtualMachine(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related(
+        'virtual_machine', 'tags', 
+    ).all()
+    
+    form = InstalledApplicationAssignVirtualMachineForm
+    template_name = 'adestis_netbox_applications/assign_virtual_machine.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication,  initial=request.GET)
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_virtual_machine', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+
+        if form.is_valid():
+            
+            selected_vm = form.cleaned_data['virtual_machine']
+            with transaction.atomic():
+                
+                for virtual_machine in VirtualMachine.objects.filter(pk__in=selected_vm): 
+                    installedapplication.virtual_machine.add(virtual_machine)
+            
+            installedapplication.save()
+            
+            return redirect(installedapplication.get_absolute_url())
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_virtual_machine', kwargs={'pk': pk}),
+        })

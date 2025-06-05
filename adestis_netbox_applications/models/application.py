@@ -124,10 +124,20 @@ class InstalledApplication(NetBoxModel):
         null=True,
         verbose_name='Software'
     )
+    
+    contact = django_models.ForeignKey(
+        to='tenancy.Contact',
+        on_delete=django_models.PROTECT,
+        related_name='installedapplication_contact',
+        null=True,
+        verbose_name='Contact',
+        help_text='Contact that uses the System'
+    )
  
     class Meta:
         verbose_name_plural = "Applications"
         verbose_name = 'Application'
+        ordering = ('contact',)
 
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
