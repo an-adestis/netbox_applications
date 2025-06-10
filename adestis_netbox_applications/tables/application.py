@@ -3,6 +3,7 @@ from adestis_netbox_applications.models import InstalledApplication
 from adestis_netbox_applications.filtersets import *
 import django_tables2 as tables
 from dcim.models import *
+from dcim.tables import *
 
 class InstalledApplicationTable(NetBoxTable):
     status = ChoiceFieldColumn()
@@ -53,3 +54,4 @@ class InstalledApplicationTable(NetBoxTable):
         model = InstalledApplication
         fields = ['name', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'comments', 'software']
         default_columns = [ 'name', 'software', 'version', 'url', 'tenant', 'status', 'status_date' ]
+        

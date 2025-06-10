@@ -13,6 +13,7 @@ from utilities.forms.fields import (
     DynamicModelMultipleChoiceField,
 )
 import django_filters
+from utilities.forms import ConfirmationForm
 from utilities.forms.widgets import DatePicker
 from tenancy.models import Tenant, TenantGroup, Contact, ContactGroup
 from dcim.models import *
@@ -28,12 +29,65 @@ __all__ = (
     'InstalledApplicationAssignClusterForm',
     'InstalledApplicationAssignClusterGroupForm',
     'InstalledApplicationAssignVirtualMachineForm',
+    'InstalledApplicationRemoveDevice',
+    'InstalledApplicationRemoveCluster',
+    'InstalledApplicationRemoveClusterGroup',
+    'InstalledApplicationRemoveVirtualMachine',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
+    
+    tenant_group = DynamicModelChoiceField(
+        queryset=TenantGroup.objects.all(),
+        required=False,
+        null_option='None',
+    )
+
+    tenant = DynamicModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        query_params={
+            'group_id': '$tenant_group'
+        },
+    )
+
+    cluster_group = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        help_text=_("Cluster Group"),
+    )
+
+    cluster = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        required=False,
+        query_params={
+            'group_id': '$cluster_group',
+        },
+        help_text=_("Cluster"),
+    )
+    
+    device = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        query_params={
+            'cluster_id': '$cluster',
+        },
+        help_text=_("Device"),
+    )
+    
+    virtual_machine = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'cluster_id': '$cluster',
+            'device_id': '$device',
+        },
+        help_text=_("Virtual Machine"),
+    )
 
     fieldsets = (
-        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
+        FieldSet('name', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
         FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
         FieldSet('device', name=_('Device'))
@@ -115,11 +169,17 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         queryset=TenantGroup.objects.all(),
         required = False,
         label=_("Tenant Group"),
+        initial_params={
+            'tenants': '$tenant'
+        }
     )
     tenant = DynamicModelChoiceField(
         queryset=Tenant.objects.all(),
         required = False,
         label=_("Tenant"),
+        query_params={
+            'group_id': '$tenant_group'
+        },
     )
     
     software = DynamicModelChoiceField(
@@ -131,20 +191,26 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     cluster_group = DynamicModelChoiceField(
         queryset=ClusterGroup.objects.all(),
         required = False,
-        label=_("Cluster Groups")
+        label=_("Cluster Groups"),
+        initial_params={
+            'clusters': '$cluster'
+        }
     )
     
     cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         required = False,
         label=_("Clusters"),
+        query_params={
+            'group_id': '$cluster_group',
+        },
         null_option='None'
     )
     
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('name', 'description', 'version', 'software', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
+        FieldSet('name', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
         FieldSet('virtual_machine', 'cluster', name=_('Virtualization')),
         FieldSet('device', name=_('Device'))
@@ -207,6 +273,9 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         label=_('Cluster'),
+        query_params={
+            'group_id': '$cluster_group',
+        },
         required=False,
     )
     
@@ -336,23 +405,38 @@ class InstalledApplicationAssignDeviceForm(forms.Form):
         
 class InstalledApplicationAssignClusterForm(forms.Form):
     
+    cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset= ClusterGroup.objects.all()
+        )
+    
     cluster = DynamicModelMultipleChoiceField(
         label=_('Clusters'),
-        queryset=Cluster.objects.all()
-    )
+        queryset=Cluster.objects.all(),
+        query_params={
+            'group_id': '$cluster_group',
+        },)
 
     class Meta:
         fields = [
-            'cluster',
+            'cluster_group', 'cluster',
         ]
 
     def __init__(self, installedapplication,*args, **kwargs):
 
         self.installedapplication = installedapplication
+        
+        self.cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset= ClusterGroup.objects.all()
+        )
 
         self.cluster = DynamicModelMultipleChoiceField(
             label=_('Clusters'),
-            queryset=Cluster.objects.all()
+            queryset=Cluster.objects.all(),
+            query_params={
+            'group_id': '$cluster_group',
+        },
         )        
 
         super().__init__(*args, **kwargs)
@@ -409,3 +493,26 @@ class InstalledApplicationAssignVirtualMachineForm(forms.Form):
 
         self.fields['virtual_machine'].choices = []
     
+class InstalledApplicationRemoveDevice(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    ) 
+    
+class InstalledApplicationRemoveCluster(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveClusterGroup(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveVirtualMachine(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )

@@ -26,19 +26,19 @@ class InstalledApplicationSerializer(NetBoxModelSerializer):
 class DeviceAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = DeviceAssignment
-        fields = ('id', 'installed_application', 'device')
+        fields = ('id', 'installedapplication', 'device')
         
 class ClusterAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = ClusterAssignment
-        fields = ('id', 'installed_application', 'cluster')
+        fields = ('id', 'installedapplication', 'cluster')
         
 class ClusterGroupAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = ClusterGroupAssignment
-        fields = ('id', 'installed_application', 'cluster_group')
+        fields = ('id', 'installedapplication', 'cluster_group')
         
 class VirtualMachineAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = VirtualMachineAssignment
-        fields = ('id', 'installed_application', 'virtual_machine')
+        fields = ('id', 'installedapplication', 'virtual_machine')
