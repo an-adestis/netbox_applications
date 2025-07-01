@@ -89,7 +89,7 @@ class InstalledApplicationForm(NetBoxModelForm):
     fieldsets = (
         FieldSet('name', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
+        FieldSet('cluster_group', 'cluster', 'virtual_machine',  name=_('Virtualization')),   
         FieldSet('device', name=_('Device'))
     )
 
@@ -212,7 +212,7 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     fieldsets = (
         FieldSet('name', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
-        FieldSet('virtual_machine', 'cluster', name=_('Virtualization')),
+        FieldSet('cluster_group', 'cluster', 'virtual_machine', name=_('Virtualization')),
         FieldSet('device', name=_('Device'))
     )
 
@@ -227,7 +227,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         FieldSet('name', 'description', 'version', 'software_id', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group_id', 'tenant_id',  name=_('Tenant')), 
-        FieldSet('virtual_machine', 'cluster_group', 'cluster', name=_('Virtualization')),   
+        FieldSet('cluster_group', 'cluster', 'virtual_machine', name=_('Virtualization')),   
         FieldSet('device', name=_('Device'))
     )
 

@@ -60,7 +60,7 @@ class Software(NetBoxModel):
     )
     
     class Meta:
-        verbose_name_plural = "Softwares"
+        verbose_name_plural = "Software"
         verbose_name = 'Software'
 
     def get_absolute_url(self):

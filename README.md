@@ -9,9 +9,10 @@ This plugin provide following Models:
 
 ## Compatibility
 
-|               |           |
-|---------------|-----------|
-| NetBox 3.4.x  | >= 4.2.8  |
+| Plugin Version | NetBox Min. Version | NetBox Max. Version |
+|----------------|---------------------|---------------------|
+| 1.0.13         | 4.2.7               | 4.3.3               |
+
 
 
 ## Installation

@@ -64,7 +64,8 @@ class InstalledApplication(NetBoxModel):
     )
     
     url = django_models.URLField(
-        max_length=300
+        max_length=300,
+        blank = True
     )
     
     device = django_models.ManyToManyField(
@@ -152,7 +153,7 @@ class DeviceAssignment(NetBoxModel):
     
     device = django_models.ForeignKey(
         to='dcim.Device',
-        on_delete=django_models.PROTECT,
+        on_delete=django_models.CASCADE,
         related_name="device_assignments",
         verbose_name="Device"
     )
@@ -169,7 +170,7 @@ class ClusterAssignment(NetBoxModel):
     
     cluster = django_models.ForeignKey(
         to='virtualization.Cluster',
-        on_delete=django_models.PROTECT,
+        on_delete=django_models.CASCADE,
         related_name="cluster_assignments",
         verbose_name="Cluster"
     )
@@ -180,7 +181,7 @@ class ClusterGroupAssignment(NetBoxModel):
     
     cluster_group = django_models.ForeignKey(
         to='virtualization.ClusterGroup',
-        on_delete=django_models.PROTECT,
+        on_delete=django_models.CASCADE,
         related_name="cluster_group_assignments",
         verbose_name="Cluster Group"
     )
@@ -191,7 +192,7 @@ class VirtualMachineAssignment(NetBoxModel):
     
     virtual_machine = django_models.ForeignKey(
         to='virtualization.VirtualMachine',
-        on_delete=django_models.PROTECT,
+        on_delete=django_models.CASCADE,
         related_name="virtual_machine_assignments",
         verbose_name="Virtual Machine"
     )

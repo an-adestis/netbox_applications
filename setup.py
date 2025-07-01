@@ -6,9 +6,9 @@ with open("README.md", "r") as f:
 
 setup(
     name='adestis-netbox-applications',
-    version='1.0.12',
+    version='1.0.13',
     description='ADESTIS Application Management',
-    # url='https://github.com/adestis/netbox-account-management',
+    url='https://github.com/an-adestis/netbox_applications',
     author='ADESTIS GmbH',
     author_email='pypi@adestis.de',
     install_requires=[],
