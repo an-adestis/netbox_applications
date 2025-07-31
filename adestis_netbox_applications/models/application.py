@@ -8,6 +8,7 @@ from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.application_types import *
 
 __all__ = (
     'InstalledApplicationStatusChoices',
@@ -124,6 +125,14 @@ class InstalledApplication(NetBoxModel):
         related_name= 'applications_software',
         null=True,
         verbose_name='Software'
+    )
+    
+    application_types = django_models.ForeignKey(
+        to='adestis_netbox_applications.InstalledApplicationTypes',
+        on_delete= django_models.PROTECT,
+        related_name='applications_types',
+        null=True,
+        verbose_name='Application Types'
     )
     
     contact = django_models.ForeignKey(

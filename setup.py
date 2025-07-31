@@ -11,10 +11,10 @@ setup(
     url='https://github.com/an-adestis/netbox_applications',
     author='ADESTIS GmbH',
     author_email='pypi@adestis.de',
-    install_requires=[],
+    install_requires=['adestis_netbox_certificate_management'],
     packages=find_packages(),
     include_package_data=True,
-    license='MIT License',
+    license='GPL-3.0-only',
     keywords=['netbox', 'netbox-plugin', 'plugin'],
     package_data={
         "adestis_netbox_applications": ["**/*.html"],

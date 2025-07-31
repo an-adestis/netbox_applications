@@ -1,4 +1,6 @@
 from netbox.views import generic
+from adestis_netbox_certificate_management.models import Certificate
+from adestis_netbox_certificate_management.tables import CertificateTable
 from adestis_netbox_applications.forms.application import *
 from adestis_netbox_applications.filtersets.application import *
 from adestis_netbox_applications.models.application import InstalledApplication, ClusterAssignment, DeviceAssignment, ClusterGroupAssignment, VirtualMachineAssignment
@@ -49,6 +51,8 @@ __all__ = (
     'InstalledApplicationRemoveClusterView',
     'InstalledApplicationRemoveClusterGroupView',
     'InstalledApplicationRemoveVirtualMachineView',
+    
+    'InstalledApplicationAffectedCertificateView',
 )
 
 class InstalledApplicationView(generic.ObjectView):
@@ -97,6 +101,29 @@ class InstalledApplicationBulkImportView(generic.BulkImportView):
     queryset = InstalledApplication.objects.all()
     model_form = InstalledApplicationCSVForm
     table = InstalledApplicationTable
+    
+@register_model_view(InstalledApplication, name='certificate')
+class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
+    queryset = InstalledApplication.objects.all()
+    child_model= Certificate
+    table = CertificateTable
+    template_name = "adestis_netbox_applications/certificate_application.html"
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_import': {'add'},
+        'bulk_edit': {'change'},
+        'bulk_remove_certificate': {'change'},
+    }
+
+    tab = ViewTab(
+        label=_('Certificate'),
+        badge=lambda obj: obj.certificate.count(),
+        hide_if_empty=False
+    )
+
+    def get_children(self, request, parent):
+        return Certificate.objects.restrict(request.user, 'view').filter(installedapplication=parent)
     
 @register_model_view(InstalledApplication, name='device')
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):

@@ -1,9 +1,11 @@
 from django.urls import path
 from netbox.views.generic import ObjectChangeLogView
-from adestis_netbox_applications.models import *
+from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.models.software import *
-from adestis_netbox_applications.views import *
+from adestis_netbox_applications.models.application_types import *
+from adestis_netbox_applications.views.application import *
 from adestis_netbox_applications.views.software import *
+from adestis_netbox_applications.views.application_types import *
 from django.urls import include
 from utilities.urls import get_model_urls
 
@@ -50,6 +52,9 @@ urlpatterns = (
         'model': InstalledApplication
     }),
     
+     path('applications/certificates/', InstalledApplicationAffectedCertificateView.as_view(),
+         name='certificateapplications_list'),
+    
     #Software
     path('software/', SoftwareListView.as_view(),
          name='software_list'),
@@ -71,6 +76,30 @@ urlpatterns = (
          SoftwareDeleteView.as_view(), name='software_delete'),
     path('software/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='software_changelog', kwargs={
         'model': Software
+    }),
+    
+    
+    #Application Types
+    path('application_types/', InstalledApplicationTypesListView.as_view(),
+         name='installedapplicationtypes_list'),
+    path('application_types/add/', InstalledApplicationTypesEditView.as_view(),
+         name='installedapplicationtypes_add'),
+    path('application_types/delete/', InstalledApplicationTypesBulkDeleteView.as_view(),
+         name='installedapplicationtypes_bulk_delete'),
+    path('application_types/edit/', InstalledApplicationTypesBulkEditView.as_view(),
+         name='installedapplicationtypes_bulk_edit'),
+    path('application_types/import/', InstalledApplicationTypesBulkImportView.as_view(),
+         name='installedapplicationtypes_bulk_import'),
+    path('application_types/<int:pk>/',
+         InstalledApplicationTypesView.as_view(), name='installedapplicationtypes'),
+    path('application_types/<int:pk>/',
+         include(get_model_urls("adestis_netbox_applications", "installedapplicationtypes"))),
+    path('application_types/<int:pk>/edit/',
+         InstalledApplicationTypesEditView.as_view(), name='installedapplicationtypes_edit'),
+    path('application_types/<int:pk>/delete/',
+         InstalledApplicationTypesDeleteView.as_view(), name='installedapplicationtypes_delete'),
+    path('application_types/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplicationtypes_changelog', kwargs={
+        'model': InstalledApplicationTypes
     }),
 
 )

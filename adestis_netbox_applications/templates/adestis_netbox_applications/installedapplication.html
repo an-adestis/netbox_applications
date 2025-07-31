@@ -28,6 +28,15 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Application Types</th>
+              <td>{% if object.software %}
+                <a href="{% url 'plugins:adestis_netbox_applications:installedapplicationtypes' object.application_types.id %}"> {{ object.application_types.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope='row'>Status Date</th>
               <td>
                 {% if object.status_date %}

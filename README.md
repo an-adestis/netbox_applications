@@ -1,31 +1,42 @@
 # Netbox Application Plugin
 
-Netbox Plugin for Application related objects documentation.
+The **NetBox Application Plugin** extends NetBox with the ability to manage applications and link them to various existing NetBox objects.
+
 ## Features
 
+- Manage applications directly within NetBox
+- Flexible association of applications with existing NetBox objects
+
 This plugin provide following Models:
-* Application
-* Software
+- Application
+- Software
+
+
+## Screenshots
+
+![Applications Details](https://github.com/an-adestis/netbox_applications/raw/application/applications01.png)
+
+![Applications View](https://github.com/an-adestis/netbox_applications/raw/application/applications02.png)
+
+![Software Details](https://github.com/an-adestis/netbox_applications/raw/application/software01.png)
+
+![Software View](https://github.com/an-adestis/netbox_applications/raw/application/software02.png)
 
 ## Compatibility
 
-| Plugin Version | NetBox Min. Version | NetBox Max. Version |
-|----------------|---------------------|---------------------|
-| 1.0.13         | 4.2.7               | 4.3.3               |
+> **Note**: This plugin depends on the [`adestis-netbox-certificate-management`](https://pypi.org/project/adestis-netbox-certificate-management/) plugin.  
+> Therefore, its compatibility is directly tied to the NetBox version used in the base image.
 
+The plugin is developed and tested using the following base image:
 
+```dockerfile
+ARG FROM_TAG=v4.2.9-3.2.1  # NetBox v4.2.9
+```
 
 ## Installation
 
-The plugin is available as a Python package in pypi and can be installed with pip  
+The plugin is available on PyPI and can be installed via pip:
 
+```bash
+pip install adestis-netbox-applications
 ```
-pip install adestis_netbox_applications
-```
-Enable the plugin in /etc/netbox/config/configuration.py:
-```
-PLUGINS = ['adestis_netbox_applications']
-```
-Restart NetBox and add `adestis_netbox_applications` to your local_requirements.txt
-
-See [NetBox Documentation](https://docs.netbox.dev/en/stable/plugins/#installing-plugins) for details

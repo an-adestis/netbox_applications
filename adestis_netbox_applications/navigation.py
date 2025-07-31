@@ -24,6 +24,17 @@ _software = [
     ),    
 ]
 
+_application_types = [
+    PluginMenuItem(
+        link='plugins:adestis_netbox_applications:installedapplicationtypes_list',
+        link_text='Application Types',
+        permissions=["adestis_netbox_applications.installedapplicationtypes_list"],
+        buttons=(
+            PluginMenuButton('plugins:adestis_netbox_applications:installedapplicationtypes_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.installedapplicationtypes_add"]),
+        )
+    ),    
+]
+
 plugin_settings = settings.PLUGINS_CONFIG.get('adestis_netbox_applications', {})
 
 if plugin_settings.get('top_level_menu'):
@@ -32,6 +43,7 @@ if plugin_settings.get('top_level_menu'):
         groups=(
             ("Applications", _applications),
             ("Software", _software ),
+            ("Application Types", _application_types ),
         ),
         icon_class="mdi mdi-application-cog-outline",
     )

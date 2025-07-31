@@ -1,5 +1,6 @@
 from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.application_types import *
 from netbox.filtersets import NetBoxModelFilterSet
 
 from django.db.models import Q
@@ -87,7 +88,7 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
     tenant_group_id = django_filters.ModelMultipleChoiceFilter(
         queryset=TenantGroup.objects.all(),
-        label=_('Tenant (ID)'),
+        label=_('Tenant Group (ID)'),
     )
     
     tenant_group = django_filters.ModelMultipleChoiceFilter(
@@ -108,10 +109,22 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         field_name='software__name',
         label=_('Software (name)'),
     )
+    
+    application_types_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Software.objects.all(),
+        label=_('Application Types (ID)'),
+    )
+    
+    application_types = django_filters.ModelMultipleChoiceFilter(
+        queryset=InstalledApplicationTypes.objects.all(),
+        required = False,
+        field_name='application_types__name',
+        label=_('application Types (name)'),
+    )
 
     class Meta:
         model = InstalledApplication
-        fields = ('id', 'status', 'status_date', 'name', 'url', 'contact', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software')
+        fields = ('id', 'status', 'status_date', 'name', 'url', 'contact', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software', 'application_types')
     
 
     def search(self, queryset, name, value):
