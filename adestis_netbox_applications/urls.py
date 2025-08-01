@@ -101,5 +101,6 @@ urlpatterns = (
     path('application_types/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplicationtypes_changelog', kwargs={
         'model': InstalledApplicationTypes
     }),
+    
 
 )

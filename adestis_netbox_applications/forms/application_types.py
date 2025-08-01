@@ -9,6 +9,7 @@ from utilities.forms.fields import (
     CSVModelChoiceField,
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
+    SlugField,
 )
 from utilities.forms.widgets import DatePicker
 from dcim.models import *
@@ -24,13 +25,18 @@ __all__ = (
 
 class InstalledApplicationTypesForm(NetBoxModelForm):
 
+    slug = SlugField(
+        label=_('Slug'),
+        slug_source='model'
+    )
+    
     fieldsets = (
-        FieldSet('name', 'comment', 'tags',   name=_('Application Types')),
+        FieldSet('name', 'slug', 'tags',   name=_('Application Types')),
     )
 
     class Meta:
         model = InstalledApplicationTypes
-        fields = ['name', 'comment', 'tags']
+        fields = ['name', 'slug', 'tags']
         
     
 class InstalledApplicationTypesBulkEditForm(NetBoxModelBulkEditForm):
@@ -45,21 +51,19 @@ class InstalledApplicationTypesBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Name"),
     )
     
-    
-    comment = forms.CharField(
-        max_length=500,
-        required=False,
-        label=_("Comment"),
+    slug = SlugField(
+        label=_('Slug'),
+        slug_source='model'
     )
     
     model = InstalledApplicationTypes
 
     fieldsets = (
-        FieldSet('name', 'comment', 'tags',  name=_('Application Types')),
+        FieldSet('name', 'slug',  'tags',  name=_('Application Types')),
     )
 
     nullable_fields = [
-         'add_tags', 'remove_tags', 'comment', ''
+         'add_tags', 'remove_tags'
     ]
     
 class InstalledApplicationTypesFilterForm(NetBoxModelFilterSetForm):
@@ -68,7 +72,7 @@ class InstalledApplicationTypesFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'comment', 'tag',  name=_('Application Types')),
+        FieldSet('name', 'slug', 'tag',  name=_('Application Types')),
     )
 
     index = forms.IntegerField(
@@ -82,7 +86,7 @@ class InstalledApplicationTypesCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = InstalledApplicationTypes
-        fields = ['name', 'comment', 'tags']
+        fields = ['name', 'slug', 'tags']
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplicationTypes_list'
 
 

@@ -1,4 +1,6 @@
 from django.db import models as django_models
+from adestis_netbox_applications.models.application import *
+from netbox.models import OrganizationalModel
 from django.urls import reverse
 from netbox.models import NetBoxModel
 from utilities.choices import ChoiceSet
@@ -10,15 +12,23 @@ __all__ = (
     'InstalledApplicationTypes',
 )
     
-class InstalledApplicationTypes(NetBoxModel):
+class InstalledApplicationTypes(OrganizationalModel):
 
     name = django_models.CharField(
         max_length=150
     )
     
-    comment = django_models.CharField(
-        max_length=500,
-        blank = True
+    slug = django_models.SlugField(
+        verbose_name='Slug',
+        max_length=100
+    )
+    
+    installedapplication = django_models.ForeignKey(
+        to='adestis_netbox_applications.InstalledApplication',
+        on_delete= django_models.PROTECT,
+        related_name='installed_app',
+        null=True,
+        verbose_name='Application'
     )
     
     class Meta:

@@ -8,7 +8,7 @@
   </a>
 {% endblock %}
 
-{% block bulk_edit_controls %}
+{% comment %} {% block bulk_edit_controls %}
     {{ block.super }}
     {% if 'bulk_rename' in actions %}
         <button type="submit" name="_rename"
@@ -17,7 +17,7 @@
             <i class="mdi mdi-pencil-outline" aria-hidden="true"></i> {% trans "Rename" %}
         </button>
     {% endif %}
-{% endblock bulk_edit_controls %}
+{% endblock bulk_edit_controls %} {% endcomment %}
 
 {% block bulk_delete_controls %}
     {{ block.super }}

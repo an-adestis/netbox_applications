@@ -265,7 +265,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
         'add': {'add'},
         'export': {'view'},
         'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_cluster': {'change'},
     }
 

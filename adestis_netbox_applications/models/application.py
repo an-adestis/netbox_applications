@@ -130,7 +130,7 @@ class InstalledApplication(NetBoxModel):
     application_types = django_models.ForeignKey(
         to='adestis_netbox_applications.InstalledApplicationTypes',
         on_delete= django_models.PROTECT,
-        related_name='applications_types',
+        related_name='applications',
         null=True,
         verbose_name='Application Types'
     )
