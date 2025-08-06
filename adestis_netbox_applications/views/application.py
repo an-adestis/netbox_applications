@@ -113,8 +113,6 @@ class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
         'bulk_remove_certificate': {'change'},
     }
 
@@ -215,13 +213,13 @@ class InstalledApplicationRemoveCertificateView(generic.ObjectEditView):
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= Device
-    table = DeviceTable
+    table = DeviceTableApplication
     template_name = "adestis_netbox_applications/device.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_device': {'change'},
     }
 
@@ -238,13 +236,13 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = Device.objects.all()
     child_model= InstalledApplication
-    table = InstalledApplicationTable
+    table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_device.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -345,13 +343,13 @@ class InstalledApplicationRemoveDeviceView(generic.ObjectEditView):
 class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= Cluster
-    table = ClusterTable
+    table = ClusterTableApplication
     template_name = "adestis_netbox_applications/cluster.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # # 'bulk_edit': {'change'},
         'bulk_remove_cluster': {'change'},
     }
 
@@ -368,13 +366,13 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
 class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = Cluster.objects.all()
     child_model= InstalledApplication
-    table = InstalledApplicationTable
+    table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_cluster.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -479,13 +477,13 @@ class InstalledApplicationRemoveClusterView(generic.ObjectEditView):
 class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= ClusterGroup
-    table = ClusterGroupTable
+    table = ClusterGroupTableApplication
     template_name = "adestis_netbox_applications/cluster_group.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_cluster_group': {'change'},
     }
 
@@ -502,13 +500,13 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
 class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = ClusterGroup.objects.all()
     child_model= InstalledApplication
-    table = InstalledApplicationTable
+    table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_clustergroup.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -610,13 +608,13 @@ class InstalledApplicationRemoveClusterGroupView(generic.ObjectEditView):
 class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= VirtualMachine
-    table = VirtualMachineTable
+    table = VirtualMachineTableApplication
     template_name = "adestis_netbox_applications/virtual_machine.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_virtual_machine': {'change'},
     }
 
@@ -633,13 +631,13 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
 class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = VirtualMachine.objects.all()
     child_model= InstalledApplication
-    table = InstalledApplicationTable
+    table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_virtualmachine.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
+        # 'bulk_import': {'add'},
+        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
