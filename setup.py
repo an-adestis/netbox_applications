@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='adestis-netbox-applications',
-    version='1.0.14',
+    version='1.0.15',
     description='ADESTIS Application Management',
     url='https://github.com/an-adestis/netbox_applications',
     author='ADESTIS GmbH',
