@@ -53,6 +53,8 @@ __all__ = (
     'InstalledApplicationRemoveVirtualMachineView',
     
     'InstalledApplicationAffectedCertificateView',
+    'InstalledApplicationAssignCertificate',
+    'InstalledApplicationRemoveCertificateView',
 )
 
 class InstalledApplicationView(generic.ObjectView):
@@ -107,7 +109,7 @@ class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
     child_model= Certificate
     table = CertificateTable
-    template_name = "adestis_netbox_applications/certificate_application.html"
+    template_name = "adestis_netbox_applications/application.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -124,6 +126,90 @@ class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return Certificate.objects.restrict(request.user, 'view').filter(installedapplication=parent)
+    
+    
+@register_model_view(InstalledApplication, 'assign_certificate')
+class InstalledApplicationAssignCertificate(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related(
+        'certificate', 'tags', 
+    ).all()
+    
+    form = InstalledApplicationAssignCertificateForm
+    template_name = 'adestis_netbox_applications/assign_certificate.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication,  initial=request.GET)
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_certificate', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+
+        if form.is_valid():
+            
+            selected_certificates = form.cleaned_data['certificate']
+            with transaction.atomic():
+                
+                for certificate in Certificate.objects.filter(pk__in=selected_certificates): 
+                    installedapplication.certificate.add(certificate)
+            
+            installedapplication.save()
+            
+            return redirect(installedapplication.get_absolute_url())
+
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_certificate', kwargs={'pk': pk}),
+        })
+        
+@register_model_view(InstalledApplication, 'remove_certificate', path='certificate/remove')
+class InstalledApplicationRemoveCertificateView(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.all()
+    form = InstalledApplicationRemoveCertificate
+    template_name = 'generic/bulk_remove.html'
+
+    def post(self, request, pk):
+
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+
+        if '_confirm' in request.POST:
+            
+            form = self.form(request.POST)
+            if form.is_valid():
+                
+                certificate_pks = form.cleaned_data['pk']
+                with transaction.atomic():
+                    installedapplication.certificate.remove(*certificate_pks)
+                    installedapplication.save()
+
+                messages.success(request, _("Removed {count} certificates from applications {installedapplication}").format(
+                    count=len(certificate_pks),
+                    installedapplication=installedapplication
+                ))
+                return redirect(installedapplication.get_absolute_url())
+        else:
+            form = self.form(initial={'pk': request.POST.getlist('pk')})
+
+        selected_objects = Certificate.objects.filter(pk__in=form.initial['pk'])
+        certificate_table = CertificateTable(list(selected_objects), orderable=False)
+        certificate_table.configure(request)
+
+        return render(request, self.template_name, {
+            'form': form,
+            'parent_obj': installedapplication,
+            'table': certificate_table,
+            'obj_type_plural': 'certificates',
+            'return_url': installedapplication.get_absolute_url(),
+        })
     
 @register_model_view(InstalledApplication, name='device')
 class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):

@@ -4,6 +4,7 @@ from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
 from adestis_netbox_applications.models.application import InstalledApplication, DeviceAssignment, InstalledApplicationStatusChoices
 from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.models.application_types import *
+from adestis_netbox_certificate_management.models import Certificate
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
 from utilities.forms.fields import (
@@ -30,10 +31,12 @@ __all__ = (
     'InstalledApplicationAssignClusterForm',
     'InstalledApplicationAssignClusterGroupForm',
     'InstalledApplicationAssignVirtualMachineForm',
+    'InstalledApplicationAssignCertificateForm',
     'InstalledApplicationRemoveDevice',
     'InstalledApplicationRemoveCluster',
     'InstalledApplicationRemoveClusterGroup',
     'InstalledApplicationRemoveVirtualMachine',
+    'InstalledApplicationRemoveCertificate',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -513,6 +516,30 @@ class InstalledApplicationAssignVirtualMachineForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.fields['virtual_machine'].choices = []
+        
+class InstalledApplicationAssignCertificateForm(forms.Form):
+    certificate = DynamicModelMultipleChoiceField(
+        label=_('Certificate'),
+        queryset=Certificate.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'certificate',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.certificate = DynamicModelMultipleChoiceField(
+            label=_('Certificate'),
+            queryset=Certificate.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['certificate'].choices = []
     
 class InstalledApplicationRemoveDevice(ConfirmationForm):
     pk = forms.ModelMultipleChoiceField(
@@ -535,5 +562,11 @@ class InstalledApplicationRemoveClusterGroup(ConfirmationForm):
 class InstalledApplicationRemoveVirtualMachine(ConfirmationForm):
     pk = forms.ModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveCertificate(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Certificate.objects.all(),
         widget=forms.MultipleHiddenInput()
     )
