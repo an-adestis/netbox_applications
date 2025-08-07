@@ -58,6 +58,7 @@ services:
 
   # postgres
   postgres:
+    container_name: netbox-postgres
     image: docker.io/postgres:16-alpine
     env_file: env/postgres.env
     healthcheck:

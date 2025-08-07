@@ -1,0 +1,46 @@
+{% extends 'generic/object.html' %}
+{% load buttons %}
+{% load static %}
+{% load helpers %}
+{% load plugins %}
+{% load i18n %}
+
+{% block extra_controls %}
+  {% if perms.adestis_netbox_applications.installedapplication_add %}
+    <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_add' %}?application_types={{ object.pk }}" class="btn btn-primary">
+      <span class="mdi mdi-plus-thick" aria-hidden="true"></span> {% trans "Add Application" %}
+    </a>
+  {% endif %}
+{% endblock extra_controls %} 
+
+{% load render_table from django_tables2 %}
+{% block content %}
+  <div class="row my-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Application Types</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope='row'>Name</th>
+              <td>{% if object.name %}
+                {{ object.name|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/related_objects.html' %}
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html'%}
+      {% plugin_right_page object %}
+    </div>
+  </div>
+
+{% endblock content %}

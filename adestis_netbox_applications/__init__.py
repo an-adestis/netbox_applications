@@ -2,9 +2,9 @@ from netbox.plugins import PluginConfig
 
 class AdestisApplicationsConfig(PluginConfig):
     name = 'adestis_netbox_applications'
-    verbose_name = 'Applications'
+    verbose_name = 'Application Management'
     description = 'A NetBox plugin for managing applications.'
-    version = '1.0.2'
+    version = '1.0.18'
     author = 'ADESTIS GmbH'
     author_email = 'pypi@adestis.de'
     base_url = 'applications'

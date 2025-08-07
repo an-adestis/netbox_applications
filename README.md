@@ -1,38 +1,43 @@
 # Netbox Application Plugin
 
-Netbox Plugin for Application related objects documentation.
+The **NetBox Application Plugin** extends NetBox with the ability to manage applications and link them to various existing NetBox objects.
+
 ## Features
 
-This plugin provide following Model:
-* Applications
+- Manage applications directly within NetBox
+- Flexible association of applications with existing NetBox objects
 
-## Compatibility
-
-|               |           |
-|---------------|-----------|
-| NetBox 3.4.x  | >= 0.9.0  |
-
-
-## Installation
-
-The plugin is available as a Python package in pypi and can be installed with pip  
-
-```
-pip install adestis_netbox_applications
-```
-Enable the plugin in /etc/netbox/config/configuration.py:
-```
-PLUGINS = ['adestis_netbox_applications']
-```
-Restart NetBox and add `adestis_netbox_applications` to your local_requirements.txt
-
-See [NetBox Documentation](https://docs.netbox.dev/en/stable/plugins/#installing-plugins) for details
+This plugin provide following Models:
+- Application
+- Software
+- Application Type
 
 
 ## Screenshots
 
-Applications
-![Add](./docs/Images/image.png)
+![Applications Details](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/applications01.png))
 
-Applications
-![Results](./docs/Images/image-1.png)
+![Applications View](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/applications02.png)
+
+![Software Details](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/software01.png)
+
+![Software View](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/software02.png)
+
+## Compatibility
+
+> **Note**: This plugin depends on the [`adestis-netbox-certificate-management`](https://pypi.org/project/adestis-netbox-certificate-management/) plugin.  
+> Therefore, its compatibility is directly tied to the NetBox version used in the base image.
+
+The plugin is developed and tested using the following base image:
+
+```dockerfile
+ARG FROM_TAG=v4.2.9-3.2.1  # NetBox v4.2.9
+```
+
+## Installation
+
+The plugin is available on PyPI and can be installed via pip:
+
+```bash
+pip install adestis-netbox-applications
+```

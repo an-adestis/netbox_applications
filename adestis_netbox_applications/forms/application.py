@@ -1,43 +1,114 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.application import InstalledApplication, InstalledApplicationStatusChoices
+from adestis_netbox_applications.models.application import InstalledApplication, DeviceAssignment, InstalledApplicationStatusChoices
+from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.application_types import *
+from adestis_netbox_certificate_management.models import Certificate
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
 from utilities.forms.fields import (
     TagFilterField,
     CSVModelChoiceField,
+    CSVModelMultipleChoiceField,
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
 )
-from tenancy.models import Tenant, TenantGroup
+import django_filters
+from utilities.forms import ConfirmationForm
+from utilities.forms.widgets import DatePicker
+from tenancy.models import Tenant, TenantGroup, Contact, ContactGroup
 from dcim.models import *
 from virtualization.models import *
+from adestis_netbox_applications.models.software import *
 
 __all__ = (
     'InstalledApplicationForm',
     'InstalledApplicationFilterForm',
     'InstalledApplicationBulkEditForm',
     'InstalledApplicationCSVForm',
+    'InstalledApplicationAssignDeviceForm',
+    'InstalledApplicationAssignClusterForm',
+    'InstalledApplicationAssignClusterGroupForm',
+    'InstalledApplicationAssignVirtualMachineForm',
+    'InstalledApplicationAssignCertificateForm',
+    'InstalledApplicationRemoveDevice',
+    'InstalledApplicationRemoveCluster',
+    'InstalledApplicationRemoveClusterGroup',
+    'InstalledApplicationRemoveVirtualMachine',
+    'InstalledApplicationRemoveCertificate',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
+    
+    tenant_group = DynamicModelChoiceField(
+        queryset=TenantGroup.objects.all(),
+        required=False,
+        null_option='None',
+    )
+
+    tenant = DynamicModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        query_params={
+            'group_id': '$tenant_group'
+        },
+    )
+
+    cluster_group = DynamicModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        help_text=_("Cluster Group"),
+    )
+
+    cluster = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        required=False,
+        query_params={
+            'group_id': '$cluster_group',
+        },
+        help_text=_("Cluster"),
+    )
+    
+    device = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        query_params={
+            'cluster_id': '$cluster',
+        },
+        help_text=_("Device"),
+    )
+    
+    virtual_machine = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        null_option='None',
+        query_params={
+            'cluster_id': '$cluster',
+            'device_id': '$device',
+        },
+        help_text=_("Virtual Machine"),
+    )
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', name=_('Application')),
+        FieldSet('name', 'application_types', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
         FieldSet('tenant_group', 'tenant',  name=_('Tenant')), 
-        FieldSet('manufacturer', 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),   
+        FieldSet('cluster_group', 'cluster', 'virtual_machine',  name=_('Virtualization')),   
         FieldSet('device', name=_('Device'))
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'description', 'url', 'tags', 'status', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'comments', 'version']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'status_date', 'tenant', 'virtual_machine', 'device', 'cluster_group', 'cluster', 'tenant_group', 'comments', 'software', 'application_types', 'version']
         
         help_texts = {
             'status': "Example text",
         }
-
+        
+        widgets = {
+            'status_date': DatePicker(),
+        }
+        
 class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
         queryset=InstalledApplication.objects.all(),
@@ -62,15 +133,14 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("URL")
     )
     
-    version = forms.CharField(
-        max_length=200,
-        required=False,
-        label=_("Version")
-    )
-
     status = forms.ChoiceField(
         required=False,
         choices=InstalledApplicationStatusChoices,
+    )
+    
+    status_date = forms.DateField(
+        required=False,
+        widget=DatePicker
     )
     
     description = forms.CharField(
@@ -79,53 +149,80 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Description"),
     )
     
-    virtual_machine = DynamicModelChoiceField(
-        queryset=VirtualMachine.objects.all(),
-        required = False,
-        label = ("Virtual Machines")
+    version = forms.CharField(
+        max_length=200,
+        required=False,
+        label=_("Version")
     )
     
-    device = DynamicModelChoiceField(
+    virtual_machine = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required = False,
+        label = ("Virtual Machines"),
+        null_option='None'
+    )
+
+    device = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required = False,
-        label =_("Device")
+        label =_("Devices"),
+        null_option='None'
     )
     
     tenant_group = DynamicModelChoiceField(
         queryset=TenantGroup.objects.all(),
         required = False,
         label=_("Tenant Group"),
+        initial_params={
+            'tenants': '$tenant'
+        }
     )
     tenant = DynamicModelChoiceField(
         queryset=Tenant.objects.all(),
         required = False,
         label=_("Tenant"),
+        query_params={
+            'group_id': '$tenant_group'
+        },
     )
     
-    manufacturer = DynamicModelChoiceField(
-        queryset=Manufacturer.objects.all(),
-        required = False,
-        label=_("Manufacturer")
+    software = DynamicModelChoiceField(
+        queryset=Software.objects.all(),
+        required= False,
+        label=_('Software'),
+    )
+    
+    application_types = DynamicModelChoiceField(
+        queryset=InstalledApplicationTypes.objects.all(),
+        required= False,
+        label=_('Application Types'),
     )
     
     cluster_group = DynamicModelChoiceField(
         queryset=ClusterGroup.objects.all(),
         required = False,
-        label=_("Cluster Group")
+        label=_("Cluster Groups"),
+        initial_params={
+            'clusters': '$cluster'
+        }
     )
     
-    cluster = DynamicModelChoiceField(
+    cluster = DynamicModelMultipleChoiceField(
         queryset=Cluster.objects.all(),
         required = False,
-        label=_("Cluster")
+        label=_("Clusters"),
+        query_params={
+            'group_id': '$cluster_group',
+        },
+        null_option='None'
     )
     
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'version', 'comments', name=_('Application')),
+        FieldSet('name', 'application_types', 'description', 'software', 'version', 'url', 'tags', 'status', 'status_date', 'comments', name=_('Application')),
         FieldSet('tenant_group', 'tenant', name=_('Tenant')),
-        FieldSet('manufacturer', 'cluster', 'cluster_group', 'virtual_machine', name=_('Virtualization')),
+        FieldSet('cluster_group', 'cluster', 'virtual_machine', name=_('Virtualization')),
         FieldSet('device', name=_('Device'))
     )
 
@@ -138,14 +235,30 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     model = InstalledApplication
 
     fieldsets = (
-        FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'status', name=_('Application')),
-        FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
-        FieldSet('manufacturer_id', 'cluster_id', 'cluster_group_id', 'virtual_machine_id', name=_('Virtualization')),
-        FieldSet('device_id', name=_('Device'))
+        FieldSet('name', 'application_types_id', 'description', 'version', 'software_id', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
+        FieldSet('tenant_group_id', 'tenant_id',  name=_('Tenant')), 
+        FieldSet('cluster_group', 'cluster', 'virtual_machine', name=_('Virtualization')),   
+        FieldSet('device', name=_('Device'))
     )
 
     index = forms.IntegerField(
+        required=False
+    )
+    
+    name = forms.CharField(
+        max_length=200,
+        required=False
+    )
+    
+    status_date = forms.DateField(
+        required=False
+    )
+    
+    version = forms.CharField(
+        required=False
+    )
+    
+    url = forms.URLField(
         required=False
     )
 
@@ -155,65 +268,57 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
         label=_('Status')
     )
     
-    device_id = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required=False,
-        null_option='None',
-        query_params={
-            'cluster_id': '$cluster_id',
-        },
-        label=_('Device')
-    )
-    
-    virtual_machine_id = DynamicModelMultipleChoiceField(
+    virtual_machine = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
+        label=_('Virtual Machine'),
         required=False,
-        null_option='None',
-        query_params={
-            'cluster_id': '$cluster_id',
-            'device_id': '$device_id',
-        },
-        label=_('Virtual Machine')
     )
     
-    cluster_group_id = DynamicModelMultipleChoiceField(
+    cluster_group = DynamicModelMultipleChoiceField(
         queryset=ClusterGroup.objects.all(),
+        label=_('Cluster Group'),
         required=False,
-        null_option='None',
-        label=_('Cluster Group')
-    )
-
-    cluster_id = DynamicModelMultipleChoiceField(
-        queryset=Cluster.objects.all(),
-        required=False,
-        null_option='None',
-        query_params={
-            'group_id': '$cluster_group_id'
-        },
-        label=_('Cluster')
     )
     
-    manufacturer_id = DynamicModelMultipleChoiceField(
-        queryset=Manufacturer.objects.all(),
+    cluster = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        label=_('Cluster'),
+        query_params={
+            'group_id': '$cluster_group',
+        },
         required=False,
-        null_option='None',   
-        label=_('Manufacturer')
+    )
+    
+    device = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        label=_('Device'),
+        required=False,
+    )
+    
+    software_id = DynamicModelMultipleChoiceField(
+        queryset=Software.objects.all(),
+        required=False,
+        label=_('Software')
+    )
+    
+    application_types_id = DynamicModelMultipleChoiceField(
+        queryset=InstalledApplicationTypes.objects.all(),
+        required=False,
+        label=_('Application Types')
     )
     
     tenant_id = DynamicModelMultipleChoiceField(
         queryset=Tenant.objects.all(),
         required=False,
-        null_option='None',
         query_params={
             'group_id': '$tenant_group_id'
         },
         label=_('Tenant')
     )
     
-    tenant_group_id = DynamicModelChoiceField(
+    tenant_group_id = DynamicModelMultipleChoiceField(
         queryset=TenantGroup.objects.all(),
         required=False,
-        null_option='None',
         label=_('Tenant Group')
     )
 
@@ -225,7 +330,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     status = CSVChoiceField(
         choices=InstalledApplicationStatusChoices,
         help_text=_('Status'),
-        required=True,
+        required=False,
     )
     
     tenant_group = CSVModelChoiceField(
@@ -233,7 +338,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=TenantGroup.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=('Assigned tenant group')
+        help_text=('Name of assigned tenant group')
     )
     
     tenant = CSVModelChoiceField(
@@ -241,53 +346,227 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         queryset=Tenant.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Name of assigned tenant')
     )
     
-    manufacturer = CSVModelChoiceField(
-        label=_("Manufacturer"),
-        queryset=Manufacturer.objects.all(),
+    software = CSVModelChoiceField(
+        label=_('Software'),
+        queryset=Software.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned manufacturer')
+        help_text=_('Name of assigned software')
+    )
+    
+    application_types = CSVModelChoiceField(
+        label=_('Application Types'),
+        queryset=InstalledApplicationTypes.objects.all(),
+        required=True,
+        to_field_name='name',
+        help_text=_('Name of assigned application type')
     )
     
     cluster_group = CSVModelChoiceField(
-        label=_('Cluster Group'),
+        label=_('Cluster Groups'),
         queryset=ClusterGroup.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned cluster group')
+        help_text=_('Name of assigned cluster group')
     )
     
-    cluster = CSVModelChoiceField(
-        label=_('Cluster'),
+    cluster = CSVModelMultipleChoiceField(
+        label=_('Clusters'),
         queryset=Cluster.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned cluster')
+        help_text=_('Name of assigned cluster')
     )
     
-    virtual_machine = CSVModelChoiceField(
-        label=_('Virtual Machine'),
+    virtual_machine = CSVModelMultipleChoiceField(
+        label=_('Virtual Machines'),
         queryset=VirtualMachine.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned virtual machine')
+        help_text=_('Name of assigned virtual machine')
     )
     
-    device = CSVModelChoiceField(
-        label=_('Device'),
+    device = CSVModelMultipleChoiceField(
+        label=_('Devices'),
         queryset=Device.objects.all(),
         required=True,
         to_field_name='name',
-        help_text=_('Assigned device')
+        help_text=_('Name of assigned device')
     )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name' ,'status',  'url', 'tenant', 'tenant_group', 'manufacturer', 'cluster', 'cluster_group', 'virtual_machine', 'device', 'description',  'tags', 'comments', 'version']
+        fields = ['name', 'application_types', 'status', 'description', 'version', 'software', 'status_date', 'url', 'tenant', 'tenant_group', 'virtual_machine', 'cluster', 'device', 'tags', 'comments' ]
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
-
+class InstalledApplicationAssignDeviceForm(forms.Form):
     
+    device = DynamicModelMultipleChoiceField(
+        label=_('Devices'),
+        queryset=Device.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'device',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.device = DynamicModelMultipleChoiceField(
+            label=_('Devices'),
+            queryset=Device.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['device'].choices = []
+        
+class InstalledApplicationAssignClusterForm(forms.Form):
+    
+    cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset= ClusterGroup.objects.all()
+        )
+    
+    cluster = DynamicModelMultipleChoiceField(
+        label=_('Clusters'),
+        queryset=Cluster.objects.all(),
+        query_params={
+            'group_id': '$cluster_group',
+        },)
+
+    class Meta:
+        fields = [
+            'cluster_group', 'cluster',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+        
+        self.cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset= ClusterGroup.objects.all()
+        )
+
+        self.cluster = DynamicModelMultipleChoiceField(
+            label=_('Clusters'),
+            queryset=Cluster.objects.all(),
+            query_params={
+            'group_id': '$cluster_group',
+        },
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['cluster'].choices = []
+        
+class InstalledApplicationAssignClusterGroupForm(forms.Form):
+    
+    cluster_group = DynamicModelMultipleChoiceField(
+        label=_('Cluster Groups'),
+        queryset=ClusterGroup.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'cluster_group',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset=ClusterGroup.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['cluster_group'].choices = []
+        
+class InstalledApplicationAssignVirtualMachineForm(forms.Form):
+    
+    virtual_machine = DynamicModelMultipleChoiceField(
+        label=_('Virtual Machines'),
+        queryset=VirtualMachine.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'virtual_machine',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.virtual_machine = DynamicModelMultipleChoiceField(
+            label=_('Virtual Machines'),
+            queryset=VirtualMachine.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['virtual_machine'].choices = []
+        
+class InstalledApplicationAssignCertificateForm(forms.Form):
+    certificate = DynamicModelMultipleChoiceField(
+        label=_('Certificate'),
+        queryset=Certificate.objects.all()
+    )
+
+    class Meta:
+        fields = [
+            'certificate',
+        ]
+
+    def __init__(self, installedapplication,*args, **kwargs):
+
+        self.installedapplication = installedapplication
+
+        self.certificate = DynamicModelMultipleChoiceField(
+            label=_('Certificate'),
+            queryset=Certificate.objects.all()
+        )        
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['certificate'].choices = []
+    
+class InstalledApplicationRemoveDevice(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    ) 
+    
+class InstalledApplicationRemoveCluster(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveClusterGroup(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=ClusterGroup.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveVirtualMachine(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveCertificate(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=Certificate.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
