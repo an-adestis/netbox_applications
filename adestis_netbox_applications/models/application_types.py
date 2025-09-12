@@ -34,6 +34,7 @@ class InstalledApplicationTypes(OrganizationalModel):
     class Meta:
         verbose_name_plural = "Application Type"
         verbose_name = 'Application Types'
+        ordering = ('name',)
 
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:installedapplicationtypes', args=[self.pk])

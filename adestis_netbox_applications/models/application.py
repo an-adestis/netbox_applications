@@ -9,6 +9,7 @@ from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.models.application_types import *
+from adestis_netbox_certificate_management.models import *
 
 __all__ = (
     'InstalledApplicationStatusChoices',
@@ -147,7 +148,7 @@ class InstalledApplication(NetBoxModel):
     class Meta:
         verbose_name_plural = "Applications"
         verbose_name = 'Application'
-        ordering = ('contact',)
+        ordering = ('name',)
 
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])

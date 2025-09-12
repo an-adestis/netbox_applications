@@ -12,6 +12,17 @@
   {{ block.super }}
 {% endblock %}
 
+{% block bulk_edit_controls %}
+    {{ block.super }}
+    {% if 'bulk_rename' in actions %}
+        <button type="submit" name="_rename"
+                {% formaction %}="{% url 'netbox_certificate:certificate_bulk_rename' %}?return_url={{ return_url }}"
+                class="btn btn-outline-warning">
+            <i class="mdi mdi-pencil-outline" aria-hidden="true"></i> {% trans "Rename" %}
+        </button>
+    {% endif %}
+{% endblock bulk_edit_controls %}
+
 {% block bulk_delete_controls %}
     {{ block.super }}
     {% if 'bulk_remove_certificate' in actions %}

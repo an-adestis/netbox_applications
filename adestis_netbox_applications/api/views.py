@@ -8,9 +8,7 @@ from netbox.api.viewsets import NetBoxModelViewSet
 from .serializers import InstalledApplicationSerializer, SoftwareSerializer, InstalledApplicationTypesSerializer
 
 class InstalledApplicationViewSet(NetBoxModelViewSet):
-    queryset = InstalledApplication.objects.prefetch_related(
-        'tags', 'virtual_machine', 'device', 'cluster', 'cluster_group',
-    )
+    queryset = InstalledApplication.objects.order_by('name') 
     serializer_class = InstalledApplicationSerializer
     filterset_class = InstalledApplicationFilterSet
     

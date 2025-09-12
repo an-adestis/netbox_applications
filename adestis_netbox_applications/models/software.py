@@ -62,6 +62,7 @@ class Software(NetBoxModel):
     class Meta:
         verbose_name_plural = "Software"
         verbose_name = 'Software'
+        ordering = ('name',)
 
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:software', args=[self.pk])

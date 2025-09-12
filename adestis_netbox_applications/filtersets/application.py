@@ -111,7 +111,7 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     )
     
     application_types_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=Software.objects.all(),
+        queryset=InstalledApplicationTypes.objects.all(),
         label=_('Application Types (ID)'),
     )
     

@@ -15,7 +15,7 @@ This plugin provide following Models:
 
 ## Screenshots
 
-![Applications Details](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/applications01.png))
+![Applications Details](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/applications01.png)
 
 ![Applications View](https://github.com/an-adestis/netbox_applications/blob/92b2ea248759877e923063c1a18628832442371f/applications02.png)
 
@@ -31,7 +31,7 @@ This plugin provide following Models:
 The plugin is developed and tested using the following base image:
 
 ```dockerfile
-ARG FROM_TAG=v4.2.9-3.2.1  # NetBox v4.2.9
+ARG FROM_TAG=v4.3.7-3.3.0  # NetBox v4.3.7
 ```
 
 ## Installation
