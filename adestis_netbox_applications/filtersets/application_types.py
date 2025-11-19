@@ -46,4 +46,8 @@ class InstalledApplicationTypesFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(installedapplication__name__icontains=value)
+        )
 

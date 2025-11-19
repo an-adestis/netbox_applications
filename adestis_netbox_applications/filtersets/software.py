@@ -41,4 +41,9 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(status__icontains=value) |
+            Q(manufacturer__name__icontains=value) |
+            Q(url__icontains=value)
+        )

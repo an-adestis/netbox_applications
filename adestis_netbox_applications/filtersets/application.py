@@ -132,6 +132,17 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             return queryset
         return queryset.filter(
             Q(name__icontains=value) |
-            Q(system_url__icontains=value) |
-            Q(system_status__icontains=value)
+            Q(status__icontains=value) |
+            Q(status_date__icontains=value) |
+            Q(version__icontains=value) |
+            Q(url__icontains=value) |
+            Q(contact__name__icontains=value) |
+            Q(tenant__name__icontains=value) |
+            Q(tenant_group__name__icontains=value) |
+            Q(virtual_machine__name__icontains=value) |
+            Q(device__name__icontains=value) |
+            Q(cluster__name__icontains=value) |
+            Q(cluster_group__name__icontains=value) |
+            Q(application_types__name__icontains=value) |
+            Q(software__name__icontains=value) 
         )
