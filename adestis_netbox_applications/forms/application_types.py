@@ -25,13 +25,10 @@ __all__ = (
 
 class InstalledApplicationTypesForm(NetBoxModelForm):
 
-    slug = SlugField(
-        label=_('Slug'),
-        slug_source='model'
-    )
+    slug = SlugField()
     
     fieldsets = (
-        FieldSet('name', 'slug', 'tags',   name=_('Application Types')),
+        FieldSet('name', 'slug', 'tags', name=_('Application Types')),
     )
 
     class Meta:
@@ -51,10 +48,7 @@ class InstalledApplicationTypesBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Name"),
     )
     
-    slug = SlugField(
-        label=_('Slug'),
-        slug_source='model'
-    )
+    slug = SlugField()
     
     model = InstalledApplicationTypes
 

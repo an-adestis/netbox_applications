@@ -20,7 +20,8 @@ class InstalledApplicationTypes(OrganizationalModel):
     
     slug = django_models.SlugField(
         verbose_name='Slug',
-        max_length=100
+        max_length=100,
+        unique=True
     )
     
     installedapplication = django_models.ForeignKey(

@@ -50,7 +50,6 @@ class Software(NetBoxModel):
         max_length=300
     )
     
-    
     manufacturer = django_models.ForeignKey(
         to= 'dcim.Manufacturer',
         on_delete= django_models.PROTECT,
