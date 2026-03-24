@@ -12,6 +12,7 @@ from utilities.forms.fields import (
     SlugField,
 )
 from utilities.forms.widgets import DatePicker
+from utilities.forms import widgets
 from dcim.models import *
 from virtualization.models import *
 
@@ -25,7 +26,9 @@ __all__ = (
 
 class InstalledApplicationTypesForm(NetBoxModelForm):
 
-    slug = SlugField()
+    slug = SlugField(
+        widget = widgets.SlugWidget
+    )
     
     fieldsets = (
         FieldSet('name', 'slug', 'tags', name=_('Application Types')),
@@ -48,7 +51,9 @@ class InstalledApplicationTypesBulkEditForm(NetBoxModelBulkEditForm):
         label=_("Name"),
     )
     
-    slug = SlugField()
+    slug = SlugField(
+        widget = widgets.SlugWidget
+    )
     
     model = InstalledApplicationTypes
 

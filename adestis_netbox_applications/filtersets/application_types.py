@@ -48,6 +48,7 @@ class InstalledApplicationTypesFilterSet(NetBoxModelFilterSet):
             return queryset
         return queryset.filter(
             Q(name__icontains=value) |
-            Q(installedapplication__name__icontains=value)
-        )
+            Q(installedapplication__name__icontains=value) |
+            Q(slug__icontains=value)
+        ).distinct()
 

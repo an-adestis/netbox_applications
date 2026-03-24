@@ -15,6 +15,7 @@ from dcim.models import *
 from virtualization.models import *
 
 
+
 __all__ = (
     'SoftwareForm',
     'SoftwareFilterForm',
@@ -25,8 +26,7 @@ __all__ = (
 class SoftwareForm(NetBoxModelForm):
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status',  name=_('Software')),
-        FieldSet('manufacturer',  name=_('Virtualization')),   
+        FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
     )
 
     class Meta:
@@ -62,18 +62,23 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         choices=SoftwareStatusChoices,
     )
     
-    
     description = forms.CharField(
         max_length=500,
         required=False,
         label=_("Description"),
     )
     
+    manufacturer = DynamicModelChoiceField(
+        queryset=Manufacturer.objects.all(),
+        required=False,
+        null_option='None',   
+        label=_('Manufacturer')
+    )
+    
     model = Software
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', name=_('Software')),
-        FieldSet('manufacturer',  name=_('Virtualization')),
+        FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
     )
 
     nullable_fields = [
@@ -86,8 +91,7 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'status',  name=_('Software')),
-        FieldSet('manufacturer_id',  name=_('Virtualization')),
+        FieldSet('name', 'url', 'tag', 'status', 'manufacturer_id',  name=_('Software')),
     )
 
     index = forms.IntegerField(
@@ -109,7 +113,6 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
 
     tag = TagFilterField(model)
 
-    
 class SoftwareCSVForm(NetBoxModelImportForm):
 
     status = CSVChoiceField(
@@ -121,7 +124,7 @@ class SoftwareCSVForm(NetBoxModelImportForm):
     manufacturer = CSVModelChoiceField(
         label=_("Manufacturer"),
         queryset=Manufacturer.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Assigned manufacturer')
     )
@@ -130,6 +133,3 @@ class SoftwareCSVForm(NetBoxModelImportForm):
         model = Software
         fields = ['name' ,'status', 'url', 'manufacturer', 'description', 'tags']
         default_return_url = 'plugins:adestis_netbox_applications:Software_list'
-
-
-    

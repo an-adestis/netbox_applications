@@ -30,6 +30,15 @@
                   {% endif %}
               </td>
             </tr>
+            <tr>
+              <th scope='row'>Slug</th>
+              <td>{% if object.slug %}
+                {{ object.slug|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
           </table>
         </div>
       </div>

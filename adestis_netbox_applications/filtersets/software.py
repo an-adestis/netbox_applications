@@ -46,4 +46,4 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
             Q(status__icontains=value) |
             Q(manufacturer__name__icontains=value) |
             Q(url__icontains=value)
-        )
+        ).distinct()

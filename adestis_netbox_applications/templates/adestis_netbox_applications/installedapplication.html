@@ -29,7 +29,7 @@
             </tr>
             <tr>
               <th scope='row'>Application Types</th>
-              <td>{% if object.software %}
+              <td>{% if object.application_types %}
                 <a href="{% url 'plugins:adestis_netbox_applications:installedapplicationtypes' object.application_types.id %}"> {{ object.application_types.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>

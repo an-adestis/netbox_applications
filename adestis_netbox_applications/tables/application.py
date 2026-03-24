@@ -30,20 +30,20 @@ class InstalledApplicationTable(NetBoxTable):
         linkify=True
     )
     
-    virtual_machine = tables.Column(
-        linkify=True
+    virtual_machine = columns.ManyToManyColumn(
+        linkify_item=True
     )
     
-    cluster_group = tables.Column(
-        linkify=True
+    cluster_group = columns.ManyToManyColumn(
+        linkify_item=True
     )
         
-    cluster = tables.Column(
-        linkify=True
+    cluster = columns.ManyToManyColumn(
+        linkify_item=True
     )
         
-    device = tables.Column(
-        linkify=True
+    device = columns.ManyToManyColumn(
+        linkify_item=True
     )
     
     software = tables.Column(

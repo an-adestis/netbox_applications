@@ -11,7 +11,6 @@ class InstalledApplicationTypesTable(NetBoxTable):
         linkify=True
     )
 
-    
     installedapplication = tables.Column(
         linkify=True
     )

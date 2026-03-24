@@ -336,7 +336,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     tenant_group = CSVModelChoiceField(
         label=_('Tenant Group'),
         queryset=TenantGroup.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=('Name of assigned tenant group')
     )
@@ -344,7 +344,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned tenant')
     )
@@ -352,7 +352,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     software = CSVModelChoiceField(
         label=_('Software'),
         queryset=Software.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned software')
     )
@@ -360,15 +360,15 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     application_types = CSVModelChoiceField(
         label=_('Application Types'),
         queryset=InstalledApplicationTypes.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned application type')
     )
     
-    cluster_group = CSVModelChoiceField(
+    cluster_group = CSVModelMultipleChoiceField(
         label=_('Cluster Groups'),
         queryset=ClusterGroup.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned cluster group')
     )
@@ -376,7 +376,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     cluster = CSVModelMultipleChoiceField(
         label=_('Clusters'),
         queryset=Cluster.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned cluster')
     )
@@ -384,7 +384,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     virtual_machine = CSVModelMultipleChoiceField(
         label=_('Virtual Machines'),
         queryset=VirtualMachine.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned virtual machine')
     )
@@ -392,7 +392,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     device = CSVModelMultipleChoiceField(
         label=_('Devices'),
         queryset=Device.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Name of assigned device')
     )

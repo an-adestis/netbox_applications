@@ -145,4 +145,4 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             Q(cluster_group__name__icontains=value) |
             Q(application_types__name__icontains=value) |
             Q(software__name__icontains=value) 
-        )
+        ).distinct()

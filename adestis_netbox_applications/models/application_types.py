@@ -7,6 +7,7 @@ from utilities.choices import ChoiceSet
 from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
+from utilities.forms import widgets
 
 __all__ = (
     'InstalledApplicationTypes',
@@ -21,7 +22,8 @@ class InstalledApplicationTypes(OrganizationalModel):
     slug = django_models.SlugField(
         verbose_name='Slug',
         max_length=100,
-        unique=True
+        unique=True,
+        # widget = widgets.SlugWidget
     )
     
     installedapplication = django_models.ForeignKey(
