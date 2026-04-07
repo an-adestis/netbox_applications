@@ -12,8 +12,7 @@ from utilities.urls import get_model_urls
 app_name = 'adestis_netbox_applications'
 
 urlpatterns = (
-
-    # Applications
+     # Applications
     path('applications/', InstalledApplicationListView.as_view(),
          name='installedapplication_list'),
     path('applications/devices/', DeviceAffectedInstalledApplicationView.as_view(),
@@ -52,8 +51,6 @@ urlpatterns = (
         'model': InstalledApplication
     }),
     
-     # path('applications/certificates/', InstalledApplicationAffectedCertificateView.as_view(),
-     #     name='certificateapplications_list'),
     
     #Software
     path('software/', SoftwareListView.as_view(),

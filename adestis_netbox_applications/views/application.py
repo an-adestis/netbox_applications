@@ -239,8 +239,6 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -346,8 +344,6 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # # 'bulk_edit': {'change'},
         'bulk_remove_cluster': {'change'},
     }
 
@@ -369,8 +365,6 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -480,8 +474,6 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_cluster_group': {'change'},
     }
 
@@ -503,8 +495,6 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
@@ -611,8 +601,6 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_virtual_machine': {'change'},
     }
 
@@ -634,8 +622,6 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     actions = {
         'add': {'add'},
         'export': {'view'},
-        # 'bulk_import': {'add'},
-        # 'bulk_edit': {'change'},
         'bulk_remove_installedapplication': {'change'},
     }
 
