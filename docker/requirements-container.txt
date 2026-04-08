@@ -5,6 +5,7 @@ python3-saml==1.16.0
 --no-binary lxml
 --no-binary xmlsec
 sentry-sdk[django]==2.20.0
+adestis-netbox-certificate-management==1.0.20
 # === plugins ===
 # adestis-netbox-plugin-account-management==1.9.2
 # netbox-bgp~=0.15.0

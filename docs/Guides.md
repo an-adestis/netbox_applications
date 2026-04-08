@@ -94,7 +94,7 @@
 3. Um Migrationen zu erstellen, führe im Terminal den Befehl:
 
    ```shell
-   docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications
+   docker-compose run netbox sh -c "python manage.py makemigrations adestis_netbox_applications"
    ```
 
 > **Erfolg!** 🎉

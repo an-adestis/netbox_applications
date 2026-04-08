@@ -4,9 +4,9 @@
 {% load helpers %}
 {% load plugins %}
 {% load i18n %}
-{% block extra_controls %}
-{% endblock %}
+
 {% load render_table from django_tables2 %}
+
 {% block content %}
   <div class="row my-3">
     <div class="col col-md-6">
@@ -28,6 +28,25 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Application Types</th>
+              <td>{% if object.application_types %}
+                <a href="{% url 'plugins:adestis_netbox_applications:installedapplicationtypes' object.application_types.id %}"> {{ object.application_types.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope='row'>Status Date</th>
+              <td>
+                {% if object.status_date %}
+                  {{ object.status_date|date:"Y-m-d" }}  <!-- Datum im Format YYYY-MM-DD anzeigen -->
+                {% else %}
+                  <span class="text-muted">{% trans "None" %}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope='row'>Description</th>
               <td>{% if object.description %}
                 {{ object.description|markdown }}
@@ -37,9 +56,9 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>URL</th>
-              <td>{% if object.url %}
-                <a href= "{{ object.url }}" target="_blank"> {{ object.url|markdown }}</a>
+              <th scope='row'>Software</th>
+              <td>{% if object.software %}
+                <a href="{% url 'plugins:adestis_netbox_applications:software' object.software.id %}"> {{ object.software.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -55,18 +74,9 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Virtual Machine</th>
-              <td>{% if object.virtual_machine %}
-                <a href= "{% url 'virtualization:virtualmachine' object.virtual_machine.id %}"> {{ object.virtual_machine.name|markdown }} </a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Device</th>
-              <td>{% if object.device %}
-                <a href="{% url 'dcim:device' object.device.id %}"> {{ object.device.name|markdown }} </a>
+              <th scope='row'>URL</th>
+              <td>{% if object.url %}
+                <a href= "{{ object.url }}" target="_blank"> {{ object.url|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -90,33 +100,6 @@
                   {% endif %}
               </td>
             </tr>
-            <tr>
-              <th scope='row'>Manufacturer</th>
-              <td>{% if object.manufacturer %}
-                <a href="{% url 'dcim:manufacturer' object.manufacturer.id %}"> {{ object.manufacturer.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Cluster Group</th>
-              <td>{% if object.cluster_group %}
-                <a href="{% url 'virtualization:clustergroup' object.cluster_group.id %}"> {{ object.cluster_group.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Cluster</th>
-              <td>{% if object.cluster %}
-                <a href="{% url 'virtualization:cluster' object.cluster.id %}"> {{ object.cluster.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
           </table>
         </div>
       </div>
@@ -127,5 +110,4 @@
       {% include 'inc/panels/comments.html'%}
     </div>
   </div>
-
 {% endblock content %}
