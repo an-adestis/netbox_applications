@@ -100,6 +100,15 @@
                   {% endif %}
               </td>
             </tr>
+            <tr>
+              <th scope='row'>Contact Group</th>
+              <td>{% if object.contact_group %}
+                <a href="{% url 'tenancy:contactgroup' object.contact_group.id %}"> {{ object.contact_group.name|markdown }} </a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
           </table>
         </div>
       </div>

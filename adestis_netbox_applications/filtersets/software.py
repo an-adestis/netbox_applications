@@ -21,6 +21,30 @@ __all__ = (
 
 class SoftwareFilterSet(NetBoxModelFilterSet):
     
+    parent_software = django_filters.ModelMultipleChoiceFilter(
+        queryset=Software.objects.all(),
+        required = False, 
+        field_name = 'parent_software',
+        label=_('Parent Software (name)')
+    )
+    
+    contact = django_filters.ModelMultipleChoiceFilter(
+        field_name='contact',
+        queryset=Contact.objects.all()
+    )
+    
+    contact_group_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ContactGroup.objects.all(),
+        label=_('Container Group (ID)'),
+    )
+    
+    contact_group = DynamicModelMultipleChoiceField(
+        queryset=ContactGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Container Group')
+    )
+    
     manufacturer_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Manufacturer.objects.all(),
         label=_('Manufacturer (ID)'),
@@ -35,7 +59,7 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = Software
-        fields = ['id', 'status', 'name', 'url', 'manufacturer']
+        fields = ['id', 'status', 'name', 'parent_software', 'url', 'manufacturer',  'contact', 'contact_group', 'approval_status', 'approval_info',]
     
 
     def search(self, queryset, name, value):
@@ -45,5 +69,10 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
             Q(name__icontains=value) |
             Q(status__icontains=value) |
             Q(manufacturer__name__icontains=value) |
-            Q(url__icontains=value)
+            Q(url__icontains=value) |
+            Q(contact__name__icontains=value) |
+            Q(contact_group__name__icontains=value) |
+            Q(parent_software__name__icontains=value) |
+            Q(approval_status__icontains=value) |
+            Q(approval_info__icontains=value)
         ).distinct()

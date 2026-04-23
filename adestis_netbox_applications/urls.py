@@ -47,9 +47,16 @@ urlpatterns = (
          ClusterGroupAssignmentDeleteView.as_view(), name='clustergroupassignment'),
      path('applications/virtualmachines/<int:pk>/delete/',
          VirtualMachineAssignmentDeleteView.as_view(), name='virtualmachineassignment'),
+     path('applications/contacts/', ContactAffectedInstalledApplicationView.as_view(),
+         name='installedapplicationcontacts_list'),
+     path('applications/contacts/', InstalledApplicationAffectedContactView.as_view(),
+         name='certificatecontacts_list'),
     path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplication_changelog', kwargs={
         'model': InstalledApplication
     }),
+    
+    path('applications/successorapplications/', InstalledApplicationAffectedSuccessorApplicationView.as_view(),
+         name='successorapplications_list'),
     
     
     #Software

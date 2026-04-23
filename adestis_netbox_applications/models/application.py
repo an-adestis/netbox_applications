@@ -14,6 +14,7 @@ from adestis_netbox_certificate_management.models import *
 __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
+    'InstalledApplicationApprovalStatusChoises',
 )
 
 class InstalledApplicationStatusChoices(ChoiceSet):
@@ -33,6 +34,21 @@ class InstalledApplicationStatusChoices(ChoiceSet):
         (STATUS_REMOVED, 'Removed', 'gray'),
     ]
     
+class InstalledApplicationApprovalStatusChoises(ChoiceSet):
+    key = 'InstalledApplications.approval_status'
+    
+    NEEDS_APPROVAL = 'needs_approval'
+    VERSION_APPROVED = 'version_approved'
+    VERSION_CHANGED = 'version_changed'
+    NOT_APPROVAL = 'not_approved'
+    
+    CHOICES = [
+        (NEEDS_APPROVAL, 'Needs Approval', 'yellow'),
+        (VERSION_APPROVED, 'Version Approved', 'green'),
+        (VERSION_CHANGED, 'Version changed - needs Approval', 'cyan'),
+        (NOT_APPROVAL, 'Not Approved', 'red'),
+    ]
+    
 class InstalledApplication(NetBoxModel):
 
     status = django_models.CharField(
@@ -40,6 +56,25 @@ class InstalledApplication(NetBoxModel):
         choices=InstalledApplicationStatusChoices,
         verbose_name='Status',
         help_text='Status'
+    )
+    
+    approval_status = django_models.CharField(
+        choises = InstalledApplicationApprovalStatusChoises,
+        verbose_name = 'Approval Status',
+        help_text = 'Approval Status'
+    )
+    
+    parent_application = django_models.ForeignKey(
+        'self',
+        verbose_name='Parent Application',
+        on_delete = django_models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='parent_application'
+    )
+    
+    approval_info = django_models.TextField(
+        blank=True
     )
     
     status_date = django_models.DateField(
@@ -136,13 +171,21 @@ class InstalledApplication(NetBoxModel):
         verbose_name='Application Types'
     )
     
-    contact = django_models.ForeignKey(
+    contact_group = django_models.ForeignKey(
+        to = 'tenancy.ContactGroup',
+        on_delete = django_models.PROTECT,
+        related_name='installedapplication_contact_group',
+        verbose_name='Contact Group',
+        blank = True,
+        null = True,
+    )
+    
+    contact = django_models.ManyToManyField(
         to='tenancy.Contact',
-        on_delete=django_models.PROTECT,
         related_name='installedapplication_contact',
-        null=True,
+        blank = True,
         verbose_name='Contact',
-        help_text='Contact that uses the System'
+        help_text='Contact that uses the Application'
     )
  
     class Meta:
@@ -155,6 +198,7 @@ class InstalledApplication(NetBoxModel):
 
     def get_status_color(self):
         return InstalledApplicationStatusChoices.colors.get(self.status)
+        return InstalledApplicationApprovalStatusChoises.color.get(self.approval_status) 
     
     def __str__(self):
         return self.name 

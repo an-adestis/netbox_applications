@@ -13,12 +13,17 @@ from netbox.constants import DEFAULT_ACTION_PERMISSIONS
 from virtualization.models import *
 from virtualization.forms import *
 from virtualization.tables import *
+import django_tables2 as tables
 
 class InstalledApplicationTable(NetBoxTable):
     
     status = ChoiceFieldColumn()
+    
+    approval_status = ChoiceFieldColumn()
 
     comments = columns.MarkdownColumn()
+    
+    approval_info = columns.MarkdownColumn()
 
     tags = columns.TagColumn()
     
@@ -46,6 +51,14 @@ class InstalledApplicationTable(NetBoxTable):
         linkify_item=True
     )
     
+    contact = columns.ManyToManyColumn(
+        linkify_item=True
+    )
+    
+    contact_group = tables.Column(
+        linkify=True
+    )
+    
     software = tables.Column(
         linkify = True
     )
@@ -63,11 +76,14 @@ class InstalledApplicationTable(NetBoxTable):
     )
     
     status_date = columns.DateColumn()
-
+    
+    parent_application = tables.Column(
+        linkify=True
+    )
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
-        fields = ['name', 'application_types', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'comments', 'software', 'actions']
-        default_columns = [ 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'status', 'status_date' ]
+        fields = ['name', 'application_types', 'status', 'status_date', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster',  'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions']
+        default_columns = [ 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status', 'parent_application', ]
 
 class InstalledApplicationTableTab(InstalledApplicationTable):
     
@@ -76,8 +92,8 @@ class InstalledApplicationTableTab(InstalledApplicationTable):
     )
     
     class Meta(InstalledApplicationTable.Meta):
-        fields = ('name', 'application_types', 'status', 'status_date', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'comments', 'software', 'actions')
-        default_columns = ( 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'status', 'status_date' )
+        fields = ('name', 'application_types', 'status', 'status_date', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions')
+        default_columns = ( 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status', 'parent_application')
         
 class DeviceTableApplication(DeviceTable):
     actions = columns.ActionsColumn(
@@ -138,4 +154,17 @@ class VirtualMachineTableApplication(VirtualMachineTable):
         default_columns = [
             'pk', 'name', 'status', 'site', 'cluster', 'role', 'tenant', 'vcpus', 'memory', 'disk', 'primary_ip',
         ]
+        
+class ContactTableInstalledApplication(ContactTable):
+    
+    actions = columns.ActionsColumn(
+        actions=('edit', ),
+    )
+    
+    class Meta(ContactTable.Meta):
+        fields = (
+            'pk', 'name', 'groups', 'title', 'phone', 'email', 'address', 'link', 'description', 'comments',
+            'assignment_count', 'tags', 'created', 'last_updated', 'actions'
+        )
+        default_columns = ('pk', 'name', 'groups', 'assignment_count', 'title', 'phone', 'email')
         
