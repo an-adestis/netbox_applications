@@ -8,11 +8,11 @@ from virtualization.models import *
 
 __all__ = (
     'SoftwareStatusChoices',
-    'SoftwareApprovalStatusChoises',
+    'SoftwareApprovalStatusChoices',
     'Software',
 )
 
-class SoftwareApprovalStatusChoises(ChoiceSet):
+class SoftwareApprovalStatusChoices(ChoiceSet):
     key = 'Software.approval_status'
     
     NEEDS_APPROVAL = 'needs_approval'
@@ -58,7 +58,8 @@ class Software(NetBoxModel):
     )
     
     approval_status = django_models.CharField(
-        choises = SoftwareApprovalStatusChoises,
+        max_length=50,
+        choices=SoftwareApprovalStatusChoices,
         verbose_name = 'Approval Status',
         help_text = 'Approval Status'
     )
@@ -119,8 +120,8 @@ class Software(NetBoxModel):
         return reverse('plugins:adestis_netbox_applications:software', args=[self.pk])
 
     def get_status_color(self):
-        return SoftwareStatusChoices.colors.get(self.status)
-        return SoftwareApprovalStatusChoises.color.get(self.approval_status) 
+        return SoftwareStatusChoices.colors.get(self.status) | SoftwareApprovalStatusChoices.color.get(self.approval_status) 
+        
     
     def __str__(self):
         return self.name 

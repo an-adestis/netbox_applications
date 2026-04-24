@@ -14,7 +14,7 @@ from adestis_netbox_certificate_management.models import *
 __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
-    'InstalledApplicationApprovalStatusChoises',
+    'InstalledApplicationApprovalStatusChoices',
 )
 
 class InstalledApplicationStatusChoices(ChoiceSet):
@@ -34,7 +34,7 @@ class InstalledApplicationStatusChoices(ChoiceSet):
         (STATUS_REMOVED, 'Removed', 'gray'),
     ]
     
-class InstalledApplicationApprovalStatusChoises(ChoiceSet):
+class InstalledApplicationApprovalStatusChoices(ChoiceSet):
     key = 'InstalledApplications.approval_status'
     
     NEEDS_APPROVAL = 'needs_approval'
@@ -59,7 +59,8 @@ class InstalledApplication(NetBoxModel):
     )
     
     approval_status = django_models.CharField(
-        choises = InstalledApplicationApprovalStatusChoises,
+        max_length=50,
+        choices = InstalledApplicationApprovalStatusChoices,
         verbose_name = 'Approval Status',
         help_text = 'Approval Status'
     )
@@ -197,8 +198,7 @@ class InstalledApplication(NetBoxModel):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
 
     def get_status_color(self):
-        return InstalledApplicationStatusChoices.colors.get(self.status)
-        return InstalledApplicationApprovalStatusChoises.color.get(self.approval_status) 
+        return InstalledApplicationStatusChoices.colors.get(self.status) | InstalledApplicationApprovalStatusChoices.color.get(self.approval_status) 
     
     def __str__(self):
         return self.name 

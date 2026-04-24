@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.application import InstalledApplication, DeviceAssignment, InstalledApplicationStatusChoices, InstalledApplicationApprovalStatusChoises
+from adestis_netbox_applications.models.application import InstalledApplication, DeviceAssignment, InstalledApplicationStatusChoices, InstalledApplicationApprovalStatusChoices
 from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_certificate_management.models import Certificate
@@ -171,7 +171,7 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
     
     approval_status = forms.ChoiceField(
         required=False,
-        choices=InstalledApplicationApprovalStatusChoises,
+        choices=InstalledApplicationApprovalStatusChoices,
     )
     
     description = forms.CharField(
@@ -325,7 +325,7 @@ class InstalledApplicationFilterForm(NetBoxModelFilterSetForm):
     )
     
     approval_status = forms.MultipleChoiceField(
-        choices=InstalledApplicationApprovalStatusChoises.objects.all(),
+        choices=InstalledApplicationApprovalStatusChoices,
         required=False,
         label=_('Approval Status')
     )

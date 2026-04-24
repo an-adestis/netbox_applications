@@ -1,7 +1,7 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
-from adestis_netbox_applications.models.software import Software, SoftwareStatusChoices, SoftwareApprovalStatusChoises
+from adestis_netbox_applications.models.software import Software, SoftwareStatusChoices, SoftwareApprovalStatusChoices
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
 from utilities.forms.fields import (
@@ -122,7 +122,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
     
     approval_status = forms.ChoiceField(
         required=False,
-        choices=SoftwareApprovalStatusChoises,
+        choices=SoftwareApprovalStatusChoices,
     )
     
     parent_software = DynamicModelMultipleChoiceField(
@@ -165,7 +165,7 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
     )
     
     approval_status = forms.MultipleChoiceField(
-        choices=SoftwareApprovalStatusChoises.objects.all(),
+        choices=SoftwareApprovalStatusChoices,
         required=False,
         label=_('Approval Status')
     )
