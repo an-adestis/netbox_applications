@@ -50,7 +50,7 @@ urlpatterns = (
      path('applications/contacts/', ContactAffectedInstalledApplicationView.as_view(),
          name='installedapplicationcontacts_list'),
      path('applications/contacts/', InstalledApplicationAffectedContactView.as_view(),
-         name='certificatecontacts_list'),
+         name='installedapplicationcontacts_list'),
     path('applications/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplication_changelog', kwargs={
         'model': InstalledApplication
     }),
