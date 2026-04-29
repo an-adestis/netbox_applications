@@ -640,6 +640,11 @@ class InstalledApplicationAssignCertificateForm(forms.Form):
         
 class InstalledApplicationAssignContactForm(forms.Form):
     
+    contact_group = DynamicModelMultipleChoiceField(
+            label=_('Contact Group'),
+            queryset= ContactGroup.objects.all()
+    )
+    
     contact = DynamicModelMultipleChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all()

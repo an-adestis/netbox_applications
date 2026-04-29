@@ -62,7 +62,8 @@ class InstalledApplication(NetBoxModel):
         max_length=50,
         choices = InstalledApplicationApprovalStatusChoices,
         verbose_name = 'Approval Status',
-        help_text = 'Approval Status'
+        help_text = 'Approval Status',
+        null=True,
     )
     
     parent_application = django_models.ForeignKey(
@@ -71,7 +72,7 @@ class InstalledApplication(NetBoxModel):
         on_delete = django_models.CASCADE,
         null=True,
         blank=True,
-        related_name='parent_application'
+        related_name='parent_of_installedapplication'
     )
     
     approval_info = django_models.TextField(
@@ -198,7 +199,10 @@ class InstalledApplication(NetBoxModel):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
 
     def get_status_color(self):
-        return InstalledApplicationStatusChoices.colors.get(self.status) | InstalledApplicationApprovalStatusChoices.color.get(self.approval_status) 
+        return InstalledApplicationStatusChoices.colors.get(self.status) 
+    
+    def get_approval_status_color(self):
+        return InstalledApplicationApprovalStatusChoices.colors.get(self.approval_status) 
     
     def __str__(self):
         return self.name 

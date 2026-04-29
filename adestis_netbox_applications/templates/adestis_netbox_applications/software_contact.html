@@ -6,7 +6,7 @@
 {% load static %}
 
 {% block extra_controls %}
-  <a href="{% url 'plugins:adestis_netbox_application_management:software_assign_contact' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary">
+  <a href="{% url 'plugins:adestis_netbox_applications:software_assign_contact' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary">
     <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign Contact
   </a>
 {% endblock %}
@@ -26,7 +26,7 @@
     {{ block.super }}
     {% if 'bulk_remove_contact' in actions %}
         <button type="submit" name="_remove"
-                {% formaction %}="{% url 'plugins:adestis_netbox_application_management:installedapplication_remove_contact' pk=object.pk %}?return_url={{ return_url }}"
+                {% formaction %}="{% url 'plugins:adestis_netbox_applications:installedapplication_remove_contact' pk=object.pk %}?return_url={{ return_url }}"
                 class="btn btn-danger">
             <span class="mdi mdi-trash-can-outline" aria-hidden="true"></span> Remove Selected
         </button>

@@ -61,7 +61,8 @@ class Software(NetBoxModel):
         max_length=50,
         choices=SoftwareApprovalStatusChoices,
         verbose_name = 'Approval Status',
-        help_text = 'Approval Status'
+        help_text = 'Approval Status',
+        null=True,
     )
     
     parent_software = django_models.ForeignKey(
@@ -70,7 +71,7 @@ class Software(NetBoxModel):
         on_delete = django_models.CASCADE,
         null=True,
         blank=True,
-        related_name='parent_software'
+        related_name='parent_of_software'
     )
     
     approval_info = django_models.TextField(
@@ -120,7 +121,10 @@ class Software(NetBoxModel):
         return reverse('plugins:adestis_netbox_applications:software', args=[self.pk])
 
     def get_status_color(self):
-        return SoftwareStatusChoices.colors.get(self.status) | SoftwareApprovalStatusChoices.color.get(self.approval_status) 
+        return SoftwareStatusChoices.colors.get(self.status)
+
+    def get_approval_status_color(self):
+        return SoftwareApprovalStatusChoices.colors.get(self.approval_status)
         
     
     def __str__(self):

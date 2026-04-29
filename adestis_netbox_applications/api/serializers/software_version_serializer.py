@@ -9,13 +9,12 @@ from virtualization.api.serializers import *
 
 class SoftwareVersionSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:adestis_netbox_applications-api:software_version-detail'
+        view_name='plugins-api:adestis_netbox_applications-api:softwareversion-detail'
     )
-
     class Meta:
-        model = Software
+        model = SoftwareVersion
         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                  'custom_field_data', 'status',  'software', 'version',  'description' )
+                  'custom_field_data', 'approval_status', 'approval_info', 'software', 'version',  'description' )
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                        'custom_field_data', 'status', 'software', 'version',  'description')
+                        'custom_field_data', 'approval_status', 'approval_info', 'software', 'version',  'description')
 

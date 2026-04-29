@@ -28,7 +28,7 @@ __all__ = (
 
 class SoftwareForm(NetBoxModelForm):
     
-    parent_software = DynamicModelMultipleChoiceField(
+    parent_software = DynamicModelChoiceField(
         queryset=Software.objects.all(),
         required=False,
         help_text=_("Parent Software"),
@@ -52,7 +52,7 @@ class SoftwareForm(NetBoxModelForm):
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
         FieldSet('parent_software', 'approval_status', 'approval_info', name=_('Software Approvement')),
-        FieldSet('contact', 'contact_group', name=('Contact')),
+        FieldSet('contact_group', 'contact', name=('Contact')),
     )
 
     class Meta:
@@ -125,7 +125,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         choices=SoftwareApprovalStatusChoices,
     )
     
-    parent_software = DynamicModelMultipleChoiceField(
+    parent_software = DynamicModelChoiceField(
         label=_('Parent Software'),
         queryset=Software.objects.all(),
         required = False,
@@ -136,7 +136,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
     fieldsets = (
         FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
         FieldSet('parent_software', 'approval_status', 'approval_info', name=_('Software Approvement')),
-        FieldSet('contact', 'contact_group', name=('Contact')),
+        FieldSet('contact_group', 'contact', name=('Contact')),
     )
 
     nullable_fields = [
@@ -151,7 +151,7 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
         FieldSet('q', 'index',),
         FieldSet('name', 'url', 'tag', 'status', 'manufacturer_id',  name=_('Software')),
         FieldSet('parent_software_id', 'approval_status', 'approval_info', name=_('Software Approvement')),
-        FieldSet('contact', 'contact_group_id', name=_('Contact'))
+        FieldSet('contact_group_id', 'contact', name=_('Contact'))
     )
 
     index = forms.IntegerField(
@@ -206,6 +206,20 @@ class SoftwareCSVForm(NetBoxModelImportForm):
         required=True,
     )
     
+    approval_status = CSVChoiceField(
+        choices=SoftwareApprovalStatusChoices,
+        help_text=_('Approval Status'),
+        required=True,
+    )
+    
+    parent_software = CSVModelChoiceField(
+        label=_("Software"),
+        queryset=Software.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Parent Software')
+    )
+    
     manufacturer = CSVModelChoiceField(
         label=_("Manufacturer"),
         queryset=Manufacturer.objects.all(),
@@ -236,6 +250,11 @@ class SoftwareCSVForm(NetBoxModelImportForm):
         default_return_url = 'plugins:adestis_netbox_applications:Software_list'
         
 class SoftwareAssignContactForm(forms.Form):
+    
+    contact_group = DynamicModelMultipleChoiceField(
+            label=_('Contact Group'),
+            queryset= ContactGroup.objects.all()
+    )
     
     contact = DynamicModelMultipleChoiceField(
         label=_('Contacts'),

@@ -1,12 +1,11 @@
 from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
-from netbox.tables.columns import MarkdownColumn   
 from adestis_netbox_applications.models import InstalledApplication
 from adestis_netbox_applications.filtersets import *
 import django_tables2 as tables
 from dcim.models import *
 from dcim.tables import *
 from tenancy.models import *
-from tenancy.tables import *
+from tenancy.tables.contacts import ContactTable
 from tenancy.forms import *
 from dcim.models import *
 from dcim.forms import *

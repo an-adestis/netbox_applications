@@ -3,9 +3,11 @@ from netbox.views.generic import ObjectChangeLogView
 from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.models.application_types import *
+from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.views.application import *
 from adestis_netbox_applications.views.software import *
 from adestis_netbox_applications.views.application_types import *
+from adestis_netbox_applications.views.software_version import *
 from django.urls import include
 from utilities.urls import get_model_urls
 
@@ -104,6 +106,29 @@ urlpatterns = (
          InstalledApplicationTypesDeleteView.as_view(), name='installedapplicationtypes_delete'),
     path('application_types/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='installedapplicationtypes_changelog', kwargs={
         'model': InstalledApplicationTypes
+    }),
+    
+    #Software Version
+    path('softwareversion/', SoftwareVersionListView.as_view(),
+         name='softwareversion_list'),
+    path('softwareversion/add/', SoftwareVersionEditView.as_view(),
+         name='softwareversion_add'),
+    path('softwareversion/delete/', SoftwareVersionBulkDeleteView.as_view(),
+         name='softwareversion_bulk_delete'),
+    path('softwareversion/edit/', SoftwareVersionBulkEditView.as_view(),
+         name='softwareversion_bulk_edit'),
+    path('softwareversion/import/', SoftwareVersionBulkImportView.as_view(),
+         name='softwareversion_bulk_import'),
+    path('softwareversion/<int:pk>/',
+         SoftwareVersionView.as_view(), name='softwareversion'),
+    path('softwareversion/<int:pk>/',
+         include(get_model_urls("adestis_netbox_applications", "softwareversion"))),
+    path('softwareversion/<int:pk>/edit/',
+         SoftwareVersionEditView.as_view(), name='softwareversion_edit'),
+    path('softwareversion/<int:pk>/delete/',
+         SoftwareVersionDeleteView.as_view(), name='softwareversion_delete'),
+    path('softwareversion/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='software_changelog', kwargs={
+        'model': SoftwareVersion
     }),
     
 

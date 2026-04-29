@@ -81,20 +81,33 @@ class SoftwareAffectedSuccessorSoftwareView(generic.ObjectChildrenView):
 
     tab = ViewTab(
         label=_('Successor Software'),
-        badge=lambda obj: obj.parent_software.count(),
+        badge=lambda obj: Software.objects.filter(parent_software=obj).count(),
         hide_if_empty=False,
         weight=600
     )
     
     def get_children(self, request, parent):
-        return Software.objects.restrict(request.user, 'view').filter(parent_software=parent)
+        def get_descendants(app):
+            children = Software.objects.restrict(request.user, 'view').filter(
+                parent_software=app
+            )
+            result = list(children)
+            for child in children:
+                result.extend(get_descendants(child))
+            return result
+
+        descendants = get_descendants(parent)
+        pks = [obj.pk for obj in descendants]
+        qs = Software.objects.restrict(request.user, 'view').filter(pk__in=pks)
+        self.tab.badge = lambda obj: qs.count()
+        return qs
     
 @register_model_view(Software, name='contacts')
 class SoftwareAffectedContactView(generic.ObjectChildrenView):
     queryset = Software.objects.all()
     child_model= Contact
     table = ContactTableSoftware
-    template_name = "adestis_netbox_application_management/software_contact.html"
+    template_name = "adestis_netbox_applications/software_contact.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -110,14 +123,14 @@ class SoftwareAffectedContactView(generic.ObjectChildrenView):
     )
 
     def get_children(self, request, parent):
-        return Contact.objects.restrict(request.user, 'view').filter(software=parent)
+        return Contact.objects.restrict(request.user, 'view').filter(software_contact=parent)
         
 @register_model_view(Contact, name='software')
 class ContactAffectedSoftwareView(generic.ObjectChildrenView):
     queryset = Contact.objects.all()
     child_model= Software
     table = SoftwareTable
-    template_name = "adestis_netbox_application_management/contact_software.html"
+    template_name = "adestis_netbox_applications/contact_software.html"
     actions = {
         'add': {'add'},
         'export': {'view'},
@@ -142,7 +155,7 @@ class SoftwareAssignContact(generic.ObjectEditView):
     ).all()
     
     form = SoftwareAssignContactForm
-    template_name = 'adestis_netbox_application_management/assign_software_contact.html'
+    template_name = 'adestis_netbox_applications/assign_software_contact.html'
 
     def get(self, request, pk):
         software = get_object_or_404(self.queryset, pk=pk)
@@ -151,8 +164,8 @@ class SoftwareAssignContact(generic.ObjectEditView):
         return render(request, self.template_name, {
             'software': software,
             'form': form,
-            'return_url': reverse('plugins:adestis_netbox_application_management:software', kwargs={'pk': pk}),
-            'edit_url': reverse('plugins:adestis_netbox_application_management:software_assign_contact', kwargs={'pk': pk}),
+            'return_url': reverse('plugins:adestis_netbox_applications:software', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:software_assign_contact', kwargs={'pk': pk}),
         })
 
     def post(self, request, pk):
@@ -161,11 +174,15 @@ class SoftwareAssignContact(generic.ObjectEditView):
 
         if form.is_valid():
             
+            selected_contact_groups = form.cleaned_data['contact_group']
             selected_contacts = form.cleaned_data['contact']
             with transaction.atomic():
                 
                 for contact in Contact.objects.filter(pk__in=selected_contacts): 
                     software.contact.add(contact)
+                    
+                for contact_group in ContactGroup.objects.filter(pk__in=selected_contact_groups): 
+                    software.contact_group.add(contact_group)
             
             software.save()
             
@@ -175,7 +192,7 @@ class SoftwareAssignContact(generic.ObjectEditView):
             'software': software,
             'form': form,
             'return_url': software.get_absolute_url(),
-            'edit_url': reverse('plugins:adestis_netbox_application_management:software_assign_contact', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:software_assign_contact', kwargs={'pk': pk}),
         })
         
 @register_model_view(Software, 'remove_contact', path='contact/remove')

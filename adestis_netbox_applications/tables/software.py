@@ -2,8 +2,11 @@ from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
 from adestis_netbox_applications.models.software import Software
 from adestis_netbox_applications.filtersets.software import *
 import django_tables2 as tables
+from tenancy.models import *
+from tenancy.tables.contacts import ContactTable
 
 class SoftwareTable(NetBoxTable):
+    
     status = ChoiceFieldColumn()
     
     approval_status = ChoiceFieldColumn()
@@ -22,6 +25,10 @@ class SoftwareTable(NetBoxTable):
         linkify=True
     )
     
+    manufacturer = tables.Column(
+        linkify=True
+    )
+    
     contact = columns.ManyToManyColumn(
         linkify_item=True
     )
@@ -37,7 +44,7 @@ class SoftwareTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = Software
         fields = ['name', 'status', 'parent_software', 'approval_status', 'url', 'description', 'tags', 'manufacturer', 'contact', 'contact_group', 'approval_info']
-        default_columns = [ 'name', 'status', 'parent_software', 'approval_status', 'approval_info' ]
+        default_columns = [ 'name', 'status', 'parent_software', 'approval_status', 'approval_info', 'manufacturer', 'contact']
         
         
 class ContactTableSoftware(ContactTable):
