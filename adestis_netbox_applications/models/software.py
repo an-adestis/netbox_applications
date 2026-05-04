@@ -8,8 +8,24 @@ from virtualization.models import *
 
 __all__ = (
     'SoftwareStatusChoices',
+    'SoftwareApprovalStatusChoices',
     'Software',
 )
+
+class SoftwareApprovalStatusChoices(ChoiceSet):
+    key = 'Software.approval_status'
+    
+    NEEDS_APPROVAL = 'needs_approval'
+    ALL_VERSION_APPROVED = 'all_versions_approved'
+    VERSION_CHANGED = 'version_changed'
+    NOT_APPROVAL = 'not_approved'
+    
+    CHOICES = [
+        (NEEDS_APPROVAL, 'Needs Approval', 'yellow'),
+        (ALL_VERSION_APPROVED, 'All Versions Approved', 'green'),
+        (VERSION_CHANGED, 'Version changed - needs Approval', 'cyan'),
+        (NOT_APPROVAL, 'Not Approved', 'red'),
+    ]
 
 class SoftwareStatusChoices(ChoiceSet):
     key = 'Software.status'
@@ -41,6 +57,27 @@ class Software(NetBoxModel):
         max_length=150
     )
     
+    approval_status = django_models.CharField(
+        max_length=50,
+        choices=SoftwareApprovalStatusChoices,
+        verbose_name = 'Approval Status',
+        help_text = 'Approval Status',
+        null=True,
+    )
+    
+    parent_software = django_models.ForeignKey(
+        'self',
+        verbose_name='Parent Software',
+        on_delete = django_models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='parent_of_software'
+    )
+    
+    approval_info = django_models.TextField(
+        blank=True
+    )
+    
     description = django_models.CharField(
         max_length=500,
         blank = True
@@ -58,6 +95,23 @@ class Software(NetBoxModel):
         verbose_name='Manufacturer'
     )
     
+    contact_group = django_models.ForeignKey(
+        to = 'tenancy.ContactGroup',
+        on_delete = django_models.PROTECT,
+        related_name='software_contact_group',
+        verbose_name='Contact Group',
+        blank = True,
+        null = True,
+    )
+    
+    contact = django_models.ManyToManyField(
+        to='tenancy.Contact',
+        related_name='software_contact',
+        blank = True,
+        verbose_name='Contact',
+        help_text='Contact that uses the Application'
+    )
+    
     class Meta:
         verbose_name_plural = "Software"
         verbose_name = 'Software'
@@ -68,6 +122,10 @@ class Software(NetBoxModel):
 
     def get_status_color(self):
         return SoftwareStatusChoices.colors.get(self.status)
+
+    def get_approval_status_color(self):
+        return SoftwareApprovalStatusChoices.colors.get(self.approval_status)
+        
     
     def __str__(self):
         return self.name 

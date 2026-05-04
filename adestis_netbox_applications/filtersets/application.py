@@ -31,18 +31,21 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         widget=DatePicker
     )
     
-    contact_id = DynamicModelMultipleChoiceField(
-        queryset=Contact.objects.all(),
-        required=False,
-        null_option='None',
-        label=_('Group')
+    contact = django_filters.ModelMultipleChoiceFilter(
+        field_name='contact',
+        queryset=Contact.objects.all()
     )
     
-    contact = DynamicModelMultipleChoiceField(
-        queryset=Contact.objects.all(),
+    contact_group_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ContactGroup.objects.all(),
+        label=_('Container Group (ID)'),
+    )
+    
+    contact_group = DynamicModelMultipleChoiceField(
+        queryset=ContactGroup.objects.all(),
         required=False,
         null_option='None',
-        label=_('Group')
+        label=_('Container Group')
     )
     
     url = forms.URLField(
@@ -121,10 +124,17 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         field_name='application_types__name',
         label=_('application Types (name)'),
     )
+    
+    parent_application = django_filters.ModelMultipleChoiceFilter(
+        queryset=InstalledApplication.objects.all(),
+        required = False, 
+        field_name = 'parent_application',
+        label=_('Parent Application (name)')
+    )
 
     class Meta:
         model = InstalledApplication
-        fields = ('id', 'status', 'status_date', 'name', 'url', 'contact', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software', 'application_types')
+        fields = ('id', 'status', 'status_date', 'name', 'parent_application', 'url', 'contact', 'contact_group', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software', 'application_types', 'approval_status', 'approval_info')
     
 
     def search(self, queryset, name, value):
@@ -137,6 +147,7 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             Q(version__icontains=value) |
             Q(url__icontains=value) |
             Q(contact__name__icontains=value) |
+            Q(contact_group__name__icontains=value) |
             Q(tenant__name__icontains=value) |
             Q(tenant_group__name__icontains=value) |
             Q(virtual_machine__name__icontains=value) |
@@ -144,5 +155,8 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             Q(cluster__name__icontains=value) |
             Q(cluster_group__name__icontains=value) |
             Q(application_types__name__icontains=value) |
-            Q(software__name__icontains=value) 
+            Q(software__name__icontains=value) |
+            Q(parent_application__name__icontains=value) |
+            Q(approval_status__icontains=value) |
+            Q(approval_info__icontains=value)
         ).distinct()
