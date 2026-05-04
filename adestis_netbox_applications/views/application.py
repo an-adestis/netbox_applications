@@ -23,12 +23,16 @@ from virtualization.forms import *
 from virtualization.tables import *
 from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
 
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.db import transaction
 from django.contrib import messages
 from core.models import ObjectType as ContentType
 from django.contrib.contenttypes.models import ContentType
+from utilities.query import count_related
+from django.db import models as django_models
+from django.db.models import Count
 
 __all__ = (
     'InstalledApplicationView',
@@ -66,20 +70,51 @@ __all__ = (
     'InstalledApplicationAffectedSuccessorApplicationView',
 )
 
-class InstalledApplicationView(generic.ObjectView):
+@register_model_view(InstalledApplication)
+class InstalledApplicationView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = InstalledApplication.objects.all()
+    def get_extra_context(self, request, instance):
+        from adestis_netbox_applications.models.software_version import SoftwareVersion
+        software_versions = SoftwareVersion.objects.restrict(request.user, 'view').filter(
+            pk=instance.software_version_id
+        )
+        return {
+            'related_models': self.get_related_models(request, instance),
+            'software_versions': software_versions,
+        }
+
     
 class InstalledApplicationListView(generic.ObjectListView):
     queryset = InstalledApplication.objects.all()
     table = InstalledApplicationTable
     filterset = InstalledApplicationFilterSet
     filterset_form = InstalledApplicationFilterForm
+    template_name = 'adestis_netbox_applications/installedapplication_list.html'
     
+    def get_queryset(self, request):
+        qs = InstalledApplication.objects.restrict(request.user, 'view')
+        
+        def sort_hierarchical(apps, parent=None, result=None):
+            if result is None:
+                result = []
+            for app in apps:
+                if app.parent_application == parent:
+                    result.append(app)
+                    sort_hierarchical(apps, parent=app, result=result)
+            return result
 
+        all_apps = list(qs)
+        sorted_apps = sort_hierarchical(all_apps)
+        pks_ordered = [app.pk for app in sorted_apps]
+        
+        preserved = django_models.Case(
+            *[django_models.When(pk=pk, then=pos) for pos, pk in enumerate(pks_ordered)]
+        )
+        return qs.filter(pk__in=pks_ordered).order_by(preserved)
+    
 class InstalledApplicationEditView(generic.ObjectEditView):
     queryset = InstalledApplication.objects.all()
     form = InstalledApplicationForm
-
 
 class InstalledApplicationDeleteView(generic.ObjectDeleteView):
     queryset = InstalledApplication.objects.all() 
@@ -100,13 +135,11 @@ class InstalledApplicationBulkDeleteView(generic.BulkDeleteView):
     queryset = InstalledApplication.objects.all()
     table = InstalledApplicationTable
     
-    
 class InstalledApplicationBulkEditView(generic.BulkEditView):
     queryset = InstalledApplication.objects.all()
     filterset = InstalledApplicationFilterSet
     table = InstalledApplicationTable
     form =  InstalledApplicationBulkEditForm
-    
 
 class InstalledApplicationBulkImportView(generic.BulkImportView):
     queryset = InstalledApplication.objects.all()
@@ -133,7 +166,6 @@ class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return Certificate.objects.restrict(request.user, 'view').filter(installedapplication=parent)
-    
     
 @register_model_view(InstalledApplication, 'assign_certificate')
 class InstalledApplicationAssignCertificate(generic.ObjectEditView):
@@ -473,7 +505,6 @@ class InstalledApplicationRemoveClusterView(generic.ObjectEditView):
             'return_url': installedapplication.get_absolute_url(),
         })
     
-    
 @register_model_view(InstalledApplication, name='cluster groups')
 class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
@@ -515,7 +546,6 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(cluster_group=parent)
-    
     
 @register_model_view(InstalledApplication, 'assign_cluster_group')
 class InstalledApplicationAssignClusterGroup(generic.ObjectEditView):
@@ -600,7 +630,6 @@ class InstalledApplicationRemoveClusterGroupView(generic.ObjectEditView):
             'return_url': installedapplication.get_absolute_url(),
         })
 
-
 @register_model_view(InstalledApplication, name='virtual machines')
 class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
@@ -642,7 +671,6 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
 
     def get_children(self, request, parent):
         return InstalledApplication.objects.restrict(request.user, 'view').filter(virtual_machine=parent)
-    
     
 @register_model_view(InstalledApplication, 'assign_virtual_machine')
 class InstalledApplicationAssignVirtualMachine(generic.ObjectEditView):
@@ -750,7 +778,7 @@ class InstalledApplicationAffectedContactView(generic.ObjectChildrenView):
     def get_children(self, request, parent):
         return Contact.objects.restrict(request.user, 'view').filter(installedapplication_contact=parent)
         
-@register_model_view(Contact, name='installedapplication')
+@register_model_view(Contact, name='installedapplication_contact')
 class ContactAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = Contact.objects.all()
     child_model= InstalledApplication
@@ -765,8 +793,8 @@ class ContactAffectedInstalledApplicationView(generic.ObjectChildrenView):
     }
 
     tab = ViewTab(
-        label=_('InstalledApplication'),
-        badge=lambda obj: obj.installedapplication.count(),
+        label=_('Applications'),
+        badge=lambda obj: obj.installedapplication_contact.count(),
         hide_if_empty=False
     )
 

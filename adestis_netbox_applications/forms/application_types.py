@@ -41,7 +41,7 @@ class InstalledApplicationTypesForm(NetBoxModelForm):
     
 class InstalledApplicationTypesBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
-        queryset=Software.objects.all(),
+        queryset=InstalledApplicationTypes.objects.all(),
         widget=forms.MultipleHiddenInput, 
     )
     

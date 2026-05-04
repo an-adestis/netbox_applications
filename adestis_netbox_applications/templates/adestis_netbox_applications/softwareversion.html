@@ -15,40 +15,9 @@
         <div class="card-body">
           <table class="table table-hover attr-table">
             <tr>
-              <th scope="row">Approval Status</th>
-              <td>{% badge object.get_approval_status_display bg_color=object.get_approval_status_color %}</td>
-            </tr>
-            <tr>
               <th scope='row'>Name</th>
               <td>{% if object.name %}
                 {{ object.name|markdown }}
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Version</th>
-              <td>{% if object.version %}
-                {{ object.version|markdown }}
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>Description</th>
-              <td>{% if object.description %}
-                {{ object.description|markdown }}
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th scope='row'>URL</th>
-              <td>{% if object.url %}
-                <a href="{{ object.url }}" target="_blank">{{ object.url|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -64,9 +33,31 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Version</th>
+              <td>{% if object.version %}
+                {{ object.version|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Approval Status</th>
+              <td>{% badge object.get_approval_status_display bg_color=object.get_approval_status_color %}</td>
+            </tr>
+            <tr>
               <th scope='row'>Approval Info</th>
               <td>{% if object.approval_info %}
                 {{ object.approval_info|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope='row'>Description</th>
+              <td>{% if object.description %}
+                {{ object.description|markdown }}
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -77,8 +68,35 @@
       </div>
     </div>
     <div class="col col-md-6">
+      {% include 'inc/panels/related_objects.html' %}
       {% include 'inc/panels/custom_fields.html' %}
       {% include 'inc/panels/tags.html' %}
+      {% if software %}
+      <div class="card mt-3">
+        <h5 class="card-header">Software</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Approval Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sv in software %}
+              <tr>
+                <td><a href="{{ sv.get_absolute_url }}">{{ sv.name }}</a></td>
+                <td>{{ sv.status }}</td>
+                <td>{% badge sv.get_approval_status_display bg_color=sv.get_approval_status_color %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+      {% plugin_right_page object %}
     </div>
   </div>
 {% endblock content %}

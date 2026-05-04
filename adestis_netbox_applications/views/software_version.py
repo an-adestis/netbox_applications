@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.db import transaction
 from django.contrib import messages
+from utilities.query import count_related
 
 __all__ = (
     'SoftwareVersionView',
@@ -22,20 +23,31 @@ __all__ = (
     'SoftwareVersionBulkImportView',
 )
 
-class SoftwareVersionView(generic.ObjectView):
+@register_model_view(SoftwareVersion)
+class SoftwareVersionView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = SoftwareVersion.objects.all()
+    def get_extra_context(self, request, instance):
+
+            software = Software.objects.restrict(request.user, 'view').filter(
+                pk=instance.software_id
+            )
+            return {
+                'related_models': self.get_related_models(request, instance),
+                'software': software,
+            }
 
 class SoftwareVersionListView(generic.ObjectListView):
     queryset = SoftwareVersion.objects.all()
+    
     table = SoftwareVersionTable
     filterset = SoftwareVersionFilterSet
     filterset_form = SoftwareVersionFilterForm
+
     
 
 class SoftwareVersionEditView(generic.ObjectEditView):
     queryset = SoftwareVersion.objects.all()
     form = SoftwareVersionForm
-
 
 class SoftwareVersionDeleteView(generic.ObjectDeleteView):
     queryset = SoftwareVersion.objects.all() 
@@ -44,13 +56,11 @@ class SoftwareVersionBulkDeleteView(generic.BulkDeleteView):
     queryset = SoftwareVersion.objects.all()
     table = SoftwareVersionTable
     
-    
 class SoftwareVersionBulkEditView(generic.BulkEditView):
     queryset = SoftwareVersion.objects.all()
     filterset = SoftwareVersionFilterSet
     table = SoftwareVersionTable
     form =  SoftwareVersionBulkEditForm
-    
 
 class SoftwareVersionBulkImportView(generic.BulkImportView):
     queryset = SoftwareVersion.objects.all()

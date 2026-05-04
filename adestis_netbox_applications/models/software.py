@@ -5,6 +5,7 @@ from utilities.choices import ChoiceSet
 from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
+from adestis_netbox_applications.models.software_version import *
 
 __all__ = (
     'SoftwareStatusChoices',
@@ -72,6 +73,14 @@ class Software(NetBoxModel):
         null=True,
         blank=True,
         related_name='parent_of_software'
+    )
+    
+    software_version = django_models.ForeignKey(
+        to='adestis_netbox_applications.SoftwareVersion',
+        on_delete= django_models.PROTECT,
+        related_name= 'related_software_version',
+        null=True,
+        verbose_name='Software Version'
     )
     
     approval_info = django_models.TextField(

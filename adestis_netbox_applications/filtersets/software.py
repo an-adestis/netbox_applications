@@ -14,6 +14,7 @@ from tenancy.models import *
 from dcim.models import *
 from ipam.api.serializers import *
 from ipam.api.field_serializers import *
+from adestis_netbox_applications.models.software_version import *
 
 __all__ = (
     'SoftwareFilterSet',
@@ -56,10 +57,22 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
         to_field_name='manufacturer',
         label=_('Manufacturer (name)'),
     )
+    
+    software_version_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=SoftwareVersion.objects.all(),
+        label=_('Software Version (ID)'),
+    )
+    
+    software_version = django_filters.ModelMultipleChoiceFilter(
+        queryset=SoftwareVersion.objects.all(),
+        required = False,
+        field_name='software_version__name',
+        label=_('Software Version (name)'),
+    )
 
     class Meta:
         model = Software
-        fields = ['id', 'status', 'name', 'parent_software', 'url', 'manufacturer',  'contact', 'contact_group', 'approval_status', 'approval_info',]
+        fields = ['id', 'status', 'name', 'parent_software', 'software_version', 'url', 'manufacturer',  'contact', 'contact_group', 'approval_status', 'approval_info',]
     
 
     def search(self, queryset, name, value):
@@ -73,6 +86,7 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
             Q(contact__name__icontains=value) |
             Q(contact_group__name__icontains=value) |
             Q(parent_software__name__icontains=value) |
+            Q(software_version__name__icontains=value) |
             Q(approval_status__icontains=value) |
             Q(approval_info__icontains=value)
         ).distinct()

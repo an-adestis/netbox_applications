@@ -15,6 +15,8 @@ from django.urls import reverse
 from django.db import transaction
 from django.contrib import messages
 
+from django.db import models as django_models
+
 __all__ = (
     'SoftwareView',
     'SoftwareListView',
@@ -40,6 +42,28 @@ class SoftwareListView(generic.ObjectListView):
     table = SoftwareTable
     filterset = SoftwareFilterSet
     filterset_form = SoftwareFilterForm
+    template_name = 'adestis_netbox_applications/software_list.html'
+    
+    def get_queryset(self, request):
+        qs = Software.objects.restrict(request.user, 'view')
+        
+        def sort_hierarchical(apps, parent=None, result=None):
+            if result is None:
+                result = []
+            for app in apps:
+                if app.parent_software == parent:
+                    result.append(app)
+                    sort_hierarchical(apps, parent=app, result=result)
+            return result
+
+        all_apps = list(qs)
+        sorted_apps = sort_hierarchical(all_apps)
+        pks_ordered = [app.pk for app in sorted_apps]
+        
+        preserved = django_models.Case(
+            *[django_models.When(pk=pk, then=pos) for pos, pk in enumerate(pks_ordered)]
+        )
+        return qs.filter(pk__in=pks_ordered).order_by(preserved)
     
 
 class SoftwareEditView(generic.ObjectEditView):
@@ -125,7 +149,7 @@ class SoftwareAffectedContactView(generic.ObjectChildrenView):
     def get_children(self, request, parent):
         return Contact.objects.restrict(request.user, 'view').filter(software_contact=parent)
         
-@register_model_view(Contact, name='software')
+@register_model_view(Contact, name='software_contact')
 class ContactAffectedSoftwareView(generic.ObjectChildrenView):
     queryset = Contact.objects.all()
     child_model= Software
@@ -141,7 +165,7 @@ class ContactAffectedSoftwareView(generic.ObjectChildrenView):
 
     tab = ViewTab(
         label=_('Software'),
-        badge=lambda obj: obj.software.count(),
+        badge=lambda obj: obj.software_contact.count(),
         hide_if_empty=False
     )
 

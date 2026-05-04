@@ -1,0 +1,69 @@
+{% extends 'generic/object_list.html' %}
+
+{% block content %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const rows = document.querySelectorAll('table tbody tr');
+
+    rows.forEach(function (row) {
+        const span = row.querySelector('span[data-pk]');
+        if (!span) return;
+
+        const depth = parseInt(span.dataset.depth);
+        const pk = span.dataset.pk;
+        row.dataset.pk = pk;
+        row.dataset.depth = depth;
+        row.dataset.parent = span.dataset.parent;
+
+        if (depth > 0) {
+            row.style.display = 'none';
+            row.classList.add('child-row');
+            span.style.paddingLeft = (depth * 20) + 'px';  // hier
+        }
+    });
+
+    rows.forEach(function (row) {
+        const span = row.querySelector('span[data-pk]');
+        if (!span) return;
+        const pk = span.dataset.pk;
+
+        const hasChildren = document.querySelector(`tr[data-parent="${pk}"]`);
+        if (hasChildren) {
+            const toggle = document.createElement('span');
+            toggle.className = 'mdi mdi-chevron-right tree-toggle';
+            toggle.style.cursor = 'pointer';
+            toggle.style.color = '#F9FAFB';
+            toggle.style.marginRight = '6px';
+            toggle.style.marginLeft = '0px';
+            toggle.style.verticalAlign = 'middle';
+            span.insertBefore(toggle, span.firstChild);
+
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                const isOpen = this.classList.contains('mdi-chevron-down');
+                this.classList.toggle('mdi-chevron-down', !isOpen);
+                this.classList.toggle('mdi-chevron-right', isOpen);
+                toggleChildren(pk, !isOpen);
+            });
+        }
+    });
+
+    function toggleChildren(parentPk, show) {
+        document.querySelectorAll(`tr[data-parent="${parentPk}"]`).forEach(function (child) {
+            child.style.display = show ? '' : 'none';
+
+            const toggle = child.querySelector('.tree-toggle');
+            if (!show && toggle) {
+                toggle.classList.remove('mdi-chevron-down');
+                toggle.classList.add('mdi-chevron-right');
+            }
+
+            if (!show || toggle?.classList.contains('mdi-chevron-down')) {
+                toggleChildren(child.dataset.pk, show);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

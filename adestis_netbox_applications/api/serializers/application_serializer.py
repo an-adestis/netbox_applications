@@ -9,18 +9,21 @@ from dcim.api.serializers import *
 from dcim.models import *
 from virtualization.api.serializers import *
 from utilities.api import get_serializer_for_model
+from netbox.api.fields import *
 
 class InstalledApplicationSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='plugins-api:adestis_netbox_applications-api:installedapplication-detail'
     )
+    
+
 
     class Meta:
         model = InstalledApplication
         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                  'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group', 'virtual_machine', 'device', 'cluster', 'description', 'software', 'version' )
+                  'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group', 'virtual_machine', 'device', 'cluster', 'description', 'software', 'software_version', 'version', 'parent_application' )
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                        'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group','description', 'virtual_machine', 'device', 'cluster', 'software', 'version' )
+                        'custom_field_data', 'status', 'status_date', 'comments', 'tenant', 'tenant_group','description', 'virtual_machine', 'device', 'cluster', 'software', 'software_version', 'version', 'parent_application' )
 
 
 class DeviceAssignmentSerializer(NetBoxModelSerializer):

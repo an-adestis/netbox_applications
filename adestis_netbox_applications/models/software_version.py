@@ -47,8 +47,16 @@ class SoftwareVersion(NetBoxModel):
         verbose_name='Software',
         on_delete = django_models.CASCADE,
         null=True,
-        blank=True,
         related_name='related_software'
+    )
+    
+    installedapplication = django_models.ForeignKey(
+        to='adestis_netbox_applications.InstalledApplication',
+        on_delete= django_models.PROTECT,
+        related_name='version_application',
+        null=True,
+        blank=True,
+        verbose_name='Application'
     )
     
     approval_info = django_models.TextField(
@@ -60,12 +68,9 @@ class SoftwareVersion(NetBoxModel):
         blank = True
     )
     
-    url = django_models.URLField(
-        max_length=300
-    )
-    
     version = django_models.CharField(
-        max_length=150
+        max_length=150,
+        blank=True
     )
     
     class Meta:

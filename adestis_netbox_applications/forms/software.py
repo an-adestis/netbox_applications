@@ -13,6 +13,7 @@ from utilities.forms.fields import (
 )
 from utilities.forms import ConfirmationForm
 from utilities.forms.widgets import DatePicker
+from adestis_netbox_applications.models.software_version import *
 from dcim.models import *
 from virtualization.models import *
 from tenancy.models import Contact, ContactGroup
@@ -50,14 +51,14 @@ class SoftwareForm(NetBoxModelForm):
     )
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
-        FieldSet('parent_software', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'parent_software', 'status', 'software_version', 'description', 'url', 'tags',  'manufacturer', name=_('Software')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
         FieldSet('contact_group', 'contact', name=('Contact')),
     )
 
     class Meta:
         model = Software
-        fields = ['name', 'description', 'url', 'tags', 'status', 'manufacturer', 'parent_software', 'approval_status', 'approval_info', 'contact_group', 'contact']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'manufacturer', 'parent_software', 'approval_status', 'approval_info', 'contact_group', 'contact', 'software_version']
         
         help_texts = {
             'status': "Example text",
@@ -86,7 +87,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         choices=SoftwareStatusChoices,
     )
     
-    contact = DynamicModelMultipleChoiceField(
+    contact = DynamicModelChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all(),
         required = False,
@@ -131,16 +132,24 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         required = False,
     )
     
+    software_version = DynamicModelChoiceField(
+        queryset=SoftwareVersion.objects.all(),
+        required= False,
+        label=_('Software Version'),
+    )
+    
     model = Software
 
     fieldsets = (
-        FieldSet('name', 'description', 'url', 'tags', 'status', 'manufacturer', name=_('Software')),
-        FieldSet('parent_software', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'parent_software', 'status', 'software_version', 'description', 'url', 'tags', 'manufacturer', name=_('Software')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
         FieldSet('contact_group', 'contact', name=('Contact')),
     )
 
     nullable_fields = [
-         'add_tags', 'remove_tags', 'description', ''
+        'add_tags', 'remove_tags', 'name', 'description', 'url', 'status', 
+        'manufacturer', 'parent_software', 'approval_status', 'approval_info',
+        'contact_group', 'contact', 'software_version'
     ]
     
 class SoftwareFilterForm(NetBoxModelFilterSetForm):
@@ -149,8 +158,8 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'url', 'tag', 'status', 'manufacturer_id',  name=_('Software')),
-        FieldSet('parent_software_id', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'parent_software_id', 'status', 'software_version_id', 'url', 'tag', 'manufacturer_id',  name=_('Software')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approvement')),
         FieldSet('contact_group_id', 'contact', name=_('Contact'))
     )
 
@@ -194,6 +203,12 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
         queryset=Contact.objects.all(),
         required=False,
         label=_('Contacts')
+    )
+    
+    software_version_id = DynamicModelMultipleChoiceField(
+        queryset=SoftwareVersion.objects.all(),
+        required=False,
+        label=_('Software Version')
     )
 
     tag = TagFilterField(model)
@@ -244,35 +259,54 @@ class SoftwareCSVForm(NetBoxModelImportForm):
         help_text=_('Assigned contact')
     )
     
+    software_version = CSVModelChoiceField(
+        label=_('Software Version'),
+        queryset=SoftwareVersion.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Name of assigned Software Version')
+    )
+    
     class Meta:
         model = Software
-        fields = ['name' ,'status', 'url', 'manufacturer', 'description', 'tags', 'parent_software', 'approval_status', 'approval_info', 'contact_group', 'contact' ]
+        fields = ['name' ,'status', 'parent_software', 'software_version', 'approval_status', 'approval_info', 'url', 'manufacturer', 'description', 'tags', 'contact_group', 'contact' ]
         default_return_url = 'plugins:adestis_netbox_applications:Software_list'
         
 class SoftwareAssignContactForm(forms.Form):
     
     contact_group = DynamicModelMultipleChoiceField(
-            label=_('Contact Group'),
-            queryset= ContactGroup.objects.all()
+        label=_('Contact Group'),
+        queryset= ContactGroup.objects.all()
     )
     
     contact = DynamicModelMultipleChoiceField(
         label=_('Contacts'),
-        queryset=Contact.objects.all()
+        queryset=Contact.objects.all(),
+        query_params={
+                'group_id': '$contact_group',
+        },
     )
 
     class Meta:
         fields = [
-            'contact',
+            'contact_group', 'contact',
         ]
 
     def __init__(self, certificate, *args, **kwargs):
 
         self.certificate = certificate
+        
+        self.cluster_group = DynamicModelMultipleChoiceField(
+            label=_('Cluster Group'),
+            queryset= ClusterGroup.objects.all()
+        )
 
         self.contact = DynamicModelMultipleChoiceField(
             label=_('Contacts'),
-            queryset=Contact.objects.all()
+            queryset=Contact.objects.all(),
+            query_params={
+                'group_id': '$cluster_group',
+            },
         )        
 
         super().__init__(*args, **kwargs)

@@ -28,5 +28,5 @@ class SoftwareVersionTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SoftwareVersion
         fields = ['name', 'version', 'approval_status', 'software', 'description', 'tags', 'approval_info']
-        default_columns = [ 'name', 'version', 'approval_status', 'software','approval_info' ]
+        default_columns = ['name', 'version', 'approval_status', 'approval_info']
     
