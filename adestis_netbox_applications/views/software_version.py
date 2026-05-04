@@ -27,9 +27,14 @@ __all__ = (
 class SoftwareVersionView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = SoftwareVersion.objects.all()
     def get_extra_context(self, request, instance):
-        return {
-            'related_models': self.get_related_models(request, instance),
-        }
+
+            software = Software.objects.restrict(request.user, 'view').filter(
+                pk=instance.software_id
+            )
+            return {
+                'related_models': self.get_related_models(request, instance),
+                'software': software,
+            }
 
 class SoftwareVersionListView(generic.ObjectListView):
     queryset = SoftwareVersion.objects.all()
@@ -37,11 +42,7 @@ class SoftwareVersionListView(generic.ObjectListView):
     table = SoftwareVersionTable
     filterset = SoftwareVersionFilterSet
     filterset_form = SoftwareVersionFilterForm
-    def get_queryset(self, request):
-        from django.db.models import Count
-        return SoftwareVersion.objects.restrict(request.user, 'view').annotate(
-            software_count=Count('related_software', distinct=True)
-        )
+
     
 
 class SoftwareVersionEditView(generic.ObjectEditView):

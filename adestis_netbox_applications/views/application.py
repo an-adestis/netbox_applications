@@ -73,7 +73,6 @@ __all__ = (
 @register_model_view(InstalledApplication)
 class InstalledApplicationView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = InstalledApplication.objects.all()
-    
     def get_extra_context(self, request, instance):
         from adestis_netbox_applications.models.software_version import SoftwareVersion
         software_versions = SoftwareVersion.objects.restrict(request.user, 'view').filter(
@@ -83,6 +82,7 @@ class InstalledApplicationView(GetRelatedModelsMixin, generic.ObjectView):
             'related_models': self.get_related_models(request, instance),
             'software_versions': software_versions,
         }
+
     
 class InstalledApplicationListView(generic.ObjectListView):
     queryset = InstalledApplication.objects.all()
@@ -92,9 +92,7 @@ class InstalledApplicationListView(generic.ObjectListView):
     template_name = 'adestis_netbox_applications/installedapplication_list.html'
     
     def get_queryset(self, request):
-        qs = InstalledApplication.objects.restrict(request.user, 'view').annotate(
-            software_version_count=Count('software_version', distinct=True)
-        )
+        qs = InstalledApplication.objects.restrict(request.user, 'view')
         
         def sort_hierarchical(apps, parent=None, result=None):
             if result is None:
