@@ -270,7 +270,7 @@ class InstalledApplicationBulkEditForm(NetBoxModelBulkEditForm):
         label = ("Contact Group")
     )
     
-    parent_application = DynamicModelMultipleChoiceField(
+    parent_application = DynamicModelChoiceField(
         label=_('Parent Application'),
         queryset=InstalledApplication.objects.all(),
         required = False,

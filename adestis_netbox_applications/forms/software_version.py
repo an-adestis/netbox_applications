@@ -30,12 +30,6 @@ class SoftwareVersionForm(NetBoxModelForm):
         required=True,
         help_text=_("Software"),
     )
-    
-    installedapplication = DynamicModelChoiceField(
-        queryset=InstalledApplication.objects.all(),
-        required=True,
-        help_text=_("Software"),
-    )
 
     fieldsets = (
         FieldSet('name', 'version', 'software', 'description', 'tags',  name=_('Software Version')),
@@ -61,7 +55,7 @@ class SoftwareVersionBulkEditForm(NetBoxModelBulkEditForm):
     version = forms.CharField(
         required=False,
         max_length= 150,
-        label=_("Version"),
+        label=_("Version")
     )
     
     description = forms.CharField(
@@ -81,7 +75,7 @@ class SoftwareVersionBulkEditForm(NetBoxModelBulkEditForm):
         choices=SoftwareVersionApprovalStatusChoices,
     )
     
-    software = DynamicModelMultipleChoiceField(
+    software = DynamicModelChoiceField(
         label=_('Assigned Software'),
         queryset=Software.objects.all(),
         required = True,
@@ -130,7 +124,6 @@ class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):
         required = True,
     )
     
-
     tag = TagFilterField(model)
 
 class SoftwareVersionCSVForm(NetBoxModelImportForm):

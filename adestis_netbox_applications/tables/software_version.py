@@ -27,7 +27,7 @@ class SoftwareVersionTable(NetBoxTable):
     
     software_count = columns.LinkedCountColumn(
         viewname='plugins:adestis_netbox_applications:software_list',
-        url_params={'softwareversion_id': 'pk'},
+        url_params={'software_version_id': 'pk'},
         verbose_name=('Software')
     )
 

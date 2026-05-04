@@ -87,7 +87,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         choices=SoftwareStatusChoices,
     )
     
-    contact = DynamicModelMultipleChoiceField(
+    contact = DynamicModelChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all(),
         required = False,

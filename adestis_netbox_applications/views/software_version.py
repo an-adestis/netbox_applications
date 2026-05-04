@@ -32,12 +32,16 @@ class SoftwareVersionView(GetRelatedModelsMixin, generic.ObjectView):
         }
 
 class SoftwareVersionListView(generic.ObjectListView):
-    queryset = SoftwareVersion.objects.annotate(
-        software_count=count_related(Software, 'software_version')
-    )
+    queryset = SoftwareVersion.objects.all()
+    
     table = SoftwareVersionTable
     filterset = SoftwareVersionFilterSet
     filterset_form = SoftwareVersionFilterForm
+    def get_queryset(self, request):
+        from django.db.models import Count
+        return SoftwareVersion.objects.restrict(request.user, 'view').annotate(
+            software_count=Count('related_software', distinct=True)
+        )
     
 
 class SoftwareVersionEditView(generic.ObjectEditView):

@@ -55,6 +55,7 @@ class SoftwareVersion(NetBoxModel):
         on_delete= django_models.PROTECT,
         related_name='version_application',
         null=True,
+        blank=True,
         verbose_name='Application'
     )
     
@@ -68,7 +69,8 @@ class SoftwareVersion(NetBoxModel):
     )
     
     version = django_models.CharField(
-        max_length=150
+        max_length=150,
+        blank=True
     )
     
     class Meta:

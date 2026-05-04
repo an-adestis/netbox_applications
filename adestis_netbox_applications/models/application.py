@@ -101,6 +101,7 @@ class InstalledApplication(NetBoxModel):
     
     version = django_models.CharField(
          max_length=200,
+         blank = True
     )
     
     url = django_models.URLField(

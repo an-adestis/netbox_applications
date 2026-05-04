@@ -14,12 +14,12 @@ class SoftwareVersionSerializer(NetBoxModelSerializer):
     )
     
     
-    software_count=RelatedObjectCountField('software_version')
+    software_count=RelatedObjectCountField('software')
     
     class Meta:
         model = SoftwareVersion
         fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                  'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'software_count', 'description' )
+                  'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'software_count', 'description', 'installedapplication')
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                        'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'software_count', 'description')
+                        'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'software_count', 'description', 'installedapplication')
 

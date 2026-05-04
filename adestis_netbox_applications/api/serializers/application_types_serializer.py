@@ -9,12 +9,12 @@ from dcim.models import *
 from virtualization.api.serializers import *
 
 class InstalledApplicationTypesSerializer(NetBoxModelSerializer):
-    application_count=RelatedObjectCountField('application_types')
+    application_count=RelatedObjectCountField('installedapplication')
 
     class Meta:
         model = InstalledApplicationTypes
         fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                  'custom_field_data', 'application_count', 'slug')
+                  'custom_field_data', 'application_count', 'slug', 'installedapplication')
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                        'custom_field_data', 'application_count', 'slug')
+                        'custom_field_data', 'application_count', 'slug', 'installedapplication')
 
