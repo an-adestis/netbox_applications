@@ -37,6 +37,28 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Software Version</th>
+              <td>{% if object.software_version %}
+                <a href="{% url 'plugins:adestis_netbox_applications:softwareversion' object.software_version.id %}"> {{ object.software_version.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Approval Status</th>
+              <td>{% badge object.get_approval_status_display bg_color=object.get_approval_status_color %}</td>
+            </tr>
+            <tr>
+              <th scope='row'>Approval Info</th>
+              <td>{% if object.approval_info %}
+                {{ object.approval_info|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope='row'>URL</th>
               <td>{% if object.url %}
                 <a href= "{{ object.url }}" target="_blank"> {{ object.url|markdown }}</a>
@@ -63,5 +85,4 @@
       {% include 'inc/panels/tags.html' %}
     </div>
   </div>
-
 {% endblock content %}

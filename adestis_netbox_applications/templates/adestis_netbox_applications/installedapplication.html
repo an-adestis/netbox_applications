@@ -4,9 +4,9 @@
 {% load helpers %}
 {% load plugins %}
 {% load i18n %}
-
+{% block extra_controls %}
+{% endblock %}
 {% load render_table from django_tables2 %}
-
 {% block content %}
   <div class="row my-3">
     <div class="col col-md-6">
@@ -14,10 +14,6 @@
         <h5 class="card-header">Application</h5>
         <div class="card-body">
           <table class="table table-hover attr-table">
-            <tr>
-              <th scope="row">Status</th>
-              <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
-            </tr>
             <tr>
               <th scope='row'>Name</th>
               <td>{% if object.name %}
@@ -28,13 +24,8 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Application Types</th>
-              <td>{% if object.application_types %}
-                <a href="{% url 'plugins:adestis_netbox_applications:installedapplicationtypes' object.application_types.id %}"> {{ object.application_types.name|markdown }}</a>
-                  {% else %}
-                <span class="text-muted">{% trans "None" %}</span>
-                  {% endif %}
-              </td>
+              <th scope="row">Status</th>
+              <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
             </tr>
             <tr>
               <th scope='row'>Status Date</th>
@@ -46,6 +37,16 @@
                 {% endif %}
               </td>
             </tr>
+            <tr>
+              <th scope='row'>Application Types</th>
+              <td>{% if object.application_types %}
+                <a href="{% url 'plugins:adestis_netbox_applications:installedapplicationtypes' object.application_types.id %}"> {{ object.application_types.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            
             <tr>
               <th scope='row'>Description</th>
               <td>{% if object.description %}
@@ -68,6 +69,28 @@
               <th scope='row'>Version</th>
               <td>{% if object.version %}
                 {{ object.version|markdown }}
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope='row'>Software Version</th>
+              <td>{% if object.software_version %}
+                <a href="{% url 'plugins:adestis_netbox_applications:softwareversion' object.software_version.id %}"> {{ object.software_version.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Approval Status</th>
+              <td>{% badge object.get_approval_status_display bg_color=object.get_approval_status_color %}</td>
+            </tr>
+            <tr>
+              <th scope='row'>Approval Info</th>
+              <td>{% if object.approval_info %}
+                {{ object.approval_info|markdown }}
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -117,6 +140,32 @@
       {% include 'inc/panels/custom_fields.html' %}
       {% include 'inc/panels/tags.html' %}
       {% include 'inc/panels/comments.html'%}
+      {% if software_versions %}
+      <div class="card mt-3">
+        <h5 class="card-header">Software Versions</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Approval Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sv in software_versions %}
+              <tr>
+                <td><a href="{{ sv.get_absolute_url }}">{{ sv.name }}</a></td>
+                <td>{{ sv.version }}</td>
+                <td>{% badge sv.get_approval_status_display bg_color=sv.get_approval_status_color %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+      {% plugin_right_page object %}
     </div>
   </div>
 {% endblock content %}

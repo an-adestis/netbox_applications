@@ -24,9 +24,15 @@ class SoftwareVersionTable(NetBoxTable):
     software = tables.Column(
         linkify=True
     )
+    
+    software_count = columns.LinkedCountColumn(
+        viewname='plugins:adestis_netbox_applications:software_list',
+        url_params={'softwareversion_id': 'pk'},
+        verbose_name=('Software')
+    )
 
     class Meta(NetBoxTable.Meta):
         model = SoftwareVersion
-        fields = ['name', 'version', 'approval_status', 'software', 'description', 'tags', 'approval_info']
-        default_columns = [ 'name', 'version', 'approval_status', 'software','approval_info' ]
+        fields = ['name', 'version', 'approval_status', 'software', 'software_count', 'description', 'tags', 'approval_info']
+        default_columns = ['name', 'software_count', 'version', 'approval_status', 'approval_info']
     

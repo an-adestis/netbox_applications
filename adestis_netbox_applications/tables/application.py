@@ -17,6 +17,8 @@ from virtualization.forms import *
 from virtualization.tables import *
 import django_tables2 as tables
 
+from django.utils.safestring import mark_safe
+
 class InstalledApplicationTable(NetBoxTable):
     
     status = ChoiceFieldColumn()
@@ -65,6 +67,10 @@ class InstalledApplicationTable(NetBoxTable):
         linkify = True
     )
     
+    software_version = tables.Column(
+        linkify = True
+    )
+    
     application_types = tables.Column(
         linkify = True
     )
@@ -82,10 +88,33 @@ class InstalledApplicationTable(NetBoxTable):
     parent_application = tables.Column(
         linkify=True
     )
+    
+    software_version_count= columns.LinkedCountColumn(
+        viewname='plugins:adestis_netbox_applications:softwareversion_list',
+        url_params={'installedapplication_id': 'pk'},
+        verbose_name=('Software Version')
+    )
+    
+    def render_name(self, value, record):
+        depth = 0
+        parent = record.parent_application
+        while parent:
+            depth += 1
+            parent = parent.parent_application
+
+        link = f'<a href="{record.get_absolute_url()}">{record.name}</a>'
+        parent_pk = record.parent_application.pk if record.parent_application else ''
+
+        return mark_safe(
+            f'<span style="display:inline-block; min-width:{depth * 20}px;"></span>'
+            f'<span data-pk="{record.pk}" data-parent="{parent_pk}" data-depth="{depth}" style="display:inline-flex; align-items:center;">'
+            f'{link}</span>'
+        )
+    
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
-        fields = ['name', 'application_types', 'status', 'status_date', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster',  'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions']
-        default_columns = [ 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status', 'parent_application', ]
+        fields = ['name', 'application_types', 'status', 'status_date', 'software_version', 'software_version_count', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster',  'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions']
+        default_columns = [ 'name', 'application_types', 'software', 'version', 'software_version_count', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status']
 
 class InstalledApplicationTableTab(InstalledApplicationTable):
     
@@ -94,8 +123,8 @@ class InstalledApplicationTableTab(InstalledApplicationTable):
     )
     
     class Meta(InstalledApplicationTable.Meta):
-        fields = ('name', 'application_types', 'status', 'status_date', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions')
-        default_columns = ( 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status', 'parent_application')
+        fields = ('name', 'application_types', 'status', 'status_date', 'approval_status', 'software_version', 'software_version_count', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions')
+        default_columns = ( 'name', 'application_types', 'software', 'version', 'software_version_count', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status')
         
 class DeviceTableApplication(DeviceTable):
     actions = columns.ActionsColumn(

@@ -8,6 +8,7 @@ from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_certificate_management.models import *
 
@@ -163,6 +164,14 @@ class InstalledApplication(NetBoxModel):
         related_name= 'applications_software',
         null=True,
         verbose_name='Software'
+    )
+    
+    software_version = django_models.ForeignKey(
+        to='adestis_netbox_applications.SoftwareVersion',
+        on_delete= django_models.PROTECT,
+        related_name= 'applications_software_version',
+        null=True,
+        verbose_name='Software Version'
     )
     
     application_types = django_models.ForeignKey(

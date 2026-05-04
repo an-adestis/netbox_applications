@@ -3,6 +3,7 @@ from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelB
 from utilities.forms.fields import CommentField, CSVChoiceField, TagFilterField
 from adestis_netbox_applications.models.software_version import SoftwareVersion, SoftwareVersionApprovalStatusChoices
 from adestis_netbox_applications.models.software import Software
+from adestis_netbox_applications.models.application import InstalledApplication
 from django.utils.translation import gettext_lazy as _
 from utilities.forms.rendering import FieldSet
 from utilities.forms.fields import (
@@ -26,13 +27,19 @@ class SoftwareVersionForm(NetBoxModelForm):
     
     software = DynamicModelChoiceField(
         queryset=Software.objects.all(),
-        required=False,
+        required=True,
+        help_text=_("Software"),
+    )
+    
+    installedapplication = DynamicModelChoiceField(
+        queryset=InstalledApplication.objects.all(),
+        required=True,
         help_text=_("Software"),
     )
 
     fieldsets = (
-        FieldSet('name', 'description', 'tags', 'version', name=_('Software Version')),
-        FieldSet('software', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'version', 'software', 'description', 'tags',  name=_('Software Version')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
     )
 
     class Meta:
@@ -41,7 +48,7 @@ class SoftwareVersionForm(NetBoxModelForm):
 
 class SoftwareVersionBulkEditForm(NetBoxModelBulkEditForm):
     pk = forms.ModelMultipleChoiceField(
-        queryset=Software.objects.all(),
+        queryset=SoftwareVersion.objects.all(),
         widget=forms.MultipleHiddenInput, 
     )
     
@@ -77,18 +84,18 @@ class SoftwareVersionBulkEditForm(NetBoxModelBulkEditForm):
     software = DynamicModelMultipleChoiceField(
         label=_('Assigned Software'),
         queryset=Software.objects.all(),
-        required = False,
+        required = True,
     )
     
     model = SoftwareVersion
 
     fieldsets = (
-        FieldSet('name', 'description', 'tags', 'version', name=_('Software Version')),
-        FieldSet('software', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'version', 'software', 'description', 'tags',  name=_('Software Version')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
     )
 
     nullable_fields = [
-         'add_tags', 'remove_tags', 'description', ''
+        'add_tags', 'remove_tags', 'description', 'name', 'version', 'approval_info', 'approval_status', 'software'
     ]
     
 class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):
@@ -97,8 +104,8 @@ class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'tag', 'version', name=_('Software Version')),
-        FieldSet('software_id', 'approval_status', 'approval_info', name=_('Software Approvement')),
+        FieldSet('name', 'tag', 'version', 'software_id', name=_('Software Version')),
+        FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
     )
 
     index = forms.IntegerField(
@@ -114,8 +121,15 @@ class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):
     software_id = DynamicModelMultipleChoiceField(
         label=_('Assiged Software'),
         queryset=Software.objects.all(),
-        required = False,
+        required = True,
     )
+    
+    installedapplication_id = DynamicModelMultipleChoiceField(
+        label=_('Assiged Application'),
+        queryset=InstalledApplication.objects.all(),
+        required = True,
+    )
+    
 
     tag = TagFilterField(model)
 
@@ -135,9 +149,8 @@ class SoftwareVersionCSVForm(NetBoxModelImportForm):
         help_text=_('Assigned Software')
     )
 
-    
     class Meta:
         model = SoftwareVersion
-        fields = ['name', 'software', 'description', 'tags', 'software', 'version', 'approval_status', 'approval_info', ]
+        fields = ['name', 'software', 'version', 'approval_status', 'approval_info', 'description', 'tags',   ]
         default_return_url = 'plugins:adestis_netbox_applications:SoftwareVersion_list'
         
