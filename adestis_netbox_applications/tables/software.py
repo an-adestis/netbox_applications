@@ -67,7 +67,6 @@ class SoftwareTable(NetBoxTable):
         fields = ['name', 'status', 'parent_software', 'approval_status', 'url', 'description', 'tags', 'manufacturer', 'contact', 'contact_group', 'approval_info', 'software_version',]
         default_columns = [ 'name', 'status', 'software_version', 'approval_status', 'approval_info', 'manufacturer', 'contact']
         
-        
 class ContactTableSoftware(ContactTable):
     
     actions = columns.ActionsColumn(

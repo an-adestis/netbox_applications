@@ -44,6 +44,12 @@ class SoftwareForm(NetBoxModelForm):
         help_text=_("Contacts"),
     )
     
+    software_version = DynamicModelChoiceField(
+        queryset=SoftwareVersion.objects.all(),
+        required=False,
+        label=_('Software Version'),
+    )
+    
     contact_group = DynamicModelChoiceField(
         queryset=ContactGroup.objects.all(),
         required = False,

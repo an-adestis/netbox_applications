@@ -108,6 +108,12 @@ class InstalledApplicationForm(NetBoxModelForm):
         null_option='None',
         help_text=_("Supplier"),
     )
+    
+    application_types = DynamicModelChoiceField(
+        queryset=InstalledApplicationTypes.objects.all(),
+        required=True,
+        label=_('Application Types'),
+    )
 
     fieldsets = (
         FieldSet('name', 'parent_application', 'application_types', 'description', 'software', 'version', 'software_version', 'url', 'tags', 'status', 'status_date',  name=_('Application')),
