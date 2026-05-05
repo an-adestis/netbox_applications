@@ -180,6 +180,7 @@ class InstalledApplication(NetBoxModel):
         on_delete= django_models.PROTECT,
         related_name='applications',
         null=True,
+        blank=True,
         verbose_name='Application Types'
     )
     
