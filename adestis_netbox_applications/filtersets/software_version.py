@@ -35,16 +35,11 @@ class SoftwareVersionFilterSet(NetBoxModelFilterSet):
         label=_('Software (name)')
     )
     
-    installedapplication = django_filters.ModelMultipleChoiceFilter(
-        queryset=InstalledApplication.objects.all(),
-        required = False, 
-        field_name='installedapplication__name',
-        label=_('Installed Application')
-    )
+
 
     class Meta:
         model = SoftwareVersion
-        fields = ['id', 'name', 'installedapplication', 'software', 'version', 'approval_status', 'approval_info']
+        fields = ['id', 'name', 'software', 'version', 'approval_status', 'approval_info']
         filter_overrides = {
             TaggableManager: {
                 'filter_class': TaggableManagerFilter,
@@ -63,7 +58,7 @@ class SoftwareVersionFilterSet(NetBoxModelFilterSet):
             Q(name__icontains=value) |
 
             Q(version__icontains=value) |
-            Q(installedapplication__name__icontains=value) |
+
             Q(software__name__icontains=value) |
             Q(approval_status__icontains=value) |
             Q(approval_info__icontains=value)

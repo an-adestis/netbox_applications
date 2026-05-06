@@ -30,6 +30,11 @@ class SoftwareVersionForm(NetBoxModelForm):
         required=True,
         help_text=_("Software"),
     )
+    
+    version = forms.CharField(
+        required=True,
+        
+    )
 
     fieldsets = (
         FieldSet('name', 'version', 'software', 'description', 'tags',  name=_('Software Version')),
@@ -89,7 +94,7 @@ class SoftwareVersionBulkEditForm(NetBoxModelBulkEditForm):
     )
 
     nullable_fields = [
-        'add_tags', 'remove_tags', 'description', 'name', 'version', 'approval_info', 'approval_status', 'software'
+        'add_tags', 'remove_tags', 'description', 'name', 'version', 'approval_info', 'approval_status'
     ]
     
 class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):

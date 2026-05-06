@@ -42,9 +42,20 @@ class SoftwareTable(NetBoxTable):
         linkify=True
     )
     
-    software_version = tables.Column(
-        linkify = True
+    software_versions = tables.Column(
+        empty_values=(),
+        verbose_name='Software Versions',
+        orderable=False,
     )
+
+    def render_software_versions(self, value, record):
+        versions = record.related_software.all()
+        if not versions:
+            return '-'
+        links = ', '.join(
+            f'<a href="{v.get_absolute_url()}">{v.name}</a>' for v in versions
+        )
+        return mark_safe(links)
     
     def render_name(self, value, record):
         depth = 0
@@ -64,8 +75,8 @@ class SoftwareTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Software
-        fields = ['name', 'status', 'parent_software', 'approval_status', 'url', 'description', 'tags', 'manufacturer', 'contact', 'contact_group', 'approval_info', 'software_version',]
-        default_columns = [ 'name', 'status', 'software_version', 'approval_status', 'approval_info', 'manufacturer', 'contact']
+        fields = ['name', 'status', 'parent_software', 'approval_status', 'url', 'description', 'tags', 'manufacturer', 'contact', 'contact_group', 'approval_info', 'software_versions',]
+        default_columns = [ 'name', 'status', 'software_versions', 'approval_status', 'approval_info', 'manufacturer', 'contact']
         
 class ContactTableSoftware(ContactTable):
     
