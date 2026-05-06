@@ -7,6 +7,8 @@ from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software_version import *
 
+from django.core.exceptions import ValidationError
+
 __all__ = (
     'SoftwareStatusChoices',
     'SoftwareApprovalStatusChoices',
@@ -126,6 +128,10 @@ class Software(NetBoxModel):
 
     def get_approval_status_color(self):
         return SoftwareApprovalStatusChoices.colors.get(self.approval_status)
+    
+    def clean(self):
+        if self.parent_software and self.parent_software == self:
+            raise ValidationError({'parent_software': 'A software cannot be its own parent.'})
         
     
     def __str__(self):
