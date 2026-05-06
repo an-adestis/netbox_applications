@@ -12,6 +12,8 @@ from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_certificate_management.models import *
 
+from django.core.exceptions import ValidationError
+
 __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
@@ -214,6 +216,10 @@ class InstalledApplication(NetBoxModel):
     
     def get_approval_status_color(self):
         return InstalledApplicationApprovalStatusChoices.colors.get(self.approval_status) 
+    
+    def clean(self):
+        if self.parent_application and self.parent_application == self:
+            raise ValidationError({'parent_application': 'An application cannot be its own parent.'})
     
     def __str__(self):
         return self.name 

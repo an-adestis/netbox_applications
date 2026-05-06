@@ -28,9 +28,9 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Manufacturer</th>
+              <th scope='row'>Parent Software</th>
               <td>{% if object.parent_software  %}
-                <a href="{% url 'dcim:parent_software' object.parent_software.id %}"> {{ object.parent_software.name|markdown }}</a>
+                <a href="{% url 'plugins:adestis_netbox_applications:software' object.parent_software.id %}">{{ object.parent_software.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
