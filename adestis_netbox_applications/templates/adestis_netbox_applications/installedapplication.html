@@ -24,6 +24,15 @@
               </td>
             </tr>
             <tr>
+              <th scope='row'>Parent Application</th>
+              <td>{% if object.parent_application  %}
+                <a href="{% url 'plugins:adestis_netbox_applications:installedapplication' object.parent_application.id %}">{{ object.parent_application.name|markdown }}</a>
+                  {% else %}
+                <span class="text-muted">{% trans "None" %}</span>
+                  {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th scope="row">Status</th>
               <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
             </tr>
