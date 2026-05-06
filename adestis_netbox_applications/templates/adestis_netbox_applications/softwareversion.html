@@ -68,12 +68,11 @@
       </div>
     </div>
     <div class="col col-md-6">
-      {% include 'inc/panels/related_objects.html' %}
       {% include 'inc/panels/custom_fields.html' %}
       {% include 'inc/panels/tags.html' %}
-      {% if software %}
+      {% if installed_applications %}
       <div class="card mt-3">
-        <h5 class="card-header">Software</h5>
+        <h5 class="card-header">Applications</h5>
         <div class="card-body">
           <table class="table table-hover attr-table">
             <thead>
@@ -84,11 +83,11 @@
               </tr>
             </thead>
             <tbody>
-              {% for sv in software %}
+              {% for app in installed_applications %}
               <tr>
-                <td><a href="{{ sv.get_absolute_url }}">{{ sv.name }}</a></td>
-                <td>{{ sv.status }}</td>
-                <td>{% badge sv.get_approval_status_display bg_color=sv.get_approval_status_color %}</td>
+                <td><a href="{{ app.get_absolute_url }}">{{ app.name }}</a></td>
+                <td>{{ app.status }}</td>
+                <td>{% badge sv.get_approval_status_display bg_color=app.get_approval_status_color %}</td>
               </tr>
               {% endfor %}
             </tbody>

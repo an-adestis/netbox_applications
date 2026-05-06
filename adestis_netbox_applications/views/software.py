@@ -34,8 +34,16 @@ __all__ = (
     'SoftwareRemoveContactView',
 )
 
-class SoftwareView(generic.ObjectView):
+@register_model_view(Software)
+class SoftwareView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = Software.objects.all()
+    
+    def get_extra_context(self, request, instance):
+        software_versions = instance.related_software.restrict(request.user, 'view').all()
+        return {
+            'related_models': self.get_related_models(request, instance),
+            'software_versions': software_versions,
+        }
 
 class SoftwareListView(generic.ObjectListView):
     queryset = Software.objects.all()

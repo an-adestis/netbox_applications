@@ -110,7 +110,7 @@ class InstalledApplicationTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = InstalledApplication
         fields = ['name', 'application_types', 'status', 'status_date', 'software_version', 'approval_status', 'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster',  'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions']
-        default_columns = [ 'name', 'application_types', 'software', 'version',  'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status']
+        default_columns = [ 'name', 'application_types', 'software', 'version', 'software_version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status']
 
 class InstalledApplicationTableTab(InstalledApplicationTable):
     
@@ -120,7 +120,7 @@ class InstalledApplicationTableTab(InstalledApplicationTable):
     
     class Meta(InstalledApplicationTable.Meta):
         fields = ('name', 'application_types', 'status', 'status_date', 'approval_status', 'software_version',  'parent_application', 'tenant', 'url', 'description', 'tags', 'tenant_group', 'virtual_machine', 'cluster', 'cluster_group', 'device', 'contact', 'contact_group', 'comments', 'approval_info', 'software', 'actions')
-        default_columns = ( 'name', 'application_types', 'software', 'version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status')
+        default_columns = ( 'name', 'application_types', 'software', 'version', 'software_version', 'url', 'tenant', 'contact', 'status', 'status_date', 'approval_status')
         
 class DeviceTableApplication(DeviceTable):
     actions = columns.ActionsColumn(

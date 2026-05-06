@@ -28,18 +28,18 @@
               </td>
             </tr>
             <tr>
-              <th scope='row'>Description</th>
-              <td>{% if object.description %}
-                {{ object.description|markdown }}
+              <th scope='row'>Manufacturer</th>
+              <td>{% if object.parent_software  %}
+                <a href="{% url 'dcim:parent_software' object.parent_software.id %}"> {{ object.parent_software.name|markdown }}</a>
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
               </td>
             </tr>
             <tr>
-              <th scope='row'>Software Version</th>
-              <td>{% if object.software_version %}
-                <a href="{% url 'plugins:adestis_netbox_applications:softwareversion' object.software_version.id %}"> {{ object.software_version.name|markdown }}</a>
+              <th scope='row'>Description</th>
+              <td>{% if object.description %}
+                {{ object.description|markdown }}
                   {% else %}
                 <span class="text-muted">{% trans "None" %}</span>
                   {% endif %}
@@ -83,6 +83,32 @@
     <div class="col col-md-6">
       {% include 'inc/panels/custom_fields.html' %}
       {% include 'inc/panels/tags.html' %}
+      {% if software_versions %}
+      <div class="card mt-3">
+        <h5 class="card-header">Software Versions</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Approval Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sv in software_versions %}
+              <tr>
+                <td><a href="{{ sv.get_absolute_url }}">{{ sv.name }}</a></td>
+                <td>{{ sv.version }}</td>
+                <td>{% badge sv.get_approval_status_display bg_color=sv.get_approval_status_color %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+      {% plugin_right_page object %}
     </div>
   </div>
 {% endblock content %}

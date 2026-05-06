@@ -27,15 +27,11 @@ __all__ = (
 class SoftwareVersionView(GetRelatedModelsMixin, generic.ObjectView):
     queryset = SoftwareVersion.objects.all()
     def get_extra_context(self, request, instance):
-
-            software = Software.objects.restrict(request.user, 'view').filter(
-                pk=instance.software_id
-            )
+            installed_applications = instance.applications_software_version.restrict(request.user, 'view').all()
             return {
                 'related_models': self.get_related_models(request, instance),
-                'software': software,
+                'installed_applications': installed_applications,
             }
-
 class SoftwareVersionListView(generic.ObjectListView):
     queryset = SoftwareVersion.objects.all()
     

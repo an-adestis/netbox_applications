@@ -17,7 +17,7 @@ class SoftwareVersionSerializer(NetBoxModelSerializer):
     class Meta:
         model = SoftwareVersion
         fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                  'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'description', 'installedapplication')
+                  'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'description')
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'created', 'last_updated',
-                        'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'description', 'installedapplication')
+                        'custom_field_data', 'approval_status', 'approval_info', 'software', 'version', 'description')
 

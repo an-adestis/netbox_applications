@@ -17,14 +17,12 @@ class SoftwareVersionApprovalStatusChoices(ChoiceSet):
     NEEDS_APPROVAL = 'needs_approval'
     VERSION_APPROVED = 'version_approved'
     INSTANCE_APPROVAL = 'version_approved_instance_approval_required'
-    VERSION_CHANGED = 'version_changed'
     NOT_APPROVAL = 'not_approved'
     
     CHOICES = [
         (NEEDS_APPROVAL, 'Needs Approval', 'yellow'),
         (VERSION_APPROVED, 'Version Approved', 'green'),
         (INSTANCE_APPROVAL, 'Version Approved - Instance Approval required', 'blue'),
-        (VERSION_CHANGED, 'Version changed - needs Approval', 'cyan'),
         (NOT_APPROVAL, 'Not Approved', 'red'),
     ]
     
@@ -48,15 +46,6 @@ class SoftwareVersion(NetBoxModel):
         on_delete = django_models.CASCADE,
         null=True,
         related_name='related_software'
-    )
-    
-    installedapplication = django_models.ForeignKey(
-        to='adestis_netbox_applications.InstalledApplication',
-        on_delete= django_models.PROTECT,
-        related_name='version_application',
-        null=True,
-        blank=True,
-        verbose_name='Application'
     )
     
     approval_info = django_models.TextField(
