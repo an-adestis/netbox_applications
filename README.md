@@ -1,4 +1,4 @@
-# Netbox Application Plugin
+# NetBox Application Plugin
 
 The **NetBox Application Plugin** extends NetBox with the ability to manage applications and link them to various existing NetBox objects.
 
@@ -6,12 +6,16 @@ The **NetBox Application Plugin** extends NetBox with the ability to manage appl
 
 - Manage applications directly within NetBox
 - Flexible association of applications with existing NetBox objects
+- Hierarchical structure for applications and software (parent/child relationships)
+- Software Version management
+- CSV Import/Export support
+- Bulk edit support
 
-This plugin provide following Models:
-- Application
-- Software
+This plugin provides the following Models:
+- Installed Application
 - Application Type
-
+- Software
+- Software Version
 
 ## Screenshots
 

@@ -17,11 +17,12 @@ setup(
     license='GPL-3.0-only',
     keywords=['netbox', 'netbox-plugin', 'plugin'],
     package_data={
-        "adestis_netbox_applications": ["**/*.html"],
+        "adestis_netbox_applications": ["**/*.html", "**/*.css", "**/*.js"],
         '': ['LICENSE'],
         
         
     },
     long_description=description,
     long_description_content_type="text/markdown",
+
 )

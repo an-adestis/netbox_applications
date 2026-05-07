@@ -11,6 +11,7 @@ from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_certificate_management.models import *
+from adestis_netbox_applications.models.software import RFCURLField
 
 from django.core.exceptions import ValidationError
 
@@ -106,9 +107,8 @@ class InstalledApplication(NetBoxModel):
          blank = True
     )
     
-    url = django_models.URLField(
+    url = RFCURLField(
         max_length=300,
-        blank = True
     )
     
     device = django_models.ManyToManyField(

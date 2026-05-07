@@ -118,15 +118,9 @@ class SoftwareVersionFilterForm(NetBoxModelFilterSetForm):
     )
     
     software_id = DynamicModelMultipleChoiceField(
-        label=_('Assiged Software'),
+        label=_('Assigned Software'),
         queryset=Software.objects.all(),
-        required = True,
-    )
-    
-    installedapplication_id = DynamicModelMultipleChoiceField(
-        label=_('Assiged Application'),
-        queryset=InstalledApplication.objects.all(),
-        required = True,
+        required=False,
     )
     
     tag = TagFilterField(model)

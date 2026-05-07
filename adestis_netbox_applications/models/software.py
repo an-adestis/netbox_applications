@@ -8,12 +8,26 @@ from virtualization.models import *
 from adestis_netbox_applications.models.software_version import *
 
 from django.core.exceptions import ValidationError
+from django.db.models import URLField
+
+class RFCURLField(URLField):
+    default_validators = []
+
 
 __all__ = (
     'SoftwareStatusChoices',
     'SoftwareApprovalStatusChoices',
     'Software',
+    'RFCURLField',
 )
+
+class RFCURLField(URLField):
+    default_validators = []
+    
+    def formfield(self, **kwargs):
+        from django import forms
+        kwargs['form_class'] = forms.CharField
+        return super().formfield(**kwargs)
 
 class SoftwareApprovalStatusChoices(ChoiceSet):
     key = 'Software.approval_status'
@@ -86,8 +100,8 @@ class Software(NetBoxModel):
         blank = True
     )
     
-    url = django_models.URLField(
-        max_length=300
+    url = RFCURLField(
+        max_length=300,
     )
     
     manufacturer = django_models.ForeignKey(
@@ -133,6 +147,5 @@ class Software(NetBoxModel):
         if self.parent_software and self.parent_software == self:
             raise ValidationError({'parent_software': 'A software cannot be its own parent.'})
         
-    
     def __str__(self):
         return self.name 

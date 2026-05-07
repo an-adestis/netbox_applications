@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
         const pk = span.dataset.pk;
+        const depth = parseInt(span.dataset.depth);
 
         const hasChildren = document.querySelector(`tr[data-parent="${pk}"]`);
         if (hasChildren) {
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.className = 'mdi mdi-chevron-right tree-toggle';
             toggle.style.cursor = 'pointer';
             toggle.style.color = 'var(--tblr-body-color)';
-            toggle.style.marginRight = '6px';
+            toggle.style.marginRight = '0px';
             toggle.style.marginLeft = '0px';
             toggle.style.verticalAlign = 'middle';
             span.insertBefore(toggle, span.firstChild);
@@ -46,6 +47,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.classList.toggle('mdi-chevron-right', isOpen);
                 toggleChildren(pk, !isOpen);
             });
+        } else {
+            // Placeholder für Elemente ohne Kinder
+            const placeholder = document.createElement('span');
+            placeholder.style.display = 'inline-block';
+            placeholder.style.width = '14px';
+            
+            span.insertBefore(placeholder, span.firstChild);
         }
     });
 

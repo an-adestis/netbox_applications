@@ -508,17 +508,23 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     contact_group = CSVModelChoiceField(
         label=_('Contact Group'),
         queryset=ContactGroup.objects.all(),
-        required=True,
+        required=False,  # war True
         to_field_name='name',
         help_text=_('Assigned contact_group')
     )
-    
+
     contact = CSVModelMultipleChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all(),
-        required = True,
+        required=False,  # war True
         to_field_name='name',
         help_text=_('Assigned contact')
+    )
+
+    approval_status = CSVChoiceField(
+        choices=InstalledApplicationApprovalStatusChoices,
+        help_text=_('Approval Status'),
+        required=False,
     )
 
     class Meta:

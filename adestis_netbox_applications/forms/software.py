@@ -44,11 +44,7 @@ class SoftwareForm(NetBoxModelForm):
         help_text=_("Contacts"),
     )
     
-    software_version = DynamicModelChoiceField(
-        queryset=SoftwareVersion.objects.all(),
-        required=False,
-        label=_('Software Version'),
-    )
+
     
     contact_group = DynamicModelChoiceField(
         queryset=ContactGroup.objects.all(),
@@ -57,14 +53,14 @@ class SoftwareForm(NetBoxModelForm):
     )
 
     fieldsets = (
-        FieldSet('name', 'parent_software', 'status', 'software_version', 'description', 'url', 'tags',  'manufacturer', name=_('Software')),
+        FieldSet('name', 'parent_software', 'status', 'description', 'url', 'tags',  'manufacturer', name=_('Software')),
         FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
         FieldSet('contact_group', 'contact', name=('Contact')),
     )
 
     class Meta:
         model = Software
-        fields = ['name', 'description', 'url', 'tags', 'status', 'manufacturer', 'parent_software', 'approval_status', 'approval_info', 'contact_group', 'contact', 'software_version']
+        fields = ['name', 'description', 'url', 'tags', 'status', 'manufacturer', 'parent_software', 'approval_status', 'approval_info', 'contact_group', 'contact']
         
         help_texts = {
             'status': "Example text",
@@ -138,16 +134,10 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
         required = False,
     )
     
-    software_version = DynamicModelChoiceField(
-        queryset=SoftwareVersion.objects.all(),
-        required= False,
-        label=_('Software Version'),
-    )
-    
     model = Software
 
     fieldsets = (
-        FieldSet('name', 'parent_software', 'status', 'software_version', 'description', 'url', 'tags', 'manufacturer', name=_('Software')),
+        FieldSet('name', 'parent_software', 'status', 'description', 'url', 'tags', 'manufacturer', name=_('Software')),
         FieldSet('approval_status', 'approval_info', name=_('Software Approval')),
         FieldSet('contact_group', 'contact', name=('Contact')),
     )
@@ -155,7 +145,7 @@ class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
     nullable_fields = [
         'add_tags', 'remove_tags', 'name', 'description', 'url', 'status', 
         'manufacturer', 'parent_software', 'approval_status', 'approval_info',
-        'contact_group', 'contact', 'software_version'
+        'contact_group', 'contact'
     ]
     
 class SoftwareFilterForm(NetBoxModelFilterSetForm):
@@ -164,7 +154,7 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
 
     fieldsets = (
         FieldSet('q', 'index',),
-        FieldSet('name', 'parent_software_id', 'status', 'software_version_id', 'url', 'tag', 'manufacturer_id',  name=_('Software')),
+        FieldSet('name', 'parent_software_id', 'status', 'url', 'tag', 'manufacturer_id',  name=_('Software')),
         FieldSet('approval_status', 'approval_info', name=_('Software Approvement')),
         FieldSet('contact_group_id', 'contact', name=_('Contact'))
     )
@@ -210,12 +200,6 @@ class SoftwareFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label=_('Contacts')
     )
-    
-    software_version_id = DynamicModelMultipleChoiceField(
-        queryset=SoftwareVersion.objects.all(),
-        required=False,
-        label=_('Software Version')
-    )
 
     tag = TagFilterField(model)
 
@@ -252,30 +236,22 @@ class SoftwareCSVForm(NetBoxModelImportForm):
     contact_group = CSVModelChoiceField(
         label=_('Contact Group'),
         queryset=ContactGroup.objects.all(),
-        required=True,
+        required=False,
         to_field_name='name',
         help_text=_('Assigned contact_group')
     )
-    
+
     contact = CSVModelMultipleChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all(),
-        required = True,
+        required=False,
         to_field_name='name',
         help_text=_('Assigned contact')
     )
     
-    software_version = CSVModelChoiceField(
-        label=_('Software Version'),
-        queryset=SoftwareVersion.objects.all(),
-        required=False,
-        to_field_name='name',
-        help_text=_('Name of assigned Software Version')
-    )
-    
     class Meta:
         model = Software
-        fields = ['name' ,'status', 'parent_software', 'software_version', 'approval_status', 'approval_info', 'url', 'manufacturer', 'description', 'tags', 'contact_group', 'contact' ]
+        fields = ['name', 'status', 'parent_software', 'approval_status', 'approval_info', 'url', 'manufacturer', 'description', 'tags', 'contact_group', 'contact']
         default_return_url = 'plugins:adestis_netbox_applications:Software_list'
         
 class SoftwareAssignContactForm(forms.Form):

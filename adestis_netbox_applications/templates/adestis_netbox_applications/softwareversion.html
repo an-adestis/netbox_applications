@@ -87,7 +87,7 @@
               <tr>
                 <td><a href="{{ app.get_absolute_url }}">{{ app.name }}</a></td>
                 <td>{{ app.status }}</td>
-                <td>{% badge sv.get_approval_status_display bg_color=app.get_approval_status_color %}</td>
+                <td>{% badge app.get_approval_status_display bg_color=app.get_approval_status_color %}</td>
               </tr>
               {% endfor %}
             </tbody>

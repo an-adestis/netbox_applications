@@ -12,5 +12,6 @@ class AdestisApplicationsConfig(PluginConfig):
     default_settings = {
         'top_level_menu' : True,
     }
+    docs_url = 'https://github.com/an-adestis/netbox_applications/wiki'
 
 config = AdestisApplicationsConfig

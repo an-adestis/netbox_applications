@@ -35,6 +35,7 @@ services:
     # docker-compose run netbox sh -c "cat /opt/netbox/base_requirements.txt" > ../docs/requirements.txt
     volumes:
      - ./../adestis_netbox_applications/migrations:/opt/netbox/venv/lib/python3.12/site-packages/adestis_netbox_applications/migrations:rw
+     - ./../adestis_netbox_applications/static:/opt/netbox/venv/lib/python3.12/site-packages/adestis_netbox_applications/static:rw
   netbox-worker:
     image: adestis-netbox-plugin-account-management-plugin:latest
     build:
