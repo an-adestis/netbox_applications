@@ -133,10 +133,14 @@ class SoftwareVersionCSVForm(NetBoxModelImportForm):
         required=True,
     )
     
+    version = CSVChoiceField(
+       required=True,
+    )
+    
     software = CSVModelChoiceField(
         label=_("Software"),
         queryset=Software.objects.all(),
-        required=False,
+        required=True,
         to_field_name='name',
         help_text=_('Assigned Software')
     )

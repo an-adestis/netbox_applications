@@ -46,7 +46,7 @@ class SoftwareView(GetRelatedModelsMixin, generic.ObjectView):
         }
 
 class SoftwareListView(generic.ObjectListView):
-    queryset = Software.objects.all()
+    queryset = Software.objects.all().order_by('name')
     table = SoftwareTable
     filterset = SoftwareFilterSet
     filterset_form = SoftwareFilterForm

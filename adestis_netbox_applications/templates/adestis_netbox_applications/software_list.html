@@ -3,33 +3,86 @@
 {% block content %}
 {{ block.super }}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const rows = document.querySelectorAll('table tbody tr');
+let treeInitialized = false;
 
-    rows.forEach(function (row) {
+async function initTree() {
+    if (treeInitialized) return;
+    treeInitialized = true;
+
+    const isImportResult = window.location.search.includes('modified_by_request');
+    if (isImportResult) return;
+
+    // Sofort verstecken basierend auf data-parent aus render_name
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
-
-        const depth = parseInt(span.dataset.depth);
-        const pk = span.dataset.pk;
-        row.dataset.pk = pk;
-        row.dataset.depth = depth;
-        row.dataset.parent = span.dataset.parent;
-
-        if (depth > 0) {
+        row.dataset.pk = span.dataset.pk;
+        row.dataset.parent = span.dataset.parent || '';
+        if (span.dataset.parent && span.dataset.parent !== '') {
             row.style.display = 'none';
             row.classList.add('child-row');
-            span.style.paddingLeft = (depth * 20) + 'px';  // hier
         }
     });
 
+    const response = await fetch('/api/plugins/applications/software/?limit=10000&format=json');
+    const data = await response.json();
+    
+    const parentMap = {};
+    data.results.forEach(item => {
+        if (item.parent_software) {
+            parentMap[item.id] = typeof item.parent_software === 'object' 
+                ? item.parent_software.id 
+                : item.parent_software;
+        }
+    });
+
+    const rows = document.querySelectorAll('table tbody tr');
+    const addedPhantoms = new Set();
+
     rows.forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
-        const pk = span.dataset.pk;
-        const depth = parseInt(span.dataset.depth);
 
-        const hasChildren = document.querySelector(`tr[data-parent="${pk}"]`);
+        const pk = parseInt(span.dataset.pk);
+        const parentFromRender = span.dataset.parent;
+        row.dataset.pk = pk;
+        row.dataset.parent = (parentFromRender && parentFromRender !== '') ? parentFromRender : (parentMap[pk] || '');
+
+        if (row.dataset.parent) {
+            row.style.display = 'none';
+            row.classList.add('child-row');
+
+            const parentPk = parseInt(row.dataset.parent);
+            const parentOnPage = document.querySelector(`tr[data-pk="${parentPk}"]`);
+            
+            if (!parentOnPage && !addedPhantoms.has(parentPk)) {
+                addedPhantoms.add(parentPk);
+                const phantomRow = document.createElement('tr');
+                phantomRow.dataset.pk = parentPk;
+                phantomRow.dataset.depth = 0;
+                phantomRow.classList.add('phantom-row');
+                
+                const parentData = data.results.find(i => i.id === parentPk);
+                phantomRow.innerHTML = `<td colspan="20" style="color: var(--tblr-body-color); opacity: 0.6; padding-left: 30px;">
+                    <a href="/plugins/applications/software/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small>(continued)</small>
+                </td>`;
+                
+                row.parentNode.insertBefore(phantomRow, row);
+            }
+
+            let depth = parseInt(span.dataset.depth) || 1;
+            span.style.paddingLeft = (depth * 20) + 'px';
+        }
+    });
+
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
+        if (row.querySelector('.tree-toggle') || row.querySelector('span[style*="inline-block"]')) return;
+        
+        const span = row.querySelector('span[data-pk]');
+        const pk = row.dataset.pk || (span ? span.dataset.pk : null);
+        if (!pk) return;
+
+        const hasChildren = Object.values(parentMap).includes(parseInt(pk));
         if (hasChildren) {
             const toggle = document.createElement('span');
             toggle.className = 'mdi mdi-chevron-right tree-toggle';
@@ -38,7 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.style.marginRight = '0px';
             toggle.style.marginLeft = '0px';
             toggle.style.verticalAlign = 'middle';
-            span.insertBefore(toggle, span.firstChild);
+
+            if (span) {
+                span.insertBefore(toggle, span.firstChild);
+            } else {
+                const td = row.querySelector('td');
+                if (td) td.prepend(toggle);
+            }
 
             toggle.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -47,12 +106,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.classList.toggle('mdi-chevron-right', isOpen);
                 toggleChildren(pk, !isOpen);
             });
-        } else {
-            // Placeholder für Elemente ohne Kinder
+        } else if (span && !row.classList.contains('phantom-row') && !row.classList.contains('child-row')) {
             const placeholder = document.createElement('span');
             placeholder.style.display = 'inline-block';
             placeholder.style.width = '14px';
-            
             span.insertBefore(placeholder, span.firstChild);
         }
     });
@@ -72,6 +129,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    treeInitialized = false;
+    initTree();
+});
+
+document.body.addEventListener('htmx:afterSettle', function() {
+    treeInitialized = false;
+    initTree();
 });
 </script>
 {% endblock %}

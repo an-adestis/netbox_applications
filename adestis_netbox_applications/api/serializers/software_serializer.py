@@ -15,7 +15,7 @@ class SoftwareSerializer(NetBoxModelSerializer):
     class Meta:
         model = Software
         fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                  'custom_field_data', 'status',  'manufacturer', 'description' )
+                  'custom_field_data', 'status',  'manufacturer', 'description', 'parent_software' )
         brief_fields = ('id', 'tags', 'custom_fields', 'display', 'url', 'created', 'last_updated',
-                        'custom_field_data', 'status', 'manufacturer', 'description')
+                        'custom_field_data', 'status', 'manufacturer', 'description', 'parent_software')
 
