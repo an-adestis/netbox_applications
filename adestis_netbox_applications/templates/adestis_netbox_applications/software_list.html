@@ -2,6 +2,14 @@
 
 {% block content %}
 {{ block.super }}
+<style>
+table tbody tr td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+</style>
 <script>
 async function initTree() {
     const isImportResult = window.location.search.includes('modified_by_request');
@@ -75,12 +83,14 @@ async function initTree() {
             current = parentMap[current];
         }
 
-        phantomRow.innerHTML = `<td colspan="20" style="padding-left: 0px;">
-            <span style="display:inline-block; width:14px;"></span>
-            <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6; padding-left: ${depth * 20}px;">
-                <a href="/plugins/applications/software/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small style="margin-left:4px;">(continued)</small>
-            </span>
-        </td>`;
+        phantomRow.innerHTML = `
+            <td></td>
+            <td colspan="19">
+                <span style="display:inline-block; min-width:${depth * 19}px;"></span>
+                <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6;">
+                    <a href="/plugins/applications/software/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small style="margin-left:4px;">(continued)</small>
+                </span>
+            </td>`;
         
         // Füge Phantom nach dem Eltern-Phantom ein falls vorhanden
         const parentPhantom = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);

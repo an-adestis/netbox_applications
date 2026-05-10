@@ -92,15 +92,19 @@ class InstalledApplicationListView(generic.ObjectListView):
     template_name = 'adestis_netbox_applications/installedapplication_list.html'
     
     def get_queryset(self, request):
+        import re
         qs = InstalledApplication.objects.restrict(request.user, 'view')
+        
+        def natural_sort_key(app):
+            return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', app.name)]
         
         def sort_hierarchical(apps, parent=None, result=None):
             if result is None:
                 result = []
-            for app in apps:
-                if app.parent_application == parent:
-                    result.append(app)
-                    sort_hierarchical(apps, parent=app, result=result)
+            children = sorted([app for app in apps if app.parent_application == parent], key=natural_sort_key)
+            for app in children:
+                result.append(app)
+                sort_hierarchical(apps, parent=app, result=result)
             return result
 
         all_apps = list(qs)

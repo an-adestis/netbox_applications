@@ -2,35 +2,142 @@
 
 {% block content %}
 {{ block.super }}
+<style>
+table tbody tr td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+</style>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const rows = document.querySelectorAll('table tbody tr');
+async function initTree() {
+    const isImportResult = window.location.search.includes('modified_by_request');
+    if (isImportResult) return;
 
-    rows.forEach(function (row) {
+    const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+
+    // Sofort verstecken
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
-
-        const depth = parseInt(span.dataset.depth);
-        const pk = span.dataset.pk;
-        row.dataset.pk = pk;
-        row.dataset.depth = depth;
-        row.dataset.parent = span.dataset.parent;
-
-        if (depth > 0) {
+        row.dataset.pk = span.dataset.pk;
+        row.dataset.parent = span.dataset.parent || '';
+        if (span.dataset.parent && span.dataset.parent !== '') {
             row.style.display = 'none';
             row.classList.add('child-row');
-            span.style.paddingLeft = (depth * 20) + 'px';  // hier
         }
     });
 
-    rows.forEach(function (row) {
+    if (tbody.dataset.treeInit === 'true') return;
+    tbody.dataset.treeInit = 'true';
+
+    const response = await fetch('/api/plugins/applications/applications/?limit=10000&format=json');
+    const data = await response.json();
+    
+    const parentMap = {};
+    const nameMap = {};
+    data.results.forEach(item => {
+        nameMap[item.id] = item.display;
+        if (item.parent_application) {
+            parentMap[item.id] = typeof item.parent_application === 'object' 
+                ? item.parent_application.id 
+                : item.parent_application;
+        }
+    });
+
+    // Erstelle Phantom für einen Parent und alle seine Vorfahren rekursiv
+    function ensurePhantomChain(parentPk, insertBefore, addedPhantoms) {
+        if (addedPhantoms.has(parentPk)) return;
+        
+        // Erst Phantom für den Großeltern erstellen falls nötig
+        const grandParentPk = parentMap[parentPk];
+        if (grandParentPk) {
+            const grandParentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${grandParentPk}"]`);
+            const grandParentPhantomOnPage = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+            if (!grandParentOnPage && !grandParentPhantomOnPage) {
+                ensurePhantomChain(grandParentPk, insertBefore, addedPhantoms);
+            }
+        }
+
+        addedPhantoms.add(parentPk);
+        const phantomRow = document.createElement('tr');
+        phantomRow.dataset.pk = parentPk;
+        phantomRow.classList.add('phantom-row');
+        
+        if (grandParentPk) {
+            phantomRow.dataset.parent = grandParentPk;
+            phantomRow.style.display = 'none';
+        }
+        
+        const parentData = data.results.find(i => i.id === parentPk);
+        
+        // Berechne Tiefe
+        let depth = 0;
+        let current = parentPk;
+        const visited = new Set();
+        while (parentMap[current] && !visited.has(current)) {
+            visited.add(current);
+            depth++;
+            current = parentMap[current];
+        }
+
+        phantomRow.innerHTML = `
+            <td></td>
+            <td colspan="19">
+                <span style="display:inline-block; min-width:${depth * 19}px;"></span>
+                <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6;">
+                    <a href="/plugins/applications/applications/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small style="margin-left:4px;">(continued)</small>
+                </span>
+            </td>`;
+        
+        // Füge Phantom nach dem Eltern-Phantom ein falls vorhanden
+        const parentPhantom = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+        if (parentPhantom) {
+            parentPhantom.parentNode.insertBefore(phantomRow, parentPhantom.nextSibling);
+        } else {
+            insertBefore.parentNode.insertBefore(phantomRow, insertBefore);
+        }
+    }
+
+    const addedPhantoms = new Set();
+
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
-        const pk = span.dataset.pk;
-        const depth = parseInt(span.dataset.depth);
 
-        const hasChildren = document.querySelector(`tr[data-parent="${pk}"]`);
-        if (hasChildren) {
+        const pk = parseInt(span.dataset.pk);
+        const parentFromRender = span.dataset.parent;
+        row.dataset.pk = pk;
+        row.dataset.parent = (parentFromRender && parentFromRender !== '') ? parentFromRender : (parentMap[pk] || '');
+
+        if (row.dataset.parent) {
+            row.style.display = 'none';
+            row.classList.add('child-row');
+
+            const parentPk = parseInt(row.dataset.parent);
+            const parentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${parentPk}"]`);
+            
+            if (!parentOnPage) {
+                ensurePhantomChain(parentPk, row, addedPhantoms);
+            }
+
+            let depth = parseInt(span.dataset.depth) || 1;
+            span.style.paddingLeft = (depth * 20) + 'px';
+        }
+    });
+
+    // Toggles hinzufügen
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
+        const span = row.querySelector('span[data-pk]');
+        const pk = row.dataset.pk || (span ? span.dataset.pk : null);
+        if (!pk) return;
+
+        const hasChildren = Object.values(parentMap).includes(parseInt(pk)) || 
+                           document.querySelector(`tr[data-parent="${pk}"]`) !== null;
+        
+        if (hasChildren && !row.querySelector('.tree-toggle')) {
             const toggle = document.createElement('span');
             toggle.className = 'mdi mdi-chevron-right tree-toggle';
             toggle.style.cursor = 'pointer';
@@ -38,7 +145,13 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.style.marginRight = '0px';
             toggle.style.marginLeft = '0px';
             toggle.style.verticalAlign = 'middle';
-            span.insertBefore(toggle, span.firstChild);
+
+            if (span) {
+                span.insertBefore(toggle, span.firstChild);
+            } else {
+                const td = row.querySelector('td');
+                if (td) td.prepend(toggle);
+            }
 
             toggle.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -47,12 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.classList.toggle('mdi-chevron-right', isOpen);
                 toggleChildren(pk, !isOpen);
             });
-        } else {
-            // Placeholder für Elemente ohne Kinder
+        } else if (span && !row.classList.contains('phantom-row') && !row.classList.contains('child-row') && !span.querySelector('.tree-toggle') && !span.querySelector('span[style*="inline-block"]')) {
             const placeholder = document.createElement('span');
             placeholder.style.display = 'inline-block';
             placeholder.style.width = '14px';
-            
             span.insertBefore(placeholder, span.firstChild);
         }
     });
@@ -72,6 +183,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-});
+}
+
+document.addEventListener('DOMContentLoaded', initTree);
+document.body.addEventListener('htmx:afterSettle', initTree);
 </script>
 {% endblock %}

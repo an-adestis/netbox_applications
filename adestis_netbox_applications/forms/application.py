@@ -526,6 +526,14 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         help_text=_('Approval Status'),
         required=False,
     )
+    
+    parent_application = CSVModelChoiceField(
+        label=_('Parent Application'),
+        queryset=InstalledApplication.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Name of parent application')
+    )
 
     class Meta:
         model = InstalledApplication
