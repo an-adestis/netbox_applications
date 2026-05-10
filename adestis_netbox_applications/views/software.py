@@ -46,22 +46,27 @@ class SoftwareView(GetRelatedModelsMixin, generic.ObjectView):
         }
 
 class SoftwareListView(generic.ObjectListView):
-    queryset = Software.objects.all().order_by('name')
+    queryset = Software.objects.all()
     table = SoftwareTable
     filterset = SoftwareFilterSet
     filterset_form = SoftwareFilterForm
     template_name = 'adestis_netbox_applications/software_list.html'
+    paginate_by = 500
     
     def get_queryset(self, request):
+        import re
         qs = Software.objects.restrict(request.user, 'view')
+        
+        def natural_sort_key(app):
+            return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', app.name)]
         
         def sort_hierarchical(apps, parent=None, result=None):
             if result is None:
                 result = []
-            for app in apps:
-                if app.parent_software == parent:
-                    result.append(app)
-                    sort_hierarchical(apps, parent=app, result=result)
+            children = sorted([app for app in apps if app.parent_software == parent], key=natural_sort_key)
+            for app in children:
+                result.append(app)
+                sort_hierarchical(apps, parent=app, result=result)
             return result
 
         all_apps = list(qs)

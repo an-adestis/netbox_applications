@@ -3,16 +3,14 @@
 {% block content %}
 {{ block.super }}
 <script>
-let treeInitialized = false;
-
 async function initTree() {
-    if (treeInitialized) return;
-    treeInitialized = true;
-
     const isImportResult = window.location.search.includes('modified_by_request');
     if (isImportResult) return;
 
-    // Sofort verstecken basierend auf data-parent aus render_name
+    const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+
+    // Sofort verstecken
     document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
@@ -24,11 +22,16 @@ async function initTree() {
         }
     });
 
+    if (tbody.dataset.treeInit === 'true') return;
+    tbody.dataset.treeInit = 'true';
+
     const response = await fetch('/api/plugins/applications/software/?limit=10000&format=json');
     const data = await response.json();
     
     const parentMap = {};
+    const nameMap = {};
     data.results.forEach(item => {
+        nameMap[item.id] = item.display;
         if (item.parent_software) {
             parentMap[item.id] = typeof item.parent_software === 'object' 
                 ? item.parent_software.id 
@@ -36,10 +39,61 @@ async function initTree() {
         }
     });
 
-    const rows = document.querySelectorAll('table tbody tr');
+    // Erstelle Phantom für einen Parent und alle seine Vorfahren rekursiv
+    function ensurePhantomChain(parentPk, insertBefore, addedPhantoms) {
+        if (addedPhantoms.has(parentPk)) return;
+        
+        // Erst Phantom für den Großeltern erstellen falls nötig
+        const grandParentPk = parentMap[parentPk];
+        if (grandParentPk) {
+            const grandParentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${grandParentPk}"]`);
+            const grandParentPhantomOnPage = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+            if (!grandParentOnPage && !grandParentPhantomOnPage) {
+                ensurePhantomChain(grandParentPk, insertBefore, addedPhantoms);
+            }
+        }
+
+        addedPhantoms.add(parentPk);
+        const phantomRow = document.createElement('tr');
+        phantomRow.dataset.pk = parentPk;
+        phantomRow.classList.add('phantom-row');
+        
+        if (grandParentPk) {
+            phantomRow.dataset.parent = grandParentPk;
+            phantomRow.style.display = 'none';
+        }
+        
+        const parentData = data.results.find(i => i.id === parentPk);
+        
+        // Berechne Tiefe
+        let depth = 0;
+        let current = parentPk;
+        const visited = new Set();
+        while (parentMap[current] && !visited.has(current)) {
+            visited.add(current);
+            depth++;
+            current = parentMap[current];
+        }
+
+        phantomRow.innerHTML = `<td colspan="20" style="padding-left: 0px;">
+            <span style="display:inline-block; width:14px;"></span>
+            <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6; padding-left: ${depth * 20}px;">
+                <a href="/plugins/applications/software/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small style="margin-left:4px;">(continued)</small>
+            </span>
+        </td>`;
+        
+        // Füge Phantom nach dem Eltern-Phantom ein falls vorhanden
+        const parentPhantom = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+        if (parentPhantom) {
+            parentPhantom.parentNode.insertBefore(phantomRow, parentPhantom.nextSibling);
+        } else {
+            insertBefore.parentNode.insertBefore(phantomRow, insertBefore);
+        }
+    }
+
     const addedPhantoms = new Set();
 
-    rows.forEach(function (row) {
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
 
@@ -53,21 +107,10 @@ async function initTree() {
             row.classList.add('child-row');
 
             const parentPk = parseInt(row.dataset.parent);
-            const parentOnPage = document.querySelector(`tr[data-pk="${parentPk}"]`);
+            const parentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${parentPk}"]`);
             
-            if (!parentOnPage && !addedPhantoms.has(parentPk)) {
-                addedPhantoms.add(parentPk);
-                const phantomRow = document.createElement('tr');
-                phantomRow.dataset.pk = parentPk;
-                phantomRow.dataset.depth = 0;
-                phantomRow.classList.add('phantom-row');
-                
-                const parentData = data.results.find(i => i.id === parentPk);
-                phantomRow.innerHTML = `<td colspan="20" style="color: var(--tblr-body-color); opacity: 0.6; padding-left: 30px;">
-                    <a href="/plugins/applications/software/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small>(continued)</small>
-                </td>`;
-                
-                row.parentNode.insertBefore(phantomRow, row);
+            if (!parentOnPage) {
+                ensurePhantomChain(parentPk, row, addedPhantoms);
             }
 
             let depth = parseInt(span.dataset.depth) || 1;
@@ -75,15 +118,16 @@ async function initTree() {
         }
     });
 
+    // Toggles hinzufügen
     document.querySelectorAll('table tbody tr').forEach(function (row) {
-        if (row.querySelector('.tree-toggle') || row.querySelector('span[style*="inline-block"]')) return;
-        
         const span = row.querySelector('span[data-pk]');
         const pk = row.dataset.pk || (span ? span.dataset.pk : null);
         if (!pk) return;
 
-        const hasChildren = Object.values(parentMap).includes(parseInt(pk));
-        if (hasChildren) {
+        const hasChildren = Object.values(parentMap).includes(parseInt(pk)) || 
+                           document.querySelector(`tr[data-parent="${pk}"]`) !== null;
+        
+        if (hasChildren && !row.querySelector('.tree-toggle')) {
             const toggle = document.createElement('span');
             toggle.className = 'mdi mdi-chevron-right tree-toggle';
             toggle.style.cursor = 'pointer';
@@ -106,7 +150,7 @@ async function initTree() {
                 this.classList.toggle('mdi-chevron-right', isOpen);
                 toggleChildren(pk, !isOpen);
             });
-        } else if (span && !row.classList.contains('phantom-row') && !row.classList.contains('child-row')) {
+        } else if (span && !row.classList.contains('phantom-row') && !row.classList.contains('child-row') && !span.querySelector('.tree-toggle') && !span.querySelector('span[style*="inline-block"]')) {
             const placeholder = document.createElement('span');
             placeholder.style.display = 'inline-block';
             placeholder.style.width = '14px';
@@ -131,14 +175,7 @@ async function initTree() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    treeInitialized = false;
-    initTree();
-});
-
-document.body.addEventListener('htmx:afterSettle', function() {
-    treeInitialized = false;
-    initTree();
-});
+document.addEventListener('DOMContentLoaded', initTree);
+document.body.addEventListener('htmx:afterSettle', initTree);
 </script>
 {% endblock %}
