@@ -1,0 +1,44 @@
+{% extends 'base/layout.html' %}
+{% load i18n %}
+{% block content %}
+<div class="row my-3">
+  <div class="col col-md-8">
+    <div class="card">
+      <h5 class="card-header">Merge Applications</h5>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for pk in pks %}
+            <input type="hidden" name="pks" value="{{ pk }}">
+          {% endfor %}
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Primary</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Software</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for app in applications %}
+              <tr>
+                <td>
+                  <input type="radio" name="primary" value="{{ app.pk }}" {% if forloop.first %}checked{% endif %}>
+                </td>
+                <td>{{ app.name }}</td>
+                <td>{{ app.get_status_display }}</td>
+                <td>{{ app.software }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p class="text-muted">Select the primary application – all others will be merged into it and deleted.</p>
+          <button type="submit" class="btn btn-warning">Merge</button>
+          <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -2,6 +2,52 @@
 
 {% block content %}
 {{ block.super }}
+<script>
+function mergeApplications() {
+    const checked = document.querySelectorAll('table tbody tr input[type="checkbox"]:checked');
+    const pks = Array.from(checked).map(cb => {
+        const row = cb.closest('tr');
+        // Versuche data-pk, dann href aus dem Link
+        if (row.dataset.pk) return row.dataset.pk;
+        const link = row.querySelector('a[href*="/applications/"]');
+        if (link) {
+            const match = link.href.match(/\/applications\/(\d+)\//);
+            if (match) return match[1];
+        }
+        return null;
+    }).filter(Boolean);
+    
+    if (pks.length < 2) {
+        alert('Please select at least 2 applications to merge.');
+        return;
+    }
+    
+    window.location.href = `/plugins/applications/applications/merge/?pks=${pks.join(',')}`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mergeBtn = document.getElementById('merge-btn');
+    
+    function updateMergeButton() {
+        const checked = document.querySelectorAll('table tbody tr input[type="checkbox"]:checked');
+        mergeBtn.style.display = checked.length >= 2 ? 'inline-block' : 'none';
+    }
+    
+    document.querySelectorAll('table tbody tr input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateMergeButton);
+    });
+    
+    // Auch den Header-Checkbox überwachen
+    const headerCheckbox = document.querySelector('table thead input[type="checkbox"]');
+    if (headerCheckbox) {
+        headerCheckbox.addEventListener('change', updateMergeButton);
+    }
+});
+</script>
+
+<button id="merge-btn" onclick="mergeApplications()" class="btn btn-warning" style="display:none; margin-left: 8px;">
+    <span class="mdi mdi-merge"></span> Merge Selected
+</button>
 <style>
 table tbody tr td {
     white-space: nowrap;

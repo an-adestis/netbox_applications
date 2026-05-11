@@ -109,6 +109,7 @@ class Software(NetBoxModel):
         on_delete= django_models.PROTECT,
         related_name= 'software_manufacturer',
         null= True,
+        blank= True, 
         verbose_name='Manufacturer'
     )
     

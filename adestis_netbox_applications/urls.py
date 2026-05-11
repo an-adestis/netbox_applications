@@ -59,6 +59,7 @@ urlpatterns = (
     
     path('applications/successorapplications/', InstalledApplicationAffectedSuccessorApplicationView.as_view(),
          name='successorapplications_list'),
+    path('applications/merge/', InstalledApplicationMergeView.as_view(), name='installedapplication_merge'),
     
     
     #Software

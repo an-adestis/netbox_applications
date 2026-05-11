@@ -68,6 +68,7 @@ __all__ = (
     'InstalledApplicationRemoveCertificateView',
     
     'InstalledApplicationAffectedSuccessorApplicationView',
+    'InstalledApplicationMergeView',
 )
 
 @register_model_view(InstalledApplication)
@@ -150,6 +151,45 @@ class InstalledApplicationBulkImportView(generic.BulkImportView):
     model_form = InstalledApplicationCSVForm
     table = InstalledApplicationTable
     
+from django.views import View
+
+class InstalledApplicationMergeView(View):
+    template_name = 'adestis_netbox_applications/merge_applications.html'
+
+    def get(self, request):
+        pks = request.GET.get('pks', '').split(',')
+        pks = [int(pk) for pk in pks if pk.isdigit()]
+        applications = InstalledApplication.objects.filter(pk__in=pks)
+        return render(request, self.template_name, {
+            'applications': applications,
+            'pks': pks,
+        })
+
+    def post(self, request):
+        pks = request.POST.getlist('pks')
+        primary_pk = request.POST.get('primary')
+        
+        primary = get_object_or_404(InstalledApplication, pk=primary_pk)
+        duplicates = InstalledApplication.objects.filter(pk__in=pks).exclude(pk=primary_pk)
+
+        with transaction.atomic():
+            for duplicate in duplicates:
+                for child in InstalledApplication.objects.filter(parent_application=duplicate):
+                    child.parent_application = primary
+                    child.save()
+                for device in duplicate.device.all():
+                    primary.device.add(device)
+                for vm in duplicate.virtual_machine.all():
+                    primary.virtual_machine.add(vm)
+                for cluster in duplicate.cluster.all():
+                    primary.cluster.add(cluster)
+                for contact in duplicate.contact.all():
+                    primary.contact.add(contact)
+                duplicate.delete()
+            primary.save()
+
+        messages.success(request, f"Merged {len(pks)-1} applications into '{primary.name}'")
+        return redirect(reverse('plugins:adestis_netbox_applications:installedapplication_list'))
 @register_model_view(InstalledApplication, name='certificate')
 class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()
