@@ -7,7 +7,6 @@ function mergeApplications() {
     const checked = document.querySelectorAll('table tbody tr input[type="checkbox"]:checked');
     const pks = Array.from(checked).map(cb => {
         const row = cb.closest('tr');
-        // Versuche data-pk, dann href aus dem Link
         if (row.dataset.pk) return row.dataset.pk;
         const link = row.querySelector('a[href*="/applications/"]');
         if (link) {
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cb.addEventListener('change', updateMergeButton);
     });
     
-    // Auch den Header-Checkbox überwachen
     const headerCheckbox = document.querySelector('table thead input[type="checkbox"]');
     if (headerCheckbox) {
         headerCheckbox.addEventListener('change', updateMergeButton);
@@ -48,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <button id="merge-btn" onclick="mergeApplications()" class="btn btn-warning" style="display:none; margin-left: 8px;">
     <span class="mdi mdi-merge"></span> Merge Selected
 </button>
+
 <style>
 table tbody tr td {
     white-space: nowrap;
@@ -56,6 +55,7 @@ table tbody tr td {
     max-width: 300px;
 }
 </style>
+
 <script>
 async function initTree() {
     const isImportResult = window.location.search.includes('modified_by_request');
@@ -64,7 +64,6 @@ async function initTree() {
     const tbody = document.querySelector('table tbody');
     if (!tbody) return;
 
-    // Sofort verstecken
     document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         if (!span) return;
@@ -93,17 +92,15 @@ async function initTree() {
         }
     });
 
-    // Erstelle Phantom für einen Parent und alle seine Vorfahren rekursiv
-    function ensurePhantomChain(parentPk, insertBefore, addedPhantoms) {
+    async function ensurePhantomChain(parentPk, insertBefore, addedPhantoms) {
         if (addedPhantoms.has(parentPk)) return;
         
-        // Erst Phantom für den Großeltern erstellen falls nötig
         const grandParentPk = parentMap[parentPk];
         if (grandParentPk) {
             const grandParentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${grandParentPk}"]`);
             const grandParentPhantomOnPage = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
             if (!grandParentOnPage && !grandParentPhantomOnPage) {
-                ensurePhantomChain(grandParentPk, insertBefore, addedPhantoms);
+                await ensurePhantomChain(grandParentPk, insertBefore, addedPhantoms);
             }
         }
 
@@ -117,9 +114,6 @@ async function initTree() {
             phantomRow.style.display = 'none';
         }
         
-        const parentData = data.results.find(i => i.id === parentPk);
-        
-        // Berechne Tiefe
         let depth = 0;
         let current = parentPk;
         const visited = new Set();
@@ -129,16 +123,23 @@ async function initTree() {
             current = parentMap[current];
         }
 
+        let displayName = nameMap[parentPk] || null;
+        if (!displayName) {
+            const parentResponse = await fetch(`/api/plugins/applications/applications/${parentPk}/?format=json`);
+            const parentJson = await parentResponse.json();
+            displayName = parentJson.display || 'Parent';
+            nameMap[parentPk] = displayName;
+        }
+
         phantomRow.innerHTML = `
             <td></td>
             <td colspan="19">
                 <span style="display:inline-block; min-width:${depth * 19}px;"></span>
                 <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6;">
-                    <a href="/plugins/applications/applications/${parentPk}/">${parentData ? parentData.display : 'Parent'}</a> <small style="margin-left:4px;">(continued)</small>
+                    <a href="/plugins/applications/applications/${parentPk}/">${displayName}</a> <small style="margin-left:4px;">(continued)</small>
                 </span>
             </td>`;
         
-        // Füge Phantom nach dem Eltern-Phantom ein falls vorhanden
         const parentPhantom = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
         if (parentPhantom) {
             parentPhantom.parentNode.insertBefore(phantomRow, parentPhantom.nextSibling);
@@ -149,9 +150,9 @@ async function initTree() {
 
     const addedPhantoms = new Set();
 
-    document.querySelectorAll('table tbody tr').forEach(function (row) {
+    for (const row of document.querySelectorAll('table tbody tr')) {
         const span = row.querySelector('span[data-pk]');
-        if (!span) return;
+        if (!span) continue;
 
         const pk = parseInt(span.dataset.pk);
         const parentFromRender = span.dataset.parent;
@@ -166,15 +167,14 @@ async function initTree() {
             const parentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${parentPk}"]`);
             
             if (!parentOnPage) {
-                ensurePhantomChain(parentPk, row, addedPhantoms);
+                await ensurePhantomChain(parentPk, row, addedPhantoms);
             }
 
             let depth = parseInt(span.dataset.depth) || 1;
             span.style.paddingLeft = (depth * 20) + 'px';
         }
-    });
+    }
 
-    // Toggles hinzufügen
     document.querySelectorAll('table tbody tr').forEach(function (row) {
         const span = row.querySelector('span[data-pk]');
         const pk = row.dataset.pk || (span ? span.dataset.pk : null);
