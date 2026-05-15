@@ -51,7 +51,7 @@ class SoftwareListView(generic.ObjectListView):
     filterset = SoftwareFilterSet
     filterset_form = SoftwareFilterForm
     template_name = 'adestis_netbox_applications/software_list.html'
-    paginate_by = 500
+    # paginate_by = 500
     
     def get_queryset(self, request):
         import re

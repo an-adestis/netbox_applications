@@ -69,6 +69,10 @@ __all__ = (
     
     'InstalledApplicationAffectedSuccessorApplicationView',
     'InstalledApplicationMergeView',
+    
+    'SoftwareVersionAffectedInstalledApplicationView',
+    'InstalledApplicationAssignSoftwareVersion',
+    'InstalledApplicationRemoveSoftwareVersionsView',
 )
 
 @register_model_view(InstalledApplication)
@@ -190,6 +194,105 @@ class InstalledApplicationMergeView(View):
 
         messages.success(request, f"Merged {len(pks)-1} applications into '{primary.name}'")
         return redirect(reverse('plugins:adestis_netbox_applications:installedapplication_list'))
+    
+@register_model_view(InstalledApplication, name='software_versions')
+class SoftwareVersionAffectedInstalledApplicationView(generic.ObjectChildrenView):
+    queryset = InstalledApplication.objects.all()
+    child_model = SoftwareVersion
+    table = SoftwareVersionTable
+    template_name = 'adestis_netbox_applications/software_version_tab.html'
+    actions = {
+        'add': {'add'},
+        'export': {'view'},
+        'bulk_remove_software_versions': {'remove'},
+    }
+
+    def get_children(self, request, parent):
+        return SoftwareVersion.objects.restrict(request.user, 'view').filter(
+            assigned_applications=parent
+        )
+
+    tab = ViewTab(
+        label=_('Software Modules'),
+        badge=lambda obj: obj.software_versions.count(),
+        hide_if_empty=False,
+        weight=600
+    )
+    
+@register_model_view(InstalledApplication, 'assign_software_version')
+class InstalledApplicationAssignSoftwareVersion(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.prefetch_related('tags').all()
+    form = InstalledApplicationAssignSoftwareVersionForm
+    template_name = 'adestis_netbox_applications/assign_software_version.html'
+
+    def get(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, initial=request.GET)
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': reverse('plugins:adestis_netbox_applications:installedapplication', kwargs={'pk': pk}),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_software_versions', kwargs={'pk': pk}),
+        })
+
+    def post(self, request, pk):
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+        form = self.form(installedapplication, request.POST)
+        if form.is_valid():
+            selected_versions = form.cleaned_data['software_version']
+            with transaction.atomic():
+                for sv in SoftwareVersion.objects.filter(pk__in=selected_versions):
+                    installedapplication.software_versions.add(sv)
+                    installedapplication.save()
+            return redirect(installedapplication.get_absolute_url())
+        return render(request, self.template_name, {
+            'installedapplication': installedapplication,
+            'form': form,
+            'return_url': installedapplication.get_absolute_url(),
+            'edit_url': reverse('plugins:adestis_netbox_applications:installedapplication_assign_software_versions', kwargs={'pk': pk}),
+        })
+
+
+@register_model_view(InstalledApplication, 'remove_software_versions', path='software_versions/remove')
+class InstalledApplicationRemoveSoftwareVersionsView(generic.ObjectEditView):
+    queryset = InstalledApplication.objects.all()
+    form = InstalledApplicationRemoveSoftwareVersions
+    template_name = 'generic/bulk_remove.html'
+
+    def post(self, request, pk):
+
+        installedapplication = get_object_or_404(self.queryset, pk=pk)
+
+        if '_confirm' in request.POST:
+            
+            form = self.form(request.POST)
+            if form.is_valid():
+                
+                software_versions_pks = form.cleaned_data['pk']
+                with transaction.atomic():
+                    installedapplication.software_versions.remove(*software_versions_pks)
+                    installedapplication.save()
+
+                messages.success(request, _("Removed {count} software versions from applications {installedapplication}").format(
+                    count=len(software_versions_pks),
+                    installedapplication=installedapplication
+                ))
+                return redirect(installedapplication.get_absolute_url())
+        else:
+            form = self.form(initial={'pk': request.POST.getlist('pk')})
+
+        selected_objects = SoftwareVersion.objects.filter(pk__in=form.initial['pk'])
+        software_versions_table = SoftwareVersionTable(list(selected_objects), orderable=False)
+        software_versions_table.configure(request)
+
+        return render(request, self.template_name, {
+            'form': form,
+            'parent_obj': installedapplication,
+            'table': software_versions_table,
+            'obj_type_plural': 'software_versions',
+            'return_url': installedapplication.get_absolute_url(),
+        })
+
 @register_model_view(InstalledApplication, name='certificate')
 class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()

@@ -6,8 +6,8 @@
 {% load static %}
 
 {% block extra_controls %}
-  <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_assign_device' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary">
-    <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign Device
+  <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_assign_software_versions' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary">
+    <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign Software Module
   </a>
 {% endblock %}
 
@@ -15,7 +15,7 @@
     {{ block.super }}
     {% if 'bulk_rename' in actions %}
         <button type="submit" name="_rename"
-                {% formaction %}="{% url 'plugins:adestis_netbox_applications:software_version_bulk_rename' %}?return_url={{ return_url }}"
+                {% formaction %}="{% url 'adestis_netbox_applications:software_versions_bulk_rename' %}?return_url={{ return_url }}"
                 class="btn btn-outline-warning">
             <i class="mdi mdi-pencil-outline" aria-hidden="true"></i> {% trans "Rename" %}
         </button>
@@ -24,9 +24,9 @@
 
 {% block bulk_delete_controls %}
     {{ block.super }}
-    {% if 'bulk_remove_device' in actions %}
+    {% if 'bulk_remove_software_versions' in actions %}
         <button type="submit" name="_remove"
-                {% formaction %}="{% url 'plugins:adestis_netbox_applications:installedapplication_remove_device' pk=object.pk %}?return_url={{ return_url }}"
+                {% formaction %}="{% url 'plugins:adestis_netbox_applications:installedapplication_remove_software_versions' pk=object.pk %}?return_url={{ return_url }}"
                 class="btn btn-danger">
             <span class="mdi mdi-trash-can-outline" aria-hidden="true"></span> Remove Selected
         </button>

@@ -40,6 +40,9 @@ __all__ = (
     'InstalledApplicationRemoveVirtualMachine',
     'InstalledApplicationRemoveCertificate',
     'InstalledApplicationRemoveContact',
+    'InstalledApplicationAssignSoftwareVersionForm',
+    
+    'InstalledApplicationRemoveSoftwareVersions',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -540,6 +543,26 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         fields = ['name', 'application_types', 'parent_application', 'status', 'status_date', 'description', 'software', 'version', 'software_version', 'approval_status', 'approval_info', 'url', 'tenant_group', 'tenant', 'virtual_machine', 'cluster_group', 'cluster', 'device', 'tags', 'comments', 'contact_group', 'contact' ]
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
+
+class InstalledApplicationAssignSoftwareVersionForm(forms.Form):
+    
+    software_version = DynamicModelMultipleChoiceField(
+        label=_('Software Versions'),
+        queryset=SoftwareVersion.objects.all()
+    )
+
+    class Meta:
+        fields = ['software_version']
+
+    def __init__(self, installedapplication, *args, **kwargs):
+        self.installedapplication = installedapplication
+        self.software_version = DynamicModelMultipleChoiceField(
+            label=_('Software Versions'),
+            queryset=SoftwareVersion.objects.all()
+        )
+        super().__init__(*args, **kwargs)
+        self.fields['software_version'].choices = []
+
 class InstalledApplicationAssignDeviceForm(forms.Form):
     
     device = DynamicModelMultipleChoiceField(
@@ -747,6 +770,12 @@ class InstalledApplicationRemoveVirtualMachine(ConfirmationForm):
 class InstalledApplicationRemoveCertificate(ConfirmationForm):
     pk = forms.ModelMultipleChoiceField(
         queryset=Certificate.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
+    
+class InstalledApplicationRemoveSoftwareVersions(ConfirmationForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=SoftwareVersion.objects.all(),
         widget=forms.MultipleHiddenInput()
     )
     

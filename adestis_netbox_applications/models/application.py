@@ -177,6 +177,13 @@ class InstalledApplication(NetBoxModel):
         verbose_name='Software Version'
     )
     
+    software_versions = django_models.ManyToManyField(
+        to='adestis_netbox_applications.SoftwareVersion',
+        related_name='assigned_applications',
+        blank=True,
+        verbose_name='Software Versions'
+    )
+    
     application_types = django_models.ForeignKey(
         to='adestis_netbox_applications.InstalledApplicationTypes',
         on_delete= django_models.PROTECT,

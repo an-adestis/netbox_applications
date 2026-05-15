@@ -134,8 +134,7 @@ async function initTree() {
         phantomRow.innerHTML = `
             <td></td>
             <td colspan="19">
-                <span style="display:inline-block; min-width:${depth * 19}px;"></span>
-                <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6;">
+                <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6; padding-left:${depth * 20}px;">
                     <a href="/plugins/applications/applications/${parentPk}/">${displayName}</a> <small style="margin-left:4px;">(continued)</small>
                 </span>
             </td>`;

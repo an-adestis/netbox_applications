@@ -14,4 +14,3 @@ COPY ./docker/requirements-container.txt /source/adestis-netbox-applications/
 COPY ./docker/configuration/configuration.py /etc/netbox/config/configuration.py
 RUN /usr/local/bin/uv pip install /source/adestis-netbox-applications/
 RUN /usr/local/bin/uv pip install -r /source/adestis-netbox-applications/requirements-container.txt
-ENTRYPOINT ["/opt/netbox/docker-entrypoint.sh"]
