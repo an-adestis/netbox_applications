@@ -160,6 +160,12 @@ from django.views import View
 class InstalledApplicationMergeView(View):
     template_name = 'adestis_netbox_applications/merge_applications.html'
 
+    MERGE_FIELDS = [
+        'name', 'status', 'status_date', 'approval_status', 'approval_info',
+        'description', 'version', 'url', 'comments', 'software', 'software_version',
+        'application_types', 'tenant', 'tenant_group', 'contact_group', 'parent_application'
+    ]
+
     def get(self, request):
         pks = request.GET.get('pks', '').split(',')
         pks = [int(pk) for pk in pks if pk.isdigit()]
@@ -167,6 +173,7 @@ class InstalledApplicationMergeView(View):
         return render(request, self.template_name, {
             'applications': applications,
             'pks': pks,
+            'merge_fields': self.MERGE_FIELDS,
         })
 
     def post(self, request):
@@ -177,6 +184,18 @@ class InstalledApplicationMergeView(View):
         duplicates = InstalledApplication.objects.filter(pk__in=pks).exclude(pk=primary_pk)
 
         with transaction.atomic():
+            for field in self.MERGE_FIELDS:
+                source_pk = request.POST.get(f'field_{field}')
+
+                if source_pk and source_pk != primary_pk:
+                    source = InstalledApplication.objects.get(pk=source_pk)
+                    val = getattr(source, field)
+                    
+                    if hasattr(val, 'pk'):
+                        setattr(primary, f'{field}_id', val.pk if val else None)
+                    else:
+                        setattr(primary, field, val)
+            # M2M Felder zusammenführen
             for duplicate in duplicates:
                 for child in InstalledApplication.objects.filter(parent_application=duplicate):
                     child.parent_application = primary
@@ -189,12 +208,14 @@ class InstalledApplicationMergeView(View):
                     primary.cluster.add(cluster)
                 for contact in duplicate.contact.all():
                     primary.contact.add(contact)
+                for sv in duplicate.software_versions.all():
+                    primary.software_versions.add(sv)
                 duplicate.delete()
+
             primary.save()
 
         messages.success(request, f"Merged {len(pks)-1} applications into '{primary.name}'")
         return redirect(reverse('plugins:adestis_netbox_applications:installedapplication_list'))
-    
 @register_model_view(InstalledApplication, name='software_versions')
 class SoftwareVersionAffectedInstalledApplicationView(generic.ObjectChildrenView):
     queryset = InstalledApplication.objects.all()

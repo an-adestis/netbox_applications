@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 <div class="row my-3">
-  <div class="col col-md-8">
+  <div class="col">
     <div class="card">
       <h5 class="card-header">Merge Applications</h5>
       <div class="card-body">
@@ -11,29 +11,64 @@
           {% for pk in pks %}
             <input type="hidden" name="pks" value="{{ pk }}">
           {% endfor %}
-          <table class="table table-hover">
+
+          <table class="table table-hover table-bordered">
             <thead>
               <tr>
-                <th>Primary</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Software</th>
+                <th>Field</th>
+                {% for app in applications %}
+                <th>{{ app.name }}</th>
+                {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for app in applications %}
               <tr>
+                <td><strong>Primary</strong></td>
+                {% for app in applications %}
                 <td>
                   <input type="radio" name="primary" value="{{ app.pk }}" {% if forloop.first %}checked{% endif %}>
                 </td>
-                <td>{{ app.name }}</td>
-                <td>{{ app.get_status_display }}</td>
-                <td>{{ app.software }}</td>
+                {% endfor %}
               </tr>
+              {% for field in merge_fields %}
+                <tr>
+                  <td><strong>{{ field|title }}</strong></td>
+                  {% for app in applications %}
+                  <td>
+                    <input type="radio" name="field_{{ field }}" value="{{ app.pk }}" {% if forloop.first %}checked{% endif %}>
+                    {% if field == 'name' %}{{ app.name }}
+                    {% elif field == 'status' %}{{ app.get_status_display }}
+                    {% elif field == 'description' %}{{ app.description }}
+                    {% elif field == 'version' %}{{ app.version }}
+                    {% elif field == 'url' %}{{ app.url }}
+                    {% elif field == 'approval_status' %}{{ app.get_approval_status_display }}
+                    {% elif field == 'approval_info' %}{{ app.approval_info }}
+                    {% elif field == 'comments' %}{{ app.comments }}
+                    {% elif field == 'software' %}{{ app.software }}
+                    {% elif field == 'software_version' %}{{ app.software_version }}
+                    {% elif field == 'application_types' %}{{ app.application_types }}
+                    {% elif field == 'tenant' %}{{ app.tenant }}
+                    {% elif field == 'status_date' %}{{ app.status_date }}
+                    {% elif field == 'parent_application' %}{{ app.parent_application.name|default:'—' }}
+                    {% else %}—{% endif %}
+                  </td>
+                  {% endfor %}
+                </tr>
               {% endfor %}
+              {% comment %} <tr>
+                <td><strong>{{ field|title }}</strong></td>
+                {% for app in applications %}
+                <td>
+                  <input type="radio" name="field_{{ field }}" value="{{ app.pk }}" {% if forloop.first %}checked{% endif %}>
+                  {{ app|attr:field }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% endfor %} {% endcomment %}
             </tbody>
           </table>
-          <p class="text-muted">Select the primary application – all others will be merged into it and deleted.</p>
+
+          <p class="text-muted mt-3">Select Primary application and choose which value to use for each field. M2M fields (devices, VMs, clusters, contacts) will be merged from all.</p>
           <button type="submit" class="btn btn-warning">Merge</button>
           <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_list' %}" class="btn btn-secondary">Cancel</a>
         </form>
