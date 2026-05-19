@@ -35,6 +35,12 @@ class SoftwareForm(NetBoxModelForm):
         help_text=_("Parent Software"),
     )
     
+    manufacturer = DynamicModelChoiceField(
+        queryset=Manufacturer.objects.all(),
+        required = False,
+        label = ("Manufacturer")
+    )
+    
     contact = DynamicModelMultipleChoiceField(
         queryset=Contact.objects.all(),
         required=False,
@@ -43,8 +49,6 @@ class SoftwareForm(NetBoxModelForm):
         },
         help_text=_("Contacts"),
     )
-    
-
     
     contact_group = DynamicModelChoiceField(
         queryset=ContactGroup.objects.all(),

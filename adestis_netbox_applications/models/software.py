@@ -102,6 +102,7 @@ class Software(NetBoxModel):
     
     url = RFCURLField(
         max_length=300,
+        blank=True,
     )
     
     manufacturer = django_models.ForeignKey(
