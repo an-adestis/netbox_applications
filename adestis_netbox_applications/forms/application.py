@@ -511,7 +511,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     contact_group = CSVModelChoiceField(
         label=_('Contact Group'),
         queryset=ContactGroup.objects.all(),
-        required=False,  # war True
+        required=False,
         to_field_name='name',
         help_text=_('Assigned contact_group')
     )
@@ -519,7 +519,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     contact = CSVModelMultipleChoiceField(
         label=_('Contacts'),
         queryset=Contact.objects.all(),
-        required=False,  # war True
+        required=False,
         to_field_name='name',
         help_text=_('Assigned contact')
     )
