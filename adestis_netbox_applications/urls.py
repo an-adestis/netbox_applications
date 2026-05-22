@@ -134,5 +134,11 @@ urlpatterns = (
         'model': SoftwareVersion
     }),
     
+    path('devices/<int:pk>/assign_application/', DeviceAssignApplication.as_view(), name='device_assign_application'),
+    path('virtualmachines/<int:pk>/assign_application/', VirtualMachineAssignApplication.as_view(), name='virtualmachine_assign_application'),
+    path('clusters/<int:pk>/assign_application/', ClusterAssignApplication.as_view(), name='cluster_assign_application'),
+    path('clustergroups/<int:pk>/assign_application/', ClusterGroupAssignApplication.as_view(), name='clustergroup_assign_application'),
+    path('contacts/<int:pk>/assign_application/', ContactAssignApplication.as_view(), name='contact_assign_application'),
+     
 
 )

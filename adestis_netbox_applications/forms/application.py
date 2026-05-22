@@ -43,6 +43,11 @@ __all__ = (
     'InstalledApplicationAssignSoftwareVersionForm',
     
     'InstalledApplicationRemoveSoftwareVersions',
+    'DeviceAssignApplicationForm',
+    'VirtualMachineAssignApplicationForm',
+    'ClusterGroupAssignApplicationForm',
+    'ContactAssignApplicationForm',
+    'ClusterAssignApplicationForm',
 )
 
 class InstalledApplicationForm(NetBoxModelForm):
@@ -455,7 +460,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     software = CSVModelChoiceField(
         label=_('Software'),
         queryset=Software.objects.all(),
-        required=False,
+        required=True,
         to_field_name='name',
         help_text=_('Name of assigned Software')
     )
@@ -463,15 +468,23 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     software_version = CSVModelChoiceField(
         label=_('Software Version'),
         queryset=SoftwareVersion.objects.all(),
-        required=False,
+        required=True,
         to_field_name='name',
         help_text=_('Name of assigned Software Version')
+    )
+    
+    software_versions = CSVModelMultipleChoiceField(
+        label=_('Software Modules'),
+        queryset=SoftwareVersion.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Name of assigned Software Modules')
     )
     
     application_types = CSVModelChoiceField(
         label=_('Application Types'),
         queryset=InstalledApplicationTypes.objects.all(),
-        required=False,
+        required=True,
         to_field_name='name',
         help_text=_('Name of assigned application type')
     )
@@ -527,7 +540,7 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
     approval_status = CSVChoiceField(
         choices=InstalledApplicationApprovalStatusChoices,
         help_text=_('Approval Status'),
-        required=False,
+        required=True,
     )
     
     parent_application = CSVModelChoiceField(
@@ -537,10 +550,22 @@ class InstalledApplicationCSVForm(NetBoxModelImportForm):
         to_field_name='name',
         help_text=_('Name of parent application')
     )
+    
+    status_date = forms.DateField(
+        required=True,
+        label=_('Status Date'),
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+
+    url = forms.CharField(
+        max_length=300,
+        required=False,
+        label=_('URL')
+    )
 
     class Meta:
         model = InstalledApplication
-        fields = ['name', 'application_types', 'parent_application', 'status', 'status_date', 'description', 'software', 'version', 'software_version', 'approval_status', 'approval_info', 'url', 'tenant_group', 'tenant', 'virtual_machine', 'cluster_group', 'cluster', 'device', 'tags', 'comments', 'contact_group', 'contact' ]
+        fields = ['name', 'application_types', 'parent_application', 'status', 'status_date', 'description', 'software', 'version', 'software_version', 'approval_status', 'approval_info', 'url', 'tenant_group', 'tenant', 'virtual_machine', 'cluster_group', 'cluster', 'device', 'tags', 'comments', 'contact_group', 'contact', 'software_versions' ]
         default_return_url = 'plugins:adestis_netbox_applications:InstalledApplication_list'
 
 
@@ -784,3 +809,66 @@ class InstalledApplicationRemoveContact(ConfirmationForm):
         queryset=Contact.objects.all(),
         widget=forms.MultipleHiddenInput()
     )
+    
+class DeviceAssignApplicationForm(forms.Form):
+    
+    installedapplication = DynamicModelMultipleChoiceField(
+        label=_('Applications'),
+        queryset=InstalledApplication.objects.all()
+    )
+
+    class Meta:
+        fields = ['installedapplication']
+
+    def __init__(self, device, *args, **kwargs):
+        self.device = device
+        super().__init__(*args, **kwargs)
+        self.fields['installedapplication'].choices = []
+        
+class VirtualMachineAssignApplicationForm(forms.Form):
+    installedapplication = DynamicModelMultipleChoiceField(
+        label=_('Applications'),
+        queryset=InstalledApplication.objects.all()
+    )
+    class Meta:
+        fields = ['installedapplication']
+    def __init__(self, vm, *args, **kwargs):
+        self.vm = vm
+        super().__init__(*args, **kwargs)
+        self.fields['installedapplication'].choices = []
+        
+class ClusterGroupAssignApplicationForm(forms.Form):
+    installedapplication = DynamicModelMultipleChoiceField(
+        label=_('Applications'),
+        queryset=InstalledApplication.objects.all()
+    )
+    class Meta:
+        fields = ['installedapplication']
+    def __init__(self, cluster_group, *args, **kwargs):
+        self.cluster_group = cluster_group
+        super().__init__(*args, **kwargs)
+        self.fields['installedapplication'].choices = []
+        
+class ClusterAssignApplicationForm(forms.Form):
+    installedapplication = DynamicModelMultipleChoiceField(
+        label=_('Applications'),
+        queryset=InstalledApplication.objects.all()
+    )
+    class Meta:
+        fields = ['installedapplication']
+    def __init__(self, cluster, *args, **kwargs):
+        self.cluster = cluster
+        super().__init__(*args, **kwargs)
+        self.fields['installedapplication'].choices = []
+        
+class ContactAssignApplicationForm(forms.Form):
+    installedapplication = DynamicModelMultipleChoiceField(
+        label=_('Applications'),
+        queryset=InstalledApplication.objects.all()
+    )
+    class Meta:
+        fields = ['installedapplication']
+    def __init__(self, contact, *args, **kwargs):
+        self.contact = contact
+        super().__init__(*args, **kwargs)
+        self.fields['installedapplication'].choices = []

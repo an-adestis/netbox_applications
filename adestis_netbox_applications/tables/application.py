@@ -18,6 +18,7 @@ from virtualization.tables import *
 import django_tables2 as tables
 
 from django.utils.safestring import mark_safe
+import django_tables2 as tables
 
 class InstalledApplicationTable(NetBoxTable):
     
@@ -79,8 +80,8 @@ class InstalledApplicationTable(NetBoxTable):
     
     version = columns.MarkdownColumn()
     
-    url = columns.MarkdownColumn(
-        linkify=True
+    url = columns.TemplateColumn(
+        template_code='{% if value %}<a href="{{ value }}" target="_blank">{{ value }}</a>{% else %}—{% endif %}',
     )
     
     status_date = columns.DateColumn()
