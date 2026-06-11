@@ -59,7 +59,7 @@ class SoftwareTable(NetBoxTable):
     
     def render_name(self, value, record):
         depth = 0
-        parent = record.parent_software  # oder parent_application
+        parent = record.parent_software 
         while parent:
             depth += 1
             parent = parent.parent_software

@@ -201,7 +201,7 @@ class InstalledApplicationMergeView(View):
                         setattr(primary, f'{field}_id', val.pk if val else None)
                     else:
                         setattr(primary, field, val)
-            # M2M Felder zusammenführen
+
             for duplicate in duplicates:
                 for child in InstalledApplication.objects.filter(parent_application=duplicate):
                     child.parent_application = primary
