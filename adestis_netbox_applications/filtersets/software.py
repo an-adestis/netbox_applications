@@ -76,7 +76,6 @@ class SoftwareFilterSet(NetBoxModelFilterSet):
             Q(contact__name__icontains=value) |
             Q(contact_group__name__icontains=value) |
             Q(parent_software__name__icontains=value) |
-            # Q(software_version__name__icontains=value) |
             Q(approval_status__icontains=value) |
             Q(approval_info__icontains=value)
         ).distinct()
