@@ -1,5 +1,6 @@
 from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.models.application_types import *
 from netbox.filtersets import NetBoxModelFilterSet
 
@@ -19,10 +20,17 @@ from dcim.models import *
 
 from ipam.api.serializers import *
 from ipam.api.field_serializers import *
+from taggit.managers import TaggableManager
 
 __all__ = (
     'InstalledApplicationFilterSet',
 )
+
+class TaggableManagerFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+    def filter(self, qs, value):
+        if value:
+            return qs.filter(tags__name__in=value)
+        return qs
 
 class InstalledApplicationFilterSet(NetBoxModelFilterSet):
     
@@ -31,18 +39,21 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         widget=DatePicker
     )
     
-    contact_id = DynamicModelMultipleChoiceField(
-        queryset=Contact.objects.all(),
-        required=False,
-        null_option='None',
-        label=_('Group')
+    contact = django_filters.ModelMultipleChoiceFilter(
+        field_name='contact',
+        queryset=Contact.objects.all()
     )
     
-    contact = DynamicModelMultipleChoiceField(
-        queryset=Contact.objects.all(),
+    contact_group_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ContactGroup.objects.all(),
+        label=_('Container Group (ID)'),
+    )
+    
+    contact_group = DynamicModelMultipleChoiceField(
+        queryset=ContactGroup.objects.all(),
         required=False,
         null_option='None',
-        label=_('Group')
+        label=_('Container Group')
     )
     
     url = forms.URLField(
@@ -110,6 +121,18 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         label=_('Software (name)'),
     )
     
+    software_version_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=SoftwareVersion.objects.all(),
+        label=_('Software Version (ID)'),
+    )
+    
+    software_version = django_filters.ModelMultipleChoiceFilter(
+        queryset=SoftwareVersion.objects.all(),
+        required = False, 
+        field_name = 'software_version__name',
+        label=_('Software Version (name)')
+    )
+    
     application_types_id = django_filters.ModelMultipleChoiceFilter(
         queryset=InstalledApplicationTypes.objects.all(),
         label=_('Application Types (ID)'),
@@ -121,11 +144,26 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
         field_name='application_types__name',
         label=_('application Types (name)'),
     )
+    
+    parent_application = django_filters.ModelMultipleChoiceFilter(
+        queryset=InstalledApplication.objects.all(),
+        required = False, 
+        field_name = 'parent_application',
+        label=_('Parent Application (name)')
+    )
 
     class Meta:
         model = InstalledApplication
-        fields = ('id', 'status', 'status_date', 'name', 'url', 'contact', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software', 'application_types')
-    
+        fields = ('id', 'status', 'status_date', 'name', 'parent_application', 'url', 'contact', 'contact_group', 'status_date', 'url', 'version', 'tenant', 'tenant_group', 'tenant_group_id', 'virtual_machine', 'device', 'cluster', 'cluster_group', 'software', 'software_version', 'application_types', 'approval_status', 'approval_info')
+        filter_overrides = {
+            TaggableManager: {
+                'filter_class': TaggableManagerFilter,
+                'extra': lambda f: {
+                    'label': 'Tags',
+                    'help_text': 'Filter by tag names (comma-separated)',
+                },
+            },
+        }
 
     def search(self, queryset, name, value):
         if not value.strip():
@@ -137,6 +175,7 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             Q(version__icontains=value) |
             Q(url__icontains=value) |
             Q(contact__name__icontains=value) |
+            Q(contact_group__name__icontains=value) |
             Q(tenant__name__icontains=value) |
             Q(tenant_group__name__icontains=value) |
             Q(virtual_machine__name__icontains=value) |
@@ -144,5 +183,9 @@ class InstalledApplicationFilterSet(NetBoxModelFilterSet):
             Q(cluster__name__icontains=value) |
             Q(cluster_group__name__icontains=value) |
             Q(application_types__name__icontains=value) |
-            Q(software__name__icontains=value) 
+            Q(software__name__icontains=value) |
+            Q(software_version__name__icontains=value) |
+            Q(parent_application__name__icontains=value) |
+            Q(approval_status__icontains=value) |
+            Q(approval_info__icontains=value)
         ).distinct()

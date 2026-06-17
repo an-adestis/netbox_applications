@@ -23,7 +23,6 @@ class InstalledApplicationTypes(OrganizationalModel):
         verbose_name='Slug',
         max_length=100,
         unique=True,
-        # widget = widgets.SlugWidget
     )
     
     installedapplication = django_models.ForeignKey(

@@ -1,0 +1,236 @@
+{% extends 'generic/object_list.html' %}
+
+{% block content %}
+{{ block.super }}
+<script>
+function mergeApplications() {
+    const checked = document.querySelectorAll('table tbody tr input[type="checkbox"]:checked');
+    const pks = Array.from(checked).map(cb => {
+        const row = cb.closest('tr');
+        if (row.dataset.pk) return row.dataset.pk;
+        const link = row.querySelector('a[href*="/applications/"]');
+        if (link) {
+            const match = link.href.match(/\/applications\/(\d+)\//);
+            if (match) return match[1];
+        }
+        return null;
+    }).filter(Boolean);
+    
+    if (pks.length < 2) {
+        alert('Please select at least 2 applications to merge.');
+        return;
+    }
+    
+    window.location.href = `/plugins/applications/applications/merge/?pks=${pks.join(',')}`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mergeBtn = document.getElementById('merge-btn');
+    
+    function updateMergeButton() {
+        const checked = document.querySelectorAll('table tbody tr input[type="checkbox"]:checked');
+        mergeBtn.style.display = checked.length >= 2 ? 'inline-block' : 'none';
+    }
+    
+    document.querySelectorAll('table tbody tr input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateMergeButton);
+    });
+    
+    const headerCheckbox = document.querySelector('table thead input[type="checkbox"]');
+    if (headerCheckbox) {
+        headerCheckbox.addEventListener('change', updateMergeButton);
+    }
+});
+</script>
+
+<button id="merge-btn" onclick="mergeApplications()" class="btn btn-warning" style="display:none; margin-left: 8px;">
+    <span class="mdi mdi-merge"></span> Merge Selected
+</button>
+
+<style>
+table tbody tr td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+</style>
+
+<script>
+async function initTree() {
+    const isImportResult = window.location.search.includes('modified_by_request');
+    if (isImportResult) return;
+
+    const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
+        const span = row.querySelector('span[data-pk]');
+        if (!span) return;
+        row.dataset.pk = span.dataset.pk;
+        row.dataset.parent = span.dataset.parent || '';
+        if (span.dataset.parent && span.dataset.parent !== '') {
+            row.style.display = 'none';
+            row.classList.add('child-row');
+        }
+    });
+
+    if (tbody.dataset.treeInit === 'true') return;
+    tbody.dataset.treeInit = 'true';
+
+    const response = await fetch('/api/plugins/applications/applications/?limit=10000&format=json');
+    const data = await response.json();
+    
+    const parentMap = {};
+    const nameMap = {};
+    data.results.forEach(item => {
+        nameMap[item.id] = item.display;
+        if (item.parent_application) {
+            parentMap[item.id] = typeof item.parent_application === 'object' 
+                ? item.parent_application.id 
+                : item.parent_application;
+        }
+    });
+
+    async function ensurePhantomChain(parentPk, insertBefore, addedPhantoms) {
+        if (addedPhantoms.has(parentPk)) return;
+        
+        const grandParentPk = parentMap[parentPk];
+        if (grandParentPk) {
+            const grandParentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${grandParentPk}"]`);
+            const grandParentPhantomOnPage = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+            if (!grandParentOnPage && !grandParentPhantomOnPage) {
+                await ensurePhantomChain(grandParentPk, insertBefore, addedPhantoms);
+            }
+        }
+
+        addedPhantoms.add(parentPk);
+        const phantomRow = document.createElement('tr');
+        phantomRow.dataset.pk = parentPk;
+        phantomRow.classList.add('phantom-row');
+        
+        if (grandParentPk) {
+            phantomRow.dataset.parent = grandParentPk;
+            phantomRow.style.display = 'none';
+        }
+        
+        let depth = 0;
+        let current = parentPk;
+        const visited = new Set();
+        while (parentMap[current] && !visited.has(current)) {
+            visited.add(current);
+            depth++;
+            current = parentMap[current];
+        }
+
+        let displayName = nameMap[parentPk] || null;
+        if (!displayName) {
+            const parentResponse = await fetch(`/api/plugins/applications/applications/${parentPk}/?format=json`);
+            const parentJson = await parentResponse.json();
+            displayName = parentJson.display || 'Parent';
+            nameMap[parentPk] = displayName;
+        }
+
+        phantomRow.innerHTML = `
+            <td></td>
+            <td colspan="19">
+                <span data-pk="${parentPk}" style="display:inline-flex; align-items:center; color: var(--tblr-body-color); opacity: 0.6; padding-left:${depth * 20}px;">
+                    <a href="/plugins/applications/applications/${parentPk}/">${displayName}</a> <small style="margin-left:4px;">(continued)</small>
+                </span>
+            </td>`;
+        
+        const parentPhantom = document.querySelector(`tr.phantom-row[data-pk="${grandParentPk}"]`);
+        if (parentPhantom) {
+            parentPhantom.parentNode.insertBefore(phantomRow, parentPhantom.nextSibling);
+        } else {
+            insertBefore.parentNode.insertBefore(phantomRow, insertBefore);
+        }
+    }
+
+    const addedPhantoms = new Set();
+
+    for (const row of document.querySelectorAll('table tbody tr')) {
+        const span = row.querySelector('span[data-pk]');
+        if (!span) continue;
+
+        const pk = parseInt(span.dataset.pk);
+        const parentFromRender = span.dataset.parent;
+        row.dataset.pk = pk;
+        row.dataset.parent = (parentFromRender && parentFromRender !== '') ? parentFromRender : (parentMap[pk] || '');
+
+        if (row.dataset.parent) {
+            row.style.display = 'none';
+            row.classList.add('child-row');
+
+            const parentPk = parseInt(row.dataset.parent);
+            const parentOnPage = document.querySelector(`tr:not(.phantom-row)[data-pk="${parentPk}"]`);
+            
+            if (!parentOnPage) {
+                await ensurePhantomChain(parentPk, row, addedPhantoms);
+            }
+
+            let depth = parseInt(span.dataset.depth) || 1;
+            span.style.paddingLeft = (depth * 20) + 'px';
+        }
+    }
+
+    document.querySelectorAll('table tbody tr').forEach(function (row) {
+        const span = row.querySelector('span[data-pk]');
+        const pk = row.dataset.pk || (span ? span.dataset.pk : null);
+        if (!pk) return;
+
+        const hasChildren = Object.values(parentMap).includes(parseInt(pk)) || 
+                           document.querySelector(`tr[data-parent="${pk}"]`) !== null;
+        
+        if (hasChildren && !row.querySelector('.tree-toggle')) {
+            const toggle = document.createElement('span');
+            toggle.className = 'mdi mdi-chevron-right tree-toggle';
+            toggle.style.cursor = 'pointer';
+            toggle.style.color = 'var(--tblr-body-color)';
+            toggle.style.marginRight = '0px';
+            toggle.style.marginLeft = '0px';
+            toggle.style.verticalAlign = 'middle';
+
+            if (span) {
+                span.insertBefore(toggle, span.firstChild);
+            } else {
+                const td = row.querySelector('td');
+                if (td) td.prepend(toggle);
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                const isOpen = this.classList.contains('mdi-chevron-down');
+                this.classList.toggle('mdi-chevron-down', !isOpen);
+                this.classList.toggle('mdi-chevron-right', isOpen);
+                toggleChildren(pk, !isOpen);
+            });
+        } else if (span && !row.classList.contains('phantom-row') && !row.classList.contains('child-row') && !span.querySelector('.tree-toggle') && !span.querySelector('span[style*="inline-block"]')) {
+            const placeholder = document.createElement('span');
+            placeholder.style.display = 'inline-block';
+            placeholder.style.width = '14px';
+            span.insertBefore(placeholder, span.firstChild);
+        }
+    });
+
+    function toggleChildren(parentPk, show) {
+        document.querySelectorAll(`tr[data-parent="${parentPk}"]`).forEach(function (child) {
+            child.style.display = show ? '' : 'none';
+
+            const toggle = child.querySelector('.tree-toggle');
+            if (!show && toggle) {
+                toggle.classList.remove('mdi-chevron-down');
+                toggle.classList.add('mdi-chevron-right');
+            }
+
+            if (!show || toggle?.classList.contains('mdi-chevron-down')) {
+                toggleChildren(child.dataset.pk, show);
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initTree);
+document.body.addEventListener('htmx:afterSettle', initTree);
+</script>
+{% endblock %}

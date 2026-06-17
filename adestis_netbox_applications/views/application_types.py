@@ -4,7 +4,6 @@ from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_applications.models.application import *
 from adestis_netbox_applications.filtersets.application_types import *
 from adestis_netbox_applications.tables.application_types import *
-from netbox.views import generic
 from django.utils.translation import gettext as _
 from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
 from utilities.query import count_related

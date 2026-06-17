@@ -4,7 +4,7 @@ class AdestisApplicationsConfig(PluginConfig):
     name = 'adestis_netbox_applications'
     verbose_name = 'Application Management'
     description = 'A NetBox plugin for managing applications.'
-    version = '1.0.23'
+    version = '1.1.6'
     author = 'ADESTIS GmbH'
     author_email = 'pypi@adestis.de'
     base_url = 'applications'
@@ -12,5 +12,7 @@ class AdestisApplicationsConfig(PluginConfig):
     default_settings = {
         'top_level_menu' : True,
     }
+    docs_url = 'https://github.com/an-adestis/netbox_applications/wiki'
+    scripts = ['adestis_netbox_applications.scripts.MergeApplicationsScript']
 
 config = AdestisApplicationsConfig

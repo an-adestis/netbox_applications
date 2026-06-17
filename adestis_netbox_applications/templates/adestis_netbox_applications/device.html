@@ -15,7 +15,7 @@
     {{ block.super }}
     {% if 'bulk_rename' in actions %}
         <button type="submit" name="_rename"
-                {% formaction %}="{% url 'dcim:device_bulk_rename' %}?return_url={{ return_url }}"
+                {% formaction %}="{% url 'plugins:adestis_netbox_applications:software_version_bulk_rename' %}?return_url={{ return_url }}"
                 class="btn btn-outline-warning">
             <i class="mdi mdi-pencil-outline" aria-hidden="true"></i> {% trans "Rename" %}
         </button>

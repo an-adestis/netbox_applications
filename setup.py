@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='adestis-netbox-applications',
-    version='1.0.24',
+    version='1.1.6',
     description='ADESTIS Application Management',
     url='https://github.com/an-adestis/netbox_applications',
     author='ADESTIS GmbH',
@@ -17,11 +17,12 @@ setup(
     license='GPL-3.0-only',
     keywords=['netbox', 'netbox-plugin', 'plugin'],
     package_data={
-        "adestis_netbox_applications": ["**/*.html"],
+        "adestis_netbox_applications": ["**/*.html", "**/*.css", "**/*.js"],
         '': ['LICENSE'],
         
         
     },
     long_description=description,
     long_description_content_type="text/markdown",
+
 )

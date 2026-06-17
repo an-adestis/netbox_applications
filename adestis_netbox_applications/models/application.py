@@ -8,12 +8,17 @@ from tenancy.models import *
 from dcim.models import *
 from virtualization.models import *
 from adestis_netbox_applications.models.software import *
+from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_certificate_management.models import *
+from adestis_netbox_applications.models.software import RFCURLField
+
+from django.core.exceptions import ValidationError
 
 __all__ = (
     'InstalledApplicationStatusChoices',
     'InstalledApplication',
+    'InstalledApplicationApprovalStatusChoices',
 )
 
 class InstalledApplicationStatusChoices(ChoiceSet):
@@ -33,6 +38,21 @@ class InstalledApplicationStatusChoices(ChoiceSet):
         (STATUS_REMOVED, 'Removed', 'gray'),
     ]
     
+class InstalledApplicationApprovalStatusChoices(ChoiceSet):
+    key = 'InstalledApplications.approval_status'
+    
+    NEEDS_APPROVAL = 'needs_approval'
+    VERSION_APPROVED = 'version_approved'
+    VERSION_CHANGED = 'version_changed'
+    NOT_APPROVAL = 'not_approved'
+    
+    CHOICES = [
+        (NEEDS_APPROVAL, 'Needs Approval', 'yellow'),
+        (VERSION_APPROVED, 'Version Approved', 'green'),
+        (VERSION_CHANGED, 'Version changed - needs Approval', 'cyan'),
+        (NOT_APPROVAL, 'Not Approved', 'red'),
+    ]
+    
 class InstalledApplication(NetBoxModel):
 
     status = django_models.CharField(
@@ -40,6 +60,27 @@ class InstalledApplication(NetBoxModel):
         choices=InstalledApplicationStatusChoices,
         verbose_name='Status',
         help_text='Status'
+    )
+    
+    approval_status = django_models.CharField(
+        max_length=50,
+        choices = InstalledApplicationApprovalStatusChoices,
+        verbose_name = 'Approval Status',
+        help_text = 'Approval Status',
+        null=True,
+    )
+    
+    parent_application = django_models.ForeignKey(
+        'self',
+        verbose_name='Parent Application',
+        on_delete = django_models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='parent_of_installedapplication'
+    )
+    
+    approval_info = django_models.TextField(
+        blank=True
     )
     
     status_date = django_models.DateField(
@@ -63,11 +104,11 @@ class InstalledApplication(NetBoxModel):
     
     version = django_models.CharField(
          max_length=200,
+         blank = True
     )
     
-    url = django_models.URLField(
+    url = RFCURLField(
         max_length=300,
-        blank = True
     )
     
     device = django_models.ManyToManyField(
@@ -128,21 +169,45 @@ class InstalledApplication(NetBoxModel):
         verbose_name='Software'
     )
     
+    software_version = django_models.ForeignKey(
+        to='adestis_netbox_applications.SoftwareVersion',
+        on_delete= django_models.PROTECT,
+        related_name= 'applications_software_version',
+        null=True,
+        verbose_name='Software Version'
+    )
+    
+    software_versions = django_models.ManyToManyField(
+        to='adestis_netbox_applications.SoftwareVersion',
+        related_name='assigned_applications',
+        blank=True,
+        verbose_name='Software Versions'
+    )
+    
     application_types = django_models.ForeignKey(
         to='adestis_netbox_applications.InstalledApplicationTypes',
         on_delete= django_models.PROTECT,
         related_name='applications',
         null=True,
+        blank=True,
         verbose_name='Application Types'
     )
     
-    contact = django_models.ForeignKey(
+    contact_group = django_models.ForeignKey(
+        to = 'tenancy.ContactGroup',
+        on_delete = django_models.PROTECT,
+        related_name='installedapplication_contact_group',
+        verbose_name='Contact Group',
+        blank = True,
+        null = True,
+    )
+    
+    contact = django_models.ManyToManyField(
         to='tenancy.Contact',
-        on_delete=django_models.PROTECT,
         related_name='installedapplication_contact',
-        null=True,
+        blank = True,
         verbose_name='Contact',
-        help_text='Contact that uses the System'
+        help_text='Contact that uses the Application'
     )
  
     class Meta:
@@ -154,7 +219,14 @@ class InstalledApplication(NetBoxModel):
         return reverse('plugins:adestis_netbox_applications:installedapplication', args=[self.pk])
 
     def get_status_color(self):
-        return InstalledApplicationStatusChoices.colors.get(self.status)
+        return InstalledApplicationStatusChoices.colors.get(self.status) 
+    
+    def get_approval_status_color(self):
+        return InstalledApplicationApprovalStatusChoices.colors.get(self.approval_status) 
+    
+    def clean(self):
+        if self.parent_application and self.parent_application == self:
+            raise ValidationError({'parent_application': 'An application cannot be its own parent.'})
     
     def __str__(self):
         return self.name 
