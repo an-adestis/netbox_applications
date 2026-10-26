@@ -1,4 +1,12 @@
 from netbox.views import generic
+from adestis_netbox_applications.views.actions import (
+    AddObject,
+    BulkDelete,
+    BulkEdit,
+    BulkExport,
+    BulkImport,
+    actions,
+)
 from adestis_netbox_applications.forms.software_version import *
 from adestis_netbox_applications.models.software_version import *
 from adestis_netbox_applications.filtersets.software_version import *
@@ -38,6 +46,7 @@ class SoftwareVersionListView(generic.ObjectListView):
     table = SoftwareVersionTable
     filterset = SoftwareVersionFilterSet
     filterset_form = SoftwareVersionFilterForm
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkDelete)
 
     
 

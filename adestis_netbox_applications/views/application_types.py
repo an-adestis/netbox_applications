@@ -1,4 +1,12 @@
 from netbox.views import generic
+from adestis_netbox_applications.views.actions import (
+    AddObject,
+    BulkDelete,
+    BulkEdit,
+    BulkExport,
+    BulkImport,
+    actions,
+)
 from adestis_netbox_applications.forms.application_types import *
 from adestis_netbox_applications.models.application_types import *
 from adestis_netbox_applications.models.application import *
@@ -36,6 +44,7 @@ class InstalledApplicationTypesListView(generic.ObjectListView):
     table = InstalledApplicationTypesTable
     filterset = InstalledApplicationTypesFilterSet
     filterset_form = InstalledApplicationTypesFilterForm
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkDelete)
     
 
 class InstalledApplicationTypesEditView(generic.ObjectEditView):
@@ -62,4 +71,3 @@ class InstalledApplicationTypesBulkImportView(generic.BulkImportView):
     queryset = InstalledApplicationTypes.objects.all()
     model_form = InstalledApplicationTypesCSVForm
     table = InstalledApplicationTypesTable
-    

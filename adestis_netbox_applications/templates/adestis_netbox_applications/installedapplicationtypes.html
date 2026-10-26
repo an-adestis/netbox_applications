@@ -6,7 +6,7 @@
 {% load i18n %}
 
 {% block extra_controls %}
-  {% if perms.adestis_netbox_applications.installedapplication_add %}
+  {% if perms.adestis_netbox_applications.add_installedapplication %}
     <a href="{% url 'plugins:adestis_netbox_applications:installedapplication_add' %}?application_types={{ object.pk }}" class="btn btn-primary">
       <span class="mdi mdi-plus-thick" aria-hidden="true"></span> {% trans "Add Application" %}
     </a>

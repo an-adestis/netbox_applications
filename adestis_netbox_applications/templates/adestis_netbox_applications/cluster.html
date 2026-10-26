@@ -21,11 +21,13 @@
 
 {% block bulk_delete_controls %}
     {{ block.super }}
-    {% if 'bulk_remove_cluster' in actions %}
+    {% for action in actions %}
+    {% if action.name|default:action == 'bulk_remove_cluster' %}
         <button type="submit" name="_remove"
                 {% formaction %}="{% url 'plugins:adestis_netbox_applications:installedapplication_remove_cluster' pk=object.pk %}?return_url={{ return_url }}"
                 class="btn btn-danger">
             <span class="mdi mdi-trash-can-outline" aria-hidden="true"></span> Remove Selected
         </button>
     {% endif %}
+    {% endfor %}
 {% endblock bulk_delete_controls %}

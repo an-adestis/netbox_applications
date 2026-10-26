@@ -11,7 +11,6 @@ from dcim.models import *
 from dcim.forms import *
 from dcim.tables import *
 from dcim.filtersets import *
-from netbox.constants import DEFAULT_ACTION_PERMISSIONS
 from virtualization.models import *
 from virtualization.forms import *
 from virtualization.tables import *
@@ -194,4 +193,3 @@ class ContactTableInstalledApplication(ContactTable):
             'assignment_count', 'tags', 'created', 'last_updated', 'actions'
         )
         default_columns = ('pk', 'name', 'groups', 'assignment_count', 'title', 'phone', 'email')
-        

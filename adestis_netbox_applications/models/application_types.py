@@ -1,6 +1,5 @@
 from django.db import models as django_models
 from adestis_netbox_applications.models.application import *
-from netbox.models import OrganizationalModel
 from django.urls import reverse
 from netbox.models import NetBoxModel
 from utilities.choices import ChoiceSet
@@ -13,7 +12,7 @@ __all__ = (
     'InstalledApplicationTypes',
 )
     
-class InstalledApplicationTypes(OrganizationalModel):
+class InstalledApplicationTypes(NetBoxModel):
 
     name = django_models.CharField(
         max_length=150

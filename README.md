@@ -32,7 +32,9 @@ This plugin provides the following Models:
 > **Note**: This plugin depends on the [`adestis-netbox-certificate-management`](https://pypi.org/project/adestis-netbox-certificate-management/) plugin.  
 > Therefore, its compatibility is directly tied to the NetBox version used in the base image.
 
-The plugin is developed and tested using the following base image:
+This version supports NetBox 4.3.7 and later. It uses NetBox's object action API on 4.4.0 and later, with a compatibility fallback for older releases.
+
+The plugin was previously developed and tested using the following base image:
 
 ```dockerfile
 ARG FROM_TAG=v4.3.7-3.3.0  # NetBox v4.3.7
@@ -45,3 +47,11 @@ The plugin is available on PyPI and can be installed via pip:
 ```bash
 pip install adestis-netbox-applications
 ```
+
+## Permissions
+
+For non-superusers, assign NetBox object permissions to the user or their group
+for the relevant plugin object types: Application, Application Types, Software,
+and Software Version. The **View** action makes the corresponding navigation
+entry visible; **Add** enables its Add button. Editing and deletion require
+**Change** and **Delete**, respectively.

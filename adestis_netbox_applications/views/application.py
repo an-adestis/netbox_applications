@@ -1,4 +1,20 @@
 from netbox.views import generic
+from adestis_netbox_applications.views.actions import (
+    AddObject,
+    BulkDelete,
+    BulkEdit,
+    BulkExport,
+    BulkImport,
+    BulkRemoveCertificate,
+    BulkRemoveCluster,
+    BulkRemoveClusterGroup,
+    BulkRemoveContact,
+    BulkRemoveDevice,
+    BulkRemoveInstalledApplication,
+    BulkRemoveSoftwareVersions,
+    BulkRemoveVirtualMachine,
+    actions,
+)
 from adestis_netbox_certificate_management.models import Certificate
 from adestis_netbox_certificate_management.tables import CertificateTable
 from adestis_netbox_applications.forms.application import *
@@ -17,7 +33,6 @@ from dcim.models import *
 from dcim.forms import *
 from dcim.tables import *
 from dcim.filtersets import *
-from netbox.constants import DEFAULT_ACTION_PERMISSIONS
 from virtualization.models import *
 from virtualization.forms import *
 from virtualization.tables import *
@@ -95,6 +110,7 @@ class InstalledApplicationListView(generic.ObjectListView):
     filterset = InstalledApplicationFilterSet
     filterset_form = InstalledApplicationFilterForm
     template_name = 'adestis_netbox_applications/installedapplication_list.html'
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkDelete)
     
     def get_queryset(self, request):
         import re
@@ -222,11 +238,7 @@ class SoftwareVersionAffectedInstalledApplicationView(generic.ObjectChildrenView
     child_model = SoftwareVersion
     table = SoftwareVersionTable
     template_name = 'adestis_netbox_applications/software_version_tab.html'
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_software_versions': {'remove'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveSoftwareVersions)
 
     def get_children(self, request, parent):
         return SoftwareVersion.objects.restrict(request.user, 'view').filter(
@@ -320,11 +332,7 @@ class InstalledApplicationAffectedCertificateView(generic.ObjectChildrenView):
     child_model= Certificate
     table = CertificateTable
     template_name = "adestis_netbox_applications/application.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_certificate': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveCertificate)
 
     tab = ViewTab(
         label=_('Certificate'),
@@ -424,11 +432,7 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= Device
     table = DeviceTableApplication
     template_name = "adestis_netbox_applications/device.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_device': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveDevice)
 
     tab = ViewTab(
         label=_('Devices'),
@@ -445,11 +449,7 @@ class DeviceAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= InstalledApplication
     table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_device.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_installedapplication': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveInstalledApplication)
 
     tab = ViewTab(
         label=_('Applications'),
@@ -550,11 +550,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= Cluster
     table = ClusterTableApplication
     template_name = "adestis_netbox_applications/cluster.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_cluster': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveCluster)
 
     tab = ViewTab(
         label=_('Clusters'),
@@ -571,11 +567,7 @@ class ClusterAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= InstalledApplication
     table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_cluster.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_installedapplication': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveInstalledApplication)
 
     tab = ViewTab(
         label=_('Applications'),
@@ -679,11 +671,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= ClusterGroup
     table = ClusterGroupTableApplication
     template_name = "adestis_netbox_applications/cluster_group.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_cluster_group': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveClusterGroup)
 
     tab = ViewTab(
         label=_('Cluster Groups'),
@@ -700,11 +688,7 @@ class ClusterGroupAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= InstalledApplication
     table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_clustergroup.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_installedapplication': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveInstalledApplication)
 
     tab = ViewTab(
         label=_('Applications'),
@@ -804,11 +788,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     child_model= VirtualMachine
     table = VirtualMachineTableApplication
     template_name = "adestis_netbox_applications/virtual_machine.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_virtual_machine': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveVirtualMachine)
 
     tab = ViewTab(
         label=_('Virtual Machines'),
@@ -825,11 +805,7 @@ class VirtualMachineAffectedInstalledApplicationView(generic.ObjectChildrenView)
     child_model= InstalledApplication
     table = InstalledApplicationTableTab
     template_name = "adestis_netbox_applications/application_virtualmachine.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_remove_installedapplication': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkRemoveInstalledApplication)
 
     tab = ViewTab(
         label=_('Applications'),
@@ -929,13 +905,7 @@ class InstalledApplicationAffectedContactView(generic.ObjectChildrenView):
     child_model= Contact
     table = ContactTableInstalledApplication
     template_name = "adestis_netbox_applications/contact.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-        'bulk_remove_contact': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkRemoveContact)
 
     tab = ViewTab(
         label=_('Contacts'),
@@ -952,13 +922,7 @@ class ContactAffectedInstalledApplicationView(generic.ObjectChildrenView):
     child_model= InstalledApplication
     table = InstalledApplicationTable
     template_name = "adestis_netbox_applications/installedapplication_contact.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-        'bulk_remove_installedapplication': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkRemoveInstalledApplication)
 
     tab = ViewTab(
         label=_('Applications'),
@@ -1061,12 +1025,7 @@ class InstalledApplicationAffectedSuccessorApplicationView(generic.ObjectChildre
     queryset = InstalledApplication.objects.all()
     child_model = InstalledApplication
     table = InstalledApplicationTable
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit)
 
     tab = ViewTab(
         label=_('Successor Application'),

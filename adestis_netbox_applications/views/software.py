@@ -1,4 +1,14 @@
 from netbox.views import generic
+from adestis_netbox_applications.views.actions import (
+    AddObject,
+    BulkDelete,
+    BulkEdit,
+    BulkExport,
+    BulkImport,
+    BulkRemoveContact,
+    BulkRemoveSoftware,
+    actions,
+)
 from adestis_netbox_applications.forms.software import *
 from adestis_netbox_applications.models.software import *
 from adestis_netbox_applications.filtersets.software import *
@@ -51,6 +61,7 @@ class SoftwareListView(generic.ObjectListView):
     filterset = SoftwareFilterSet
     filterset_form = SoftwareFilterForm
     template_name = 'adestis_netbox_applications/software_list.html'
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkDelete)
     # paginate_by = 500
     
     def get_queryset(self, request):
@@ -109,12 +120,7 @@ class SoftwareAffectedSuccessorSoftwareView(generic.ObjectChildrenView):
     queryset = Software.objects.all()
     child_model= Software
     table = SoftwareTable
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit)
 
     tab = ViewTab(
         label=_('Successor Software'),
@@ -145,13 +151,7 @@ class SoftwareAffectedContactView(generic.ObjectChildrenView):
     child_model= Contact
     table = ContactTableSoftware
     template_name = "adestis_netbox_applications/software_contact.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-        'bulk_remove_contact': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkRemoveContact)
 
     tab = ViewTab(
         label=_('Contacts'),
@@ -168,13 +168,7 @@ class ContactAffectedSoftwareView(generic.ObjectChildrenView):
     child_model= Software
     table = SoftwareTable
     template_name = "adestis_netbox_applications/contact_software.html"
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_import': {'add'},
-        'bulk_edit': {'change'},
-        'bulk_remove_software': {'change'},
-    }
+    actions = actions(AddObject, BulkExport, BulkImport, BulkEdit, BulkRemoveSoftware)
 
     tab = ViewTab(
         label=_('Software'),
@@ -271,4 +265,3 @@ class SoftwareRemoveContactView(generic.ObjectEditView):
             'obj_type_plural': 'contacts',
             'return_url': software.get_absolute_url(),
         })
-    

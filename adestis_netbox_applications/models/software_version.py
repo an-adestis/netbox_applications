@@ -66,6 +66,9 @@ class SoftwareVersion(NetBoxModel):
         verbose_name_plural = "Software Versions"
         verbose_name = 'Software Version'
         ordering = ('name',)
+        permissions = [
+            ('remove', 'Remove software versions from applications'),
+        ]
 
     def get_absolute_url(self):
         return reverse('plugins:adestis_netbox_applications:softwareversion', args=[self.pk])

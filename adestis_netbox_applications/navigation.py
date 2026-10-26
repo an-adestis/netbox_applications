@@ -7,9 +7,9 @@ _applications = [
     PluginMenuItem(
         link='plugins:adestis_netbox_applications:installedapplication_list',
         link_text='Applications',
-        permissions=["adestis_netbox_applications.installedapplication_list"],
+        permissions=["adestis_netbox_applications.view_installedapplication"],
         buttons=(
-            PluginMenuButton('plugins:adestis_netbox_applications:installedapplication_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.installedapplication_add"]),
+            PluginMenuButton('plugins:adestis_netbox_applications:installedapplication_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.add_installedapplication"]),
         )
     ),    
 ]
@@ -18,9 +18,9 @@ _software = [
     PluginMenuItem(
         link='plugins:adestis_netbox_applications:software_list',
         link_text='Software',
-        permissions=["adestis_netbox_applications.software_list"],
+        permissions=["adestis_netbox_applications.view_software"],
         buttons=(
-            PluginMenuButton('plugins:adestis_netbox_applications:software_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.software_add"]),
+            PluginMenuButton('plugins:adestis_netbox_applications:software_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.add_software"]),
         )
     ),    
 ]
@@ -29,9 +29,9 @@ _application_types = [
     PluginMenuItem(
         link='plugins:adestis_netbox_applications:installedapplicationtypes_list',
         link_text='Application Types',
-        permissions=["adestis_netbox_applications.installedapplicationtypes_list"],
+        permissions=["adestis_netbox_applications.view_installedapplicationtypes"],
         buttons=(
-            PluginMenuButton('plugins:adestis_netbox_applications:installedapplicationtypes_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.installedapplicationtypes_add"]),
+            PluginMenuButton('plugins:adestis_netbox_applications:installedapplicationtypes_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.add_installedapplicationtypes"]),
         )
     ),    
 ]
@@ -40,9 +40,9 @@ _software_version = [
     PluginMenuItem(
         link='plugins:adestis_netbox_applications:softwareversion_list',
         link_text='Software Version',
-        permissions=["adestis_netbox_applications.softwareversion_list"],
+        permissions=["adestis_netbox_applications.view_softwareversion"],
         buttons=(
-            PluginMenuButton('plugins:adestis_netbox_applications:softwareversion_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.software_add"]),
+            PluginMenuButton('plugins:adestis_netbox_applications:softwareversion_add', 'Add', 'mdi mdi-plus-thick', ButtonColorChoices.GREEN, ["adestis_netbox_applications.add_softwareversion"]),
         )
     ),    
 ]
